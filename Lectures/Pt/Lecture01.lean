@@ -25,7 +25,7 @@ namespace Lecture1
 open CoreCpp
 ```
 
-Esta aula apresenta o objeto da disciplina, as linguagens de programação vistas pelos conceitos que as fundamentam, e o método do curso, em que cada conceito é estudado como uma construção de uma linguagem núcleo chamada Core C++, com regras de tipos e de avaliação escritas em semântica natural e codificadas em Lean. A aula segue a estrutura de Watt{margin}[D. A. Watt, *Programming Language Concepts and Paradigms*, Prentice Hall, 1990.] e termina com um mesmo programa em quatro paradigmas.
+Esta aula apresenta o objeto da disciplina, o significado das construções das linguagens de programação, e o seu método, em que cada construção é estudada como parte de uma linguagem núcleo chamada Core C++, com regras de tipos e de avaliação escritas em semântica natural e codificadas em Lean. A aula organiza as construções pelos conceitos de Watt{margin}[D. A. Watt, *Programming Language Concepts and Paradigms*, Prentice Hall, 1990.] e termina com um mesmo programa em quatro paradigmas.
 
 *Esta aula também está disponível como [slides de apresentação](../slides/lecture-1.pt.html).*
 
@@ -37,7 +37,7 @@ tag := "por-que"
 
 Um engenheiro de computação programa em várias linguagens ao longo da carreira e escolhe, ou herda, a linguagem de cada projeto. Cada linguagem fixa um conjunto de decisões sobre valores, tipos, memória, controle e abstração, e essas decisões determinam o que é fácil de expressar, o que o compilador verifica e o que fica a cargo do programador. Quem conhece os conceitos por trás das decisões aprende uma linguagem nova em dias, lê um programa alheio com segurança e reconhece, em um erro de execução, a regra da linguagem que o explica.
 
-O plano da disciplina{margin}[IME, *Plano de Disciplina 09022, Linguagens de Programação*, Pladis 2025.] fixa dois objetivos. Ilustrar os conceitos que fundamentam as linguagens de programação e os paradigmas que os usam. Comparar os paradigmas. A {numref}[tbl-uds] mostra as sete unidades didáticas e os conceitos de cada uma.
+O plano da disciplina{margin}[IME, *Plano de Disciplina 09022, Linguagens de Programação*, Pladis 2025.] fixa dois objetivos. Ilustrar os conceitos que fundamentam as linguagens de programação e os paradigmas que os usam. Comparar os paradigmas. O foco da disciplina é o primeiro objetivo, tomado como uma pergunta sobre significado. Para cada construção, uma declaração, uma atribuição, um laço, uma chamada de função, uma classe, a disciplina pergunta o que ela computa e responde com uma regra. Os paradigmas entram como as famílias em que as construções aparecem, e a sua comparação fica restrita à UD VII. A {numref}[tbl-uds] mostra as sete unidades didáticas e os conceitos de cada uma.
 
 :::table +header
 *
@@ -155,7 +155,7 @@ O paradigma *funcional* organiza o programa em funções, no sentido matemático
 
 O paradigma *lógico* organiza o programa em fatos e regras, e a execução é a busca de uma prova de uma consulta. Prolog é a linguagem lógica de referência, e os alunos a conhecem da disciplina de Lógica Matemática, com a resolução SLD.
 
-Uma linguagem pode reunir mais de um paradigma. C++ é imperativa, orientada a objetos e, com lambdas e `std::function`, funcional. Python reúne os três. A classificação de uma linguagem por paradigma é uma classificação do estilo que ela favorece, não uma restrição do que ela permite.
+Uma linguagem pode reunir mais de um paradigma. C++ é imperativa, orientada a objetos e, com lambdas e `std::function`, funcional. Python reúne os três. A classificação de uma linguagem por paradigma é uma classificação do estilo que ela favorece, não uma restrição do que ela permite. Para esta disciplina um paradigma é, antes de tudo, um conjunto de construções, e cada construção é estudada pelo significado que tem, independentemente do paradigma que a tornou popular.
 
 # Um Programa em Quatro Paradigmas
 
@@ -204,7 +204,7 @@ def fatorial(n):
     return acc
 ```
 
-As quatro versões computam a mesma função. Elas diferem em como descrevem a computação, por atualização de estado, por equações, por relações ou por atualização sem tipos declarados, e essa diferença é o objeto da disciplina.
+As quatro versões computam a mesma função. Elas diferem nas construções que usam, um laço e uma atribuição, equações recursivas, uma relação e uma busca, um laço sem tipos declarados. A disciplina estuda o significado de cada uma dessas construções e pergunta, para cada uma, o que ela computa e como uma regra o enuncia. A comparação entre os quatro estilos volta na UD VII, já com o significado de cada construção em mãos.
 
 # Core C++, o Núcleo do Curso
 

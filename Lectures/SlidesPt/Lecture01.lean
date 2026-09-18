@@ -39,6 +39,8 @@ open CoreCpp
 
 * Objetivos do plano de disciplina. *Ilustrar* os conceitos e os paradigmas que os usam. *Comparar* os paradigmas.
 
+* Foco da disciplina. O *significado de cada construção*. O que computa uma declaração, uma atribuição, um laço, uma chamada? Uma *regra* responde. A comparação de paradigmas fica na UD VII.
+
 # §1.1 As sete unidades
 
 :::table +header
@@ -189,7 +191,7 @@ def fatorial(n):
 :::
 ::::
 
-* A mesma função, quatro descrições da computação. A diferença entre elas é o objeto da disciplina.
+* A mesma função, quatro conjuntos de construções. A disciplina estuda o *significado de cada construção*, e a comparação volta na UD VII.
 
 # §1.6 Core C++, o núcleo do curso
 
@@ -240,7 +242,7 @@ Except.ok (Except.ok (CoreCpp.Val.int 120))
 
 * *Sintaxe* diz o que é programa, *semântica* diz o que ele computa, *pragmática* diz como se usa.
 
-* Quatro *paradigmas*, imperativo, orientado a objetos, funcional e lógico, e uma linguagem pode reunir vários.
+* Quatro *paradigmas*, imperativo, orientado a objetos, funcional e lógico, cada um uma família de construções. A disciplina estuda o *significado de cada construção*.
 
 * *Core C++* é o núcleo do curso, sem comportamento indefinido, determinístico e LL(1).
 

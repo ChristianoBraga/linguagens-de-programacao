@@ -21,6 +21,8 @@ https://christianobraga.github.io/linguagens-de-programacao/.
 - Cada aula abre com `namespace LectureN` e `open CoreCpp` em um bloco
   `lean -show`, e fecha o namespace no fim. Os decks usam `SlidesN`. As saídas
   de `#eval` vão em blocos `leanOutput` e o Verso as confere na construção.
+- O foco da disciplina é o significado de cada construção, dado por regras.
+  Paradigmas são famílias de construções e a comparação fica na UD VII.
 - Nenhum texto reproduz recurso existente. As fontes entram como referência em
   notas de margem, e definições, exemplos e exercícios são redigidos de forma
   própria.

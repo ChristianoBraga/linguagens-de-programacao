@@ -24,7 +24,7 @@ namespace Lecture1
 open CoreCpp
 ```
 
-This lecture presents the subject of the course, programming languages seen through the concepts that underlie them, and the method of the course, in which each concept is studied as a construction of a core language called Core C++, with typing and evaluation rules written in natural semantics and coded in Lean. The lecture follows the structure of Watt{margin}[D. A. Watt, *Programming Language Concepts and Paradigms*, Prentice Hall, 1990.] and ends with one program in four paradigms.
+This lecture presents the subject of the course, the meaning of the constructions of programming languages, and its method, in which each construction is studied as part of a core language called Core C++, with typing and evaluation rules written in natural semantics and coded in Lean. The lecture organises the constructions by the concepts of Watt{margin}[D. A. Watt, *Programming Language Concepts and Paradigms*, Prentice Hall, 1990.] and ends with one program in four paradigms.
 
 *This lecture is also available as [presentation slides](../slides/lecture-1.en.html).*
 
@@ -36,7 +36,7 @@ tag := "why"
 
 A computer engineer programs in several languages over a career and chooses, or inherits, the language of each project. Each language fixes a set of decisions about values, types, memory, control and abstraction, and those decisions determine what is easy to express, what the compiler checks and what is left to the programmer. Whoever knows the concepts behind the decisions learns a new language in days, reads someone else's program with confidence and recognises, in a runtime error, the rule of the language that explains it.
 
-The course syllabus{margin}[IME, *Plano de Disciplina 09022, Linguagens de Programação*, Pladis 2025.] fixes two goals. To illustrate the concepts that underlie programming languages and the paradigms that use them. To compare the paradigms. {numref}[tbl-uds] shows the seven units and the concepts of each.
+The course syllabus{margin}[IME, *Plano de Disciplina 09022, Linguagens de Programação*, Pladis 2025.] fixes two goals. To illustrate the concepts that underlie programming languages and the paradigms that use them. To compare the paradigms. The focus of the course is the first goal, taken as a question about meaning. For each construction, a declaration, an assignment, a loop, a function call, a class, the course asks what it computes and answers with a rule. The paradigms enter as the families in which the constructions appear, and their comparison is confined to Unit VII. {numref}[tbl-uds] shows the seven units and the concepts of each.
 
 :::table +header
 *
@@ -154,7 +154,7 @@ The *functional* paradigm organises the program in functions, in the mathematica
 
 The *logic* paradigm organises the program in facts and rules, and execution is the search for a proof of a query. Prolog is the reference logic language, and students know it from the course on mathematical logic, with SLD resolution.
 
-A language may bring together more than one paradigm. C++ is imperative, object oriented and, with lambdas and `std::function`, functional. Python brings the three together. Classifying a language by paradigm classifies the style it favours, not a restriction of what it allows.
+A language may bring together more than one paradigm. C++ is imperative, object oriented and, with lambdas and `std::function`, functional. Python brings the three together. Classifying a language by paradigm classifies the style it favours, not a restriction of what it allows. For this course a paradigm is, above all, a set of constructions, and each construction is studied by the meaning it has, independently of the paradigm that made it popular.
 
 # One Program in Four Paradigms
 
@@ -203,7 +203,7 @@ def fatorial(n):
     return acc
 ```
 
-The four versions compute the same function. They differ in how they describe the computation, by state update, by equations, by relations or by update without declared types, and that difference is the subject of the course.
+The four versions compute the same function. They differ in the constructions they use, a loop and an assignment, recursive equations, a relation and a search, a loop without declared types. The course studies the meaning of each of these constructions, and asks, for each one, what it computes and how a rule states it. The comparison between the four styles returns in Unit VII, with the meaning of each construction already in hand.
 
 # Core C++, the Core of the Course
 

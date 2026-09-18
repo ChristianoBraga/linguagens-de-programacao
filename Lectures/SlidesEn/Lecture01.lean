@@ -39,6 +39,8 @@ open CoreCpp
 
 * Goals of the syllabus. *Illustrate* the concepts and the paradigms that use them. *Compare* the paradigms.
 
+* Focus of the course. The *meaning of each construction*. What does a declaration, an assignment, a loop, a call compute? A *rule* answers. Paradigm comparison is confined to Unit VII.
+
 # §1.1 The seven units
 
 :::table +header
@@ -189,7 +191,7 @@ def fatorial(n):
 :::
 ::::
 
-* The same function, four descriptions of the computation. The difference between them is the subject of the course.
+* The same function, four sets of constructions. The course studies the *meaning of each construction*, and the comparison returns in Unit VII.
 
 # §1.6 Core C++, the core of the course
 
@@ -240,7 +242,7 @@ Except.ok (Except.ok (CoreCpp.Val.int 120))
 
 * *Syntax* says what a program is, *semantics* what it computes, *pragmatics* how it is used.
 
-* Four *paradigms*, imperative, object oriented, functional and logic, and a language may bring several together.
+* Four *paradigms*, imperative, object oriented, functional and logic, each a family of constructions. The course studies the *meaning of each construction*.
 
 * *Core C++* is the core of the course, with no undefined behaviour, deterministic and LL(1).
 
