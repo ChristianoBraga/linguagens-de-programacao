@@ -115,9 +115,13 @@ Um operador binário aritmético avalia o operando esquerdo, depois o direito na
 A conjunção e a disjunção têm *curto‑circuito*, então o segundo operando só é avaliado quando o primeiro não decide o resultado. Cada operador tem duas regras, uma por valor do primeiro operando.
 
 ```
-ρ, σ ⊢ e₁ ⇒ bool false, σ₁                  ρ, σ ⊢ e₁ ⇒ bool true, σ₁    ρ, σ₁ ⊢ e₂ ⇒ v, σ₂
-──────────────────────────────── (And-False) ─────────────────────────────────────────────── (And-True)
-ρ, σ ⊢ e₁ && e₂ ⇒ bool false, σ₁            ρ, σ ⊢ e₁ && e₂ ⇒ v, σ₂
+ρ, σ ⊢ e₁ ⇒ bool false, σ₁
+──────────────────────────────── (And-False)
+ρ, σ ⊢ e₁ && e₂ ⇒ bool false, σ₁
+
+ρ, σ ⊢ e₁ ⇒ bool true, σ₁    ρ, σ₁ ⊢ e₂ ⇒ v, σ₂
+─────────────────────────────────────────────── (And-True)
+ρ, σ ⊢ e₁ && e₂ ⇒ v, σ₂
 ```
 
 O condicional `e₁ ? e₂ : e₃` segue o mesmo padrão, com uma regra para cada valor da condição, e só o ramo escolhido é avaliado.
@@ -159,9 +163,13 @@ Uma atribuição avalia o lado direito, depois a posição do lado esquerdo, e e
 Uma sequência de comandos leva o ambiente de saída de cada comando ao seguinte, e um `ret` interrompe a sequência. Um bloco executa a sua sequência, descarta a extensão do ambiente e retira da memória as posições que a sequência declarou. O escopo de uma variável é, assim, a restauração de ρ, e o seu tempo de vida é a retirada da posição de σ.
 
 ```
-ρ, σ ⊢ c ⇒ normal, ρ₁, σ₁    ρ₁, σ₁ ⊢ cs ⇒ r, ρ₂, σ₂        ρ, σ ⊢ c ⇒ ret v, ρ₁, σ₁
-──────────────────────────────────────────────────── (Seq)  ──────────────────────────── (Seq-Ret)
-ρ, σ ⊢ c cs ⇒ r, ρ₂, σ₂                                     ρ, σ ⊢ c cs ⇒ ret v, ρ₁, σ₁
+ρ, σ ⊢ c ⇒ normal, ρ₁, σ₁    ρ₁, σ₁ ⊢ cs ⇒ r, ρ₂, σ₂
+──────────────────────────────────────────────────── (Seq)
+ρ, σ ⊢ c cs ⇒ r, ρ₂, σ₂
+
+ρ, σ ⊢ c ⇒ ret v, ρ₁, σ₁
+──────────────────────────── (Seq-Ret)
+ρ, σ ⊢ c cs ⇒ ret v, ρ₁, σ₁
 
 ρ, σ ⊢ c₁ … cₙ ⇒ r, ρ′, σ′
 ──────────────────────────────────────────── (Block)
