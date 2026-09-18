@@ -1,0 +1,23 @@
+name = "lectures"
+defaultTargets = ["lectures-pt", "slides-pt"]
+
+[[require]]
+name = "verso"
+git = "https://github.com/leanprover/verso"
+rev = "v4.32.0"
+
+[[require]]
+name = "corecpp"
+git = "https://github.com/ChristianoBraga/corecpp"
+rev = "main"
+
+[[lean_lib]]
+name = "Lectures"
+
+[[lean_exe]]
+name = "lectures-pt"
+root = "LecturesPtMain"
+
+[[lean_exe]]
+name = "slides-pt"
+root = "SlidesPtMain"
