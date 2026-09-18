@@ -22,7 +22,7 @@ Christiano Braga · Engenharia de Computação · IME
 [↩ Abrir as notas de aula](../pt/Aula-2___-Sintaxe/)
 
 ```lean -show
-namespace SlidesAula2
+namespace Slides2
 open CoreCpp
 ```
 
@@ -201,5 +201,5 @@ Except.error "syntax error at token 7 (';'): expected '='"
 Exercícios: veja as [notas de aula](../pt/Aula-2___-Sintaxe/).
 
 ```lean -show
-end SlidesAula2
+end Slides2
 ```

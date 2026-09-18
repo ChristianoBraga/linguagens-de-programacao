@@ -21,13 +21,13 @@ tag := "aula-4"
 %%%
 
 ```lean -show
-namespace Aula4
+namespace Lecture4
 open CoreCpp
 ```
 
 Esta aula trata os programas que processam programas. Ela distingue interpretadores de compiladores, descreve as fases comuns aos dois, apresenta os diagramas em T que descrevem a combinação de processadores, e examina o interpretador de Core C++ como um processador de linguagem completo, com as suas quatro fases e os seus quatro modos de uso. A aula fecha a UD I e prepara a UD II, em que a verificação de tipos ganha as suas regras.
 
-*Esta aula também está disponível como [slides de apresentação](../slides/aula-4.pt.html).*
+*Esta aula também está disponível como [slides de apresentação](../slides/lecture-4.pt.html).*
 
 # Interpretadores e Compiladores
 
@@ -151,10 +151,10 @@ Um resultado `erro` sai com o código 134, o de um processo abortado, e um erro 
 Dentro do interpretador as fases são funções encadeadas. A função `parseProgram` chama `lex` e o analisador sintático. A função `check` percorre a árvore com o contexto de tipos. A função `run` avalia a árvore com o ambiente e a memória vazios.
 
 ```lean (name := checkOk)
-def soma : String :=
+def sum : String :=
   "int main() { int x = 1; x = x + 41; return x; }"
 
-#eval (parseProgram soma).map check
+#eval (parseProgram sum).map check
 ```
 ```leanOutput checkOk
 Except.ok (Except.ok ())
@@ -163,14 +163,14 @@ Except.ok (Except.ok ())
 A análise contextual detecta o uso de um identificador fora do seu escopo, que a gramática não consegue excluir, porque a gramática não sabe quais nomes foram declarados.
 
 ```lean (name := checkScope)
-def escopo : String :=
+def scope : String :=
   "int main() {
      int x = 1;
      { int y = 2; x = x + y; }
      return y;
    }"
 
-#eval (parseProgram escopo).map check
+#eval (parseProgram scope).map check
 ```
 ```leanOutput checkScope
 Except.ok (Except.error (CoreCpp.TypeError.undeclaredVariable "y"))
@@ -179,9 +179,9 @@ Except.ok (Except.error (CoreCpp.TypeError.undeclaredVariable "y"))
 Ela também verifica a existência de uma função `int main()`, sem a qual o programa não tem ponto de entrada.
 
 ```lean (name := checkMain)
-def semMain : String := "bool main() { return true; }"
+def noMain : String := "bool main() { return true; }"
 
-#eval (parseProgram semMain).map check
+#eval (parseProgram noMain).map check
 ```
 ```leanOutput checkMain
 Except.ok (Except.error (CoreCpp.TypeError.missingMain))
@@ -260,5 +260,5 @@ tag := "exercicios-4"
 {exercise "exr-aceito-rejeitado"}[] Escreva um programa aceito por `g++` e rejeitado por Core C++ que não use conversão entre `bool` e `int`, e um programa aceito por Core C++ cujo resultado em `g++` você consiga prever pela semântica da {secref}[aula-3].
 
 ```lean -show
-end Aula4
+end Lecture4
 ```

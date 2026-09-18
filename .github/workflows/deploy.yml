@@ -31,11 +31,16 @@ jobs:
           path: .lake
           key: lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
 
-      - name: Build notes
+      - name: Build English site
+        run: lake exe lectures-en --output _out/en
+
+      - name: Build Portuguese site
         run: lake exe lectures-pt --output _out/pt
 
       - name: Build slide decks
-        run: lake exe slides-pt --output _out/slides-pt
+        run: |
+          lake exe slides-en --output _out/slides-en
+          lake exe slides-pt --output _out/slides-pt
 
       - name: Assemble site
         run: |
@@ -43,9 +48,10 @@ jobs:
           cp -r site/. _site/
           version="$(TZ=UTC git log -1 --format='%h · %cd' --date=format-local:'%Y-%m-%d %H:%M UTC')"
           sed -i "s/__SITE_VERSION__/$version/" _site/index.html
+          cp -r _out/en/html-multi _site/en
           cp -r _out/pt/html-multi _site/pt
           mkdir -p _site/slides
-          cp _out/slides-pt/*.html _site/slides/
+          cp _out/slides-en/*.html _out/slides-pt/*.html _site/slides/
 
       - uses: actions/upload-pages-artifact@v3
         with:

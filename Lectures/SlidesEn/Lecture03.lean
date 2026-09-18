@@ -1,6 +1,6 @@
 /-
-Slides da Aula 3. Cada seção de nível superior é um slide. As regras e as
-derivações são texto preformatado em blocos `tree`.
+Slides of Lecture 3. Each top level section is a slide. Rules and
+derivations are preformatted text in `tree` blocks.
 -/
 
 import VersoManual
@@ -14,72 +14,72 @@ open Lectures
 
 set_option pp.rawOnError true
 
-#doc (Manual) "Semântica" =>
+#doc (Manual) "Semantics" =>
 
-Juízos, regras de inferência e a semântica natural de Core C++
+Judgments, inference rules and the natural semantics of Core C++
 
-Christiano Braga · Engenharia de Computação · IME
+Christiano Braga · Computer Engineering · IME
 
-[↩ Abrir as notas de aula](../pt/Aula-3___-Sem___ntica/)
+[↩ Open the lecture notes](../en/Lecture-3___-Semantics/)
 
 {cite}[G. Kahn, *Natural Semantics*, STACS 87, LNCS 247, Springer, 1987.]
 
 ```lean -show
-namespace SlidesAula3
+namespace Slides3
 open CoreCpp
 ```
 
-# §3.1 Juízos e regras de inferência
+# §3.1 Judgments and inference rules
 
-* Na dedução natural, um *juízo* é uma afirmação derivável e uma *regra* leva premissas a uma conclusão.
+* In natural deduction, a *judgment* is a derivable statement and a *rule* takes premises to a conclusion.
 
-* Uma *derivação* é uma árvore de aplicações de regras, com axiomas nas folhas.
+* A *derivation* is a tree of rule applications, with axioms at the leaves.
 
-* A semântica natural usa a mesma forma, com juízos sobre *programas*.
+* Natural semantics uses the same form, with judgments about *programs*.
 
-* Estilo de sequentes de Kahn. Contexto à esquerda de ⊢, construção à direita, resultado depois de ⇒.
+* Sequent style of Kahn. Context left of ⊢, construction right of it, result after ⇒.
 
 ```tree
-premissa₁    premissa₂
-───────────────────── (Nome)
-      conclusão
+premise₁    premise₂
+──────────────────── (Name)
+     conclusion
 ```
 
-# §3.2 Ambiente, memória e valores
+# §3.2 Environment, store and values
 
-* *Ambiente* ρ, identificadores em *posições* ℓ.
+* *Environment* ρ, identifiers to *locations* ℓ.
 
-* *Memória* σ, posições em *valores*. O domínio de σ são as posições vivas.
+* *Store* σ, locations to *values*. The domain of σ is the set of live locations.
 
-* Valores do subconjunto atual. `int n` de 32 bits e `bool b`.
+* Values of the current subset. 32 bit `int n` and `bool b`.
 
-* *Ler x é ler σ(ρ(x)). Atribuir a x é escrever em ρ(x).*
+* *Reading x is reading σ(ρ(x)). Assigning to x is writing at ρ(x).*
 
-* Duas variáveis podem denotar a mesma posição, e uma posição pode viver depois do identificador. Referências na UD III, objetos na UD V, *sem reescrever regra alguma*.
+* Two variables may denote the same location, and a location may live after the identifier. References in Unit III, objects in Unit V, *with no rule rewritten*.
 
-# §3.2 Os quatro juízos
+# §3.2 The four judgments
 
 :::table +header
 *
-  * Juízo
-  * Leitura
+  * Judgment
+  * Reading
 *
   * Γ ⊢ e : τ
-  * e tem tipo τ no contexto Γ
+  * e has type τ in the context Γ
 *
   * ρ, σ ⊢ e ⇒ v, σ′
-  * sob ρ e σ, e avalia para v e produz σ′
+  * under ρ and σ, e evaluates to v and yields σ′
 *
   * ρ, σ ⊢ e ⇒ₗ ℓ, σ′
-  * sob ρ e σ, e denota a posição ℓ
+  * under ρ and σ, e denotes the location ℓ
 *
   * ρ, σ ⊢ c ⇒ r, ρ′, σ′
-  * sob ρ e σ, c produz o controle r, o ambiente ρ′ e a memória σ′
+  * under ρ and σ, c yields the control r, the environment ρ′ and the store σ′
 :::
 
-* O controle r é `normal` ou `ret v`. Todo juízo dinâmico admite `erro`, que não é um valor da linguagem.
+* The control r is `normal` or `ret v`. Every dynamic judgment admits `error`, which is not a value of the language.
 
-# §3.3 Literais e variáveis
+# §3.3 Literals and variables
 
 ```tree
 ─────────────────────────── (Lit)      ──────────────────────── (BoolLit)
@@ -90,11 +90,11 @@ premissa₁    premissa₂
 ρ, σ ⊢ x ⇒ₗ ℓ, σ                       ρ, σ ⊢ x ⇒ σ(ℓ), σ
 ```
 
-* `int32` devolve o inteiro quando ele cabe em 32 bits e `erro` fora.
+* `int32` returns the integer when it fits in 32 bits and `error` otherwise.
 
-* A posição de uma variável precisa estar *viva*.
+* The location of a variable must be *live*.
 
-# §3.3 Operadores binários
+# §3.3 Binary operators
 
 ```tree
 ρ, σ ⊢ e₁ ⇒ int n₁, σ₁    ρ, σ₁ ⊢ e₂ ⇒ int n₂, σ₂
@@ -107,12 +107,12 @@ premissa₁    premissa₂
 
 ρ, σ ⊢ e₁ ⇒ int n₁, σ₁    ρ, σ₁ ⊢ e₂ ⇒ int 0, σ₂
 ──────────────────────────────────────────────── (DivZero)
-ρ, σ ⊢ e₁ ⊘ e₂ ⇒ erro
+ρ, σ ⊢ e₁ ⊘ e₂ ⇒ error
 ```
 
-* Esquerdo antes do direito, a escolha de Core C++ onde C++17 não fixa ordem.
+* Left before right, the choice of Core C++ where C++17 fixes no order.
 
-# §3.3 Curto‑circuito e uma derivação
+# §3.3 Short circuit and a derivation
 
 ```tree
 ρ, σ ⊢ e₁ ⇒ bool false, σ₁
@@ -124,7 +124,7 @@ premissa₁    premissa₂
 ρ, σ ⊢ e₁ && e₂ ⇒ v, σ₂
 ```
 
-{exh}[x + 41 com ρ = \[x ↦ ℓ₀\] e σ = \{ℓ₀ ↦ 1\}]
+{exh}[x + 41 with ρ = \[x ↦ ℓ₀\] and σ = \{ℓ₀ ↦ 1\}]
 
 ```tree
   ρ(x) = ℓ₀
@@ -136,7 +136,7 @@ premissa₁    premissa₂
   ρ, σ ⊢ x + 41 ⇒ int 42, σ
 ```
 
-# §3.4 Declaração e atribuição
+# §3.4 Declaration and assignment
 
 ```tree
 ρ, σ ⊢ e ⇒ v, σ′    (ℓ, σ″) = alloc(σ′, v)
@@ -148,11 +148,11 @@ premissa₁    premissa₂
 ρ, σ ⊢ e₁ = e₂ ⇒ normal, ρ, σ₂[ℓ ↦ v]
 ```
 
-* A declaração aloca uma posição *nova* e estende ρ. Posições nunca são reutilizadas.
+* The declaration allocates a *fresh* location and extends ρ. Locations are never reused.
 
-* A atribuição avalia o lado direito *antes* do esquerdo, a ordem que C++17 fixa.
+* The assignment evaluates the right side *before* the left one, the order C++17 fixes.
 
-# §3.4 Sequência e bloco
+# §3.4 Sequence and block
 
 ```tree
 ρ, σ ⊢ c ⇒ normal, ρ₁, σ₁    ρ₁, σ₁ ⊢ cs ⇒ r, ρ₂, σ₂
@@ -168,11 +168,11 @@ premissa₁    premissa₂
 ρ, σ ⊢ { c₁ … cₙ } ⇒ r, ρ, σ′ ∖ (ρ′ ∖ ρ)
 ```
 
-* *Escopo* é a restauração de ρ. *Tempo de vida* é a retirada das posições de σ.
+* *Scope* is the restoration of ρ. *Lifetime* is the removal of the locations from σ.
 
-* Um `ret` interrompe a sequência e sobe até a chamada.
+* A `ret` interrupts the sequence and rises to the call.
 
-# §3.4 Laços
+# §3.4 Loops
 
 ```tree
 ρ, σ ⊢ e ⇒ bool false, σ₁
@@ -188,15 +188,15 @@ premissa₁    premissa₂
 ρ, σ ⊢ while (e) {c} ⇒ ret v, ρ, σ₂
 ```
 
-* `While-T` recorre à *própria conclusão*.
+* `While-T` recurs on its *own conclusion*.
 
-# §3.5 A árvore de derivação impressa pelo interpretador
+# §3.5 The derivation tree printed by the interpreter
 
 ```lean (name := traceAssign)
-def soma : String :=
+def sum : String :=
   "int main() { int x = 1; x = x + 41; return x; }"
 
-#eval match parseProgram soma with
+#eval match parseProgram sum with
   | .ok p => IO.println (renderTrace (runWith true p).2)
   | .error e => IO.println e
 ```
@@ -215,9 +215,9 @@ def soma : String :=
 [], {} ⊢ main() ⇒ 42, {ℓ0 ↦ 42}   (Call)
 ```
 
-* *Pós‑ordem*, premissas antes da conclusão, indentadas pela profundidade. A raiz é a última linha.
+* *Post order*, premises before the conclusion, indented by depth. The root is the last line.
 
-# §3.6 Erro, determinismo e divergência
+# §3.6 Error, determinism and divergence
 
 ```lean (name := divZero)
 #eval (parseProgram "int main() { return 10 / 0; }").map run
@@ -226,15 +226,15 @@ def soma : String :=
 Except.ok (Except.error (CoreCpp.Error.divisionByZero))
 ```
 
-* *Progresso*. Toda derivação de um programa bem tipado termina em valor ou em `erro`.
+* *Progress*. Every derivation of a well typed program ends in a value or in `error`.
 
-* *Determinismo*. Premissas mutuamente exclusivas, no máximo uma derivação. Em C++, `f() + g()` pode ter dois resultados.
+* *Determinism*. Mutually exclusive premises, at most one derivation. In C++, `f() + g()` may have two results.
 
-* *Divergência*. `while (true) { }` não tem derivação finita. A semântica indutiva não descreve programas que não terminam.
+* *Divergence*. `while (true) { }` has no finite derivation. The inductive semantics does not describe programs that do not terminate.
 
-{cite}[X. Leroy e H. Grall, *Coinductive big-step operational semantics*, Information and Computation 207(2), 2009.]
+{cite}[X. Leroy and H. Grall, *Coinductive big-step operational semantics*, Information and Computation 207(2), 2009.]
 
-# §3.7 Semântica estática
+# §3.7 Static semantics
 
 ```tree
 Γ ⊢ e₁ : int    Γ ⊢ e₂ : int
@@ -243,30 +243,30 @@ Except.ok (Except.error (CoreCpp.Error.divisionByZero))
 ```
 
 ```lean (name := typeError)
-def somaBool : String := "int main() { return 1 + true; }"
+def sumBool : String := "int main() { return 1 + true; }"
 
-#eval (parseProgram somaBool).map check
+#eval (parseProgram sumBool).map check
 ```
 ```leanOutput typeError
 Except.ok (Except.error (CoreCpp.TypeError.badOperand "+" (CoreCpp.Ty.bool)))
 ```
 
-* Mesma forma das regras de avaliação, *sem memória*, verificadas antes da execução. A UD II trata os tipos.
+* Same form as the evaluation rules, *without a store*, checked before execution. Unit II treats types.
 
-# Resumo
+# Summary
 
-* Um *juízo* afirma o que uma construção computa em um contexto, e uma *derivação* é uma árvore de regras.
+* A *judgment* states what a construction computes in a context, and a *derivation* is a tree of rules.
 
-* *Ambiente* ρ leva identificadores a posições, *memória* σ leva posições a valores. Ler x é ler σ(ρ(x)).
+* *Environment* ρ maps identifiers to locations, *store* σ maps locations to values. Reading x is reading σ(ρ(x)).
 
-* Expressões avaliam da esquerda para a direita, com curto‑circuito em `&&` e `||`, e a divisão por zero é `erro`.
+* Expressions evaluate left to right, with short circuit in `&&` and `||`, and division by zero is `error`.
 
-* Declaração aloca, atribuição escreve, bloco restaura ρ e retira posições de σ, `while` recorre à própria conclusão.
+* Declaration allocates, assignment writes, block restores ρ and removes locations from σ, `while` recurs on its own conclusion.
 
-* O interpretador imprime a *árvore de derivação* em pós‑ordem, e a semântica não descreve programas que divergem.
+* The interpreter prints the *derivation tree* in post order, and the semantics does not describe diverging programs.
 
-Exercícios: veja as [notas de aula](../pt/Aula-3___-Sem___ntica/).
+Exercises: see the [lecture notes](../en/Lecture-3___-Semantics/).
 
 ```lean -show
-end SlidesAula3
+end Slides3
 ```

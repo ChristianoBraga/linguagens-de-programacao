@@ -21,13 +21,13 @@ tag := "aula-3"
 %%%
 
 ```lean -show
-namespace Aula3
+namespace Lecture3
 open CoreCpp
 ```
 
 Esta aula introduz a semântica natural, a notação em que a disciplina escreve o significado de cada construção de Core C++. Ela parte dos juízos e das regras de inferência que os alunos conhecem da dedução natural, apresenta os três componentes semânticos, ambiente, memória e valores, e escreve as regras de avaliação das expressões e dos comandos do subconjunto implementado. O interpretador em Lean produz a árvore de derivação de cada execução, e a aula ensina a lê‑la.
 
-*Esta aula também está disponível como [slides de apresentação](../slides/aula-3.pt.html).*
+*Esta aula também está disponível como [slides de apresentação](../slides/lecture-3.pt.html).*
 
 # Juízos e Regras de Inferência
 
@@ -203,10 +203,10 @@ tag := "trace"
 Cada função do interpretador implementa um juízo, e cada caso de cada função implementa uma regra, com a regra escrita no comentário do caso. Quando o rastreamento está ativo, cada aplicação de regra registra a sua conclusão com o nome da regra, na profundidade em que ocorre na árvore de derivação. As premissas são registradas antes da conclusão, então a árvore aparece em *pós‑ordem*, indentada pela profundidade. A raiz é a última linha.
 
 ```lean (name := traceAssign)
-def soma : String :=
+def sum : String :=
   "int main() { int x = 1; x = x + 41; return x; }"
 
-#eval match parseProgram soma with
+#eval match parseProgram sum with
   | .ok p => IO.println (renderTrace (runWith true p).2)
   | .error e => IO.println e
 ```
@@ -243,10 +243,10 @@ Except.ok (Except.error (CoreCpp.Error.divisionByZero))
 ```
 
 ```lean (name := overflow)
-def estouro : String :=
+def overflow : String :=
   "int main() { return 2147483647 + 1; }"
 
-#eval (parseProgram estouro).map run
+#eval (parseProgram overflow).map run
 ```
 ```leanOutput overflow
 Except.ok (Except.error (CoreCpp.Error.overflow))
@@ -273,9 +273,9 @@ O juízo Γ ⊢ e : τ diz que a expressão e tem tipo τ no contexto Γ, uma fu
 O verificador de tipos rejeita `1 + true` antes de qualquer avaliação, e a UD II trata os tipos em detalhe.
 
 ```lean (name := typeError)
-def somaBool : String := "int main() { return 1 + true; }"
+def sumBool : String := "int main() { return 1 + true; }"
 
-#eval (parseProgram somaBool).map check
+#eval (parseProgram sumBool).map check
 ```
 ```leanOutput typeError
 Except.ok (Except.error (CoreCpp.TypeError.badOperand "+" (CoreCpp.Ty.bool)))
@@ -300,5 +300,5 @@ tag := "exercicios-3"
 {exercise "exr-escopo"}[] Execute `int main() { int x = 1; { int y = 2; x = x + y; } return x; }` com o interpretador e explique, pela regra `Block`, o que acontece com a posição de `y` ao fim do bloco interno. Depois troque `return x` por `return y` e explique a mensagem do verificador de tipos.
 
 ```lean -show
-end Aula3
+end Lecture3
 ```

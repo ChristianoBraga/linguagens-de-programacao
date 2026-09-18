@@ -24,7 +24,7 @@ Christiano Braga · Engenharia de Computação · IME
 {cite}[D. A. Watt e D. F. Brown, *Programming Language Processors in Java*, Prentice Hall, 2000, capítulo 2.]
 
 ```lean -show
-namespace SlidesAula4
+namespace Slides4
 open CoreCpp
 ```
 
@@ -127,14 +127,14 @@ echo 'int main() { return 42; }' | bin/corecpp -; echo $?
 # §4.4 A análise contextual
 
 ```lean (name := checkScope)
-def escopo : String :=
+def scope : String :=
   "int main() {
      int x = 1;
      { int y = 2; x = x + y; }
      return y;
    }"
 
-#eval (parseProgram escopo).map check
+#eval (parseProgram scope).map check
 ```
 ```leanOutput checkScope
 Except.ok (Except.error (CoreCpp.TypeError.undeclaredVariable "y"))
@@ -204,5 +204,5 @@ int main() {
 Exercícios: veja as [notas de aula](../pt/Aula-4___-Processadores-de-Linguagens/).
 
 ```lean -show
-end SlidesAula4
+end Slides4
 ```

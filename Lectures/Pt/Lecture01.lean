@@ -21,13 +21,13 @@ tag := "aula-1"
 %%%
 
 ```lean -show
-namespace Aula1
+namespace Lecture1
 open CoreCpp
 ```
 
 Esta aula apresenta o objeto da disciplina, as linguagens de programação vistas pelos conceitos que as fundamentam, e o método do curso, em que cada conceito é estudado como uma construção de uma linguagem núcleo chamada Core C++, com regras de tipos e de avaliação escritas em semântica natural e codificadas em Lean. A aula segue a estrutura de Watt{margin}[D. A. Watt, *Programming Language Concepts and Paradigms*, Prentice Hall, 1990.] e termina com um mesmo programa em quatro paradigmas.
 
-*Esta aula também está disponível como [slides de apresentação](../slides/aula-1.pt.html).*
+*Esta aula também está disponível como [slides de apresentação](../slides/lecture-1.pt.html).*
 
 # Por que Estudar Linguagens de Programação?
 
@@ -223,7 +223,7 @@ Em vez de descrever cada conceito em uma linguagem diferente, a disciplina os in
 O programa abaixo é o fatorial em Core C++, igual à versão em C++ da {secref}[quatro-paradigmas], com a função `main` que devolve o fatorial de 5. O interpretador da disciplina, escrito em Lean, o analisa e o executa.
 
 ```lean (name := fatorialCore)
-def fatorial : String :=
+def factorial : String :=
   "int fatorial(int n) {
     int acc = 1;
     for (int i = 2; i <= n; i = i + 1) { acc = acc * i; }
@@ -231,7 +231,7 @@ def fatorial : String :=
   }
   int main() { return fatorial(5); }"
 
-#eval (parseProgram fatorial).map run
+#eval (parseProgram factorial).map run
 ```
 ```leanOutput fatorialCore
 Except.ok (Except.ok (CoreCpp.Val.int 120))
@@ -270,5 +270,5 @@ tag := "exercicios-1"
 {exercise "exr-core-cpp-main"}[] Escreva em Core C++ uma função `main` que devolve a soma dos inteiros de 1 a 10 e a execute com o interpretador, como no exemplo da {secref}[core-cpp].
 
 ```lean -show
-end Aula1
+end Lecture1
 ```

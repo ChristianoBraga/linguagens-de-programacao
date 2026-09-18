@@ -1,43 +1,49 @@
-# Linguagens de Programação — Notas de Aula
+# Programming Languages — Lecture Notes
 
-Notas de aula da disciplina *09022, Linguagens de Programação* (IME, Engenharia
-de Computação, 5º ano), escritas em [Verso](https://github.com/leanprover/verso).
+Lecture notes for the course *09022, Linguagens de Programação* (IME, Computer
+Engineering, 5th year), written in [Verso](https://github.com/leanprover/verso).
 
-**Sítio publicado:** <https://christianobraga.github.io/linguagens-de-programacao/>
-([notas](https://christianobraga.github.io/linguagens-de-programacao/pt/) ·
-[slides](https://christianobraga.github.io/linguagens-de-programacao/slides/aula-1.pt.html)).
-Cada push em `main` reconstrói e republica o sítio pela GitHub Actions
-(`.github/workflows/deploy.yml`). A página inicial fica em `site/`.
+**Published site:** <https://christianobraga.github.io/linguagens-de-programacao/>
+([English](https://christianobraga.github.io/linguagens-de-programacao/en/) ·
+[Português](https://christianobraga.github.io/linguagens-de-programacao/pt/)).
+Every push to `main` rebuilds and redeploys the site via GitHub Actions
+(`.github/workflows/deploy.yml`); the landing page lives in `site/`.
+The notes exist in two languages, with parallel document trees:
 
-A disciplina segue a estrutura de Watt e apresenta cada conceito como uma
-construção de Core C++, um subconjunto bem comportado de C++17, com regras de
-tipos e de avaliação em semântica natural e a sua implementação em Lean 4. O
-interpretador de Core C++ está em
+- `Lectures/En/` — English lectures, root document `Lectures/En.lean`
+- `Lectures/Pt/` — Portuguese lectures, root document `Lectures/Pt.lean`
+- `Lectures/SlidesEn/`, `Lectures/SlidesPt/` — one slide deck per lecture
+
+Lean code is identical in both versions; only the prose differs.
+
+The course follows Watt's structure and presents each concept as a construction
+of Core C++, a well behaved subset of C++17, with typing and evaluation rules in
+natural semantics and their implementation in Lean 4. The Core C++ interpreter,
 [github.com/ChristianoBraga/corecpp](https://github.com/ChristianoBraga/corecpp),
-é uma dependência deste projeto, e todo código Lean das notas é elaborado na
-construção do sítio.
+is a dependency of this project, and every Lean example in the notes runs it at
+build time, with the output checked by Verso. `Lectures/Meta/` holds the
+machinery shared with the Formal Software Verification course (labels and
+counters, footnotes, `savedLean` blocks, theme, slide decks).
 
-- `Lectures/Pt/` — as aulas em português, raiz `Lectures/Pt.lean`
-- `Lectures/SlidesPt/` — os slides, um documento Verso por aula
-- `Lectures/Meta/` — a maquinaria compartilhada com o curso de Verificação
-  Formal de Software (rótulos e contadores, notas de rodapé, blocos `savedLean`,
-  tema, slides)
-
-## Construção
+## Building
 
 ```
+lake exe lectures-en --output _out/en
 lake exe lectures-pt --output _out/pt
+lake exe slides-en --output _out/slides-en
 lake exe slides-pt --output _out/slides-pt
 ```
 
-O HTML do Verso precisa ser servido, e não aberto do sistema de arquivos.
-`./preview.sh` monta o sítio como `deploy.sh` e o serve em `http://localhost:8000/`.
+Verso's HTML must be served, not opened from the filesystem. `./preview.sh`
+assembles the site exactly as `deploy.sh` does and serves it at
+`http://localhost:8000/`.
 
-## Adicionar uma aula
+## Adding a lecture
 
-1. Criar `Lectures/Pt/AulaNN.lean` a partir de `Aula01.lean` e
-   `Lectures/SlidesPt/AulaNN.lean` a partir de `SlidesPt/Aula01.lean`.
-2. Importar e incluir a aula em `Lectures/Pt.lean`, e registrar o deck em
-   `SlidesPtMain.lean`.
-3. Exercícios com código Lean vão em blocos `savedLean -keep`, extraídos para
-   `html-multi/example-code/`.
+1. Create `Lectures/En/LectureNN.lean` and `Lectures/Pt/LectureNN.lean`, and the
+   decks `Lectures/SlidesEn/LectureNN.lean` and `Lectures/SlidesPt/LectureNN.lean`,
+   starting from lecture 1 as a model.
+2. Import and `{include 0 ...}` them in `Lectures/En.lean` and `Lectures/Pt.lean`,
+   and register the decks in `SlidesEnMain.lean` and `SlidesPtMain.lean`.
+3. Put exercises with Lean code in `savedLean -keep` blocks so they are extracted
+   to `html-multi/example-code/`.

@@ -11,12 +11,19 @@ https://christianobraga.github.io/linguagens-de-programacao/.
 - A RULE ZERO de `~/.claude/CLAUDE.md` e as convenções de `../CLAUDE.md` valem.
   Prosa em português, código, comentários e identificadores em inglês, salvo
   os nomes de exemplo nos programas Core C++ das aulas.
-- Um documento Verso por aula em `Lectures/Pt/AulaNN.lean`, incluído em
-  `Lectures/Pt.lean`. Um deck por aula em `Lectures/SlidesPt/AulaNN.lean`,
-  registrado em `SlidesPtMain.lean`, cada seção de nível superior é um slide.
-- Cada aula abre com `namespace AulaN` e `open CoreCpp` em um bloco
-  `lean -show`, e fecha o namespace no fim. As saídas de `#eval` vão em
-  blocos `leanOutput` e o Verso as confere na construção.
+- Bilíngue como em Verificação Formal. Árvores paralelas `Lectures/En/` e
+  `Lectures/Pt/`, um documento por aula, `LectureNN.lean`, incluído em
+  `Lectures/En.lean` e `Lectures/Pt.lean`. Decks em `Lectures/SlidesEn/` e
+  `Lectures/SlidesPt/`, registrados em `SlidesEnMain.lean` e `SlidesPtMain.lean`,
+  cada seção de nível superior é um slide. O código Lean é idêntico nas duas
+  línguas, só a prosa muda. A página de entrada `site/index.html` é em inglês
+  e aponta para as duas árvores. O inglês é escrito primeiro.
+- Cada aula abre com `namespace LectureN` e `open CoreCpp` em um bloco
+  `lean -show`, e fecha o namespace no fim. Os decks usam `SlidesN`. As saídas
+  de `#eval` vão em blocos `leanOutput` e o Verso as confere na construção.
+- Nenhum texto reproduz recurso existente. As fontes entram como referência em
+  notas de margem, e definições, exemplos e exercícios são redigidos de forma
+  própria.
 - Rótulos sem números, contadores em `Lectures/Meta/Label.lean`. `{figcap}`,
   `{tabcap}`, `{ex}`, `{exercise}` nos sítios de definição, `{numref}` e
   `{secref}` nas referências. Seções referenciadas levam `%%% tag := "..." %%%`.
@@ -32,8 +39,8 @@ https://christianobraga.github.io/linguagens-de-programacao/.
 
 ## Construção e publicação
 
-- `lake exe lectures-pt --output _out/pt` e `lake exe slides-pt --output
-  _out/slides-pt`. `./preview.sh` monta e serve em `localhost:8000`,
+- `lake exe lectures-en`, `lectures-pt`, `slides-en` e `slides-pt`, com
+  `--output _out/en`, `_out/pt`, `_out/slides-en` e `_out/slides-pt`. `./preview.sh` monta e serve em `localhost:8000`,
   `./preview.sh --no-build` reaproveita `_out`.
 - O sítio é publicado pela GitHub Actions a cada push em `main`, workflow em
   `.github/workflows/deploy.yml`, origem "GitHub Actions" nas configurações do
@@ -43,5 +50,5 @@ https://christianobraga.github.io/linguagens-de-programacao/.
 
 ## Estado em 2026-09-18
 
-UD I completa, quatro aulas com slides. Linguagens e Paradigmas, Sintaxe,
-Semântica, Processadores de Linguagens. As demais UD por escrever.
+UD I completa nas duas línguas, quatro aulas com slides. Languages and
+Paradigms, Syntax, Semantics, Language Processors. As demais UD por escrever.

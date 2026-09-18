@@ -25,7 +25,7 @@ Christiano Braga · Engenharia de Computação · IME
 Estrutura de D. A. Watt, *Programming Language Concepts and Paradigms*, Prentice Hall, 1990.
 
 ```lean -show
-namespace SlidesAula1
+namespace Slides1
 open CoreCpp
 ```
 
@@ -206,7 +206,7 @@ def fatorial(n):
 # §1.6 O fatorial em Core C++, executado
 
 ```lean (name := fatorialCore)
-def fatorial : String :=
+def factorial : String :=
   "int fatorial(int n) {
     int acc = 1;
     for (int i = 2; i <= n; i = i + 1) { acc = acc * i; }
@@ -214,7 +214,7 @@ def fatorial : String :=
   }
   int main() { return fatorial(5); }"
 
-#eval (parseProgram fatorial).map run
+#eval (parseProgram factorial).map run
 ```
 ```leanOutput fatorialCore
 Except.ok (Except.ok (CoreCpp.Val.int 120))
@@ -249,5 +249,5 @@ Except.ok (Except.ok (CoreCpp.Val.int 120))
 Exercícios: veja as [notas de aula](../pt/Aula-1___-Linguagens-e-Paradigmas/).
 
 ```lean -show
-end SlidesAula1
+end Slides1
 ```

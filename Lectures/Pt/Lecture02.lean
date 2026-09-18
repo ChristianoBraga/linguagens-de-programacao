@@ -21,13 +21,13 @@ tag := "aula-2"
 %%%
 
 ```lean -show
-namespace Aula2
+namespace Lecture2
 open CoreCpp
 ```
 
 Esta aula trata a sintaxe de uma linguagem de programação em dois níveis. O nível léxico agrupa os caracteres do texto em tokens, e o nível sintático agrupa os tokens em frases da gramática. A aula apresenta os dois níveis sobre Core C++, mostra a diferença entre sintaxe concreta e sintaxe abstrata, e explica por que a gramática de Core C++ é LL(1) e como um analisador descendente recursivo a reconhece. Os alunos conhecem gramáticas livres de contexto e árvores de derivação da disciplina de Linguagens Formais e Autômatos, e a aula parte daí.
 
-*Esta aula também está disponível como [slides de apresentação](../slides/aula-2.pt.html).*
+*Esta aula também está disponível como [slides de apresentação](../slides/lecture-2.pt.html).*
 
 # Do Texto aos Tokens
 
@@ -265,5 +265,5 @@ tag := "exercicios-2"
 {exercise "exr-parse-lean"}[] Use `parseExpr` e `parseStatement` para descobrir a árvore de sintaxe abstrata de `a ? b : c ? d : e` e de `for (int i = 0; i < n; i = i + 1) { s = s + i; }`, e explique a estrutura de cada uma.
 
 ```lean -show
-end Aula2
+end Lecture2
 ```

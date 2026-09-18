@@ -1,5 +1,5 @@
 name = "lectures"
-defaultTargets = ["lectures-pt", "slides-pt"]
+defaultTargets = ["lectures-en", "lectures-pt", "slides-en", "slides-pt"]
 
 [[require]]
 name = "verso"
@@ -15,8 +15,16 @@ rev = "main"
 name = "Lectures"
 
 [[lean_exe]]
+name = "lectures-en"
+root = "LecturesEnMain"
+
+[[lean_exe]]
 name = "lectures-pt"
 root = "LecturesPtMain"
+
+[[lean_exe]]
+name = "slides-en"
+root = "SlidesEnMain"
 
 [[lean_exe]]
 name = "slides-pt"
