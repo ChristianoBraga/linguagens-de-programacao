@@ -14,7 +14,7 @@ The notes exist in two languages, with parallel document trees:
 - `Lectures/Pt/` — Portuguese lectures, root document `Lectures/Pt.lean`
 - `Lectures/SlidesEn/`, `Lectures/SlidesPt/` — one slide deck per lecture
 
-Units I and II are written, Lectures 1 to 8.
+Units I to V are written, Lectures 1 to 20. Units VI and VII are in preparation.
 
 Lean code is identical in both versions; only the prose differs.
 

@@ -21,6 +21,10 @@ import Lectures.SlidesPt.Lecture13
 import Lectures.SlidesPt.Lecture14
 import Lectures.SlidesPt.Lecture15
 import Lectures.SlidesPt.Lecture16
+import Lectures.SlidesPt.Lecture17
+import Lectures.SlidesPt.Lecture18
+import Lectures.SlidesPt.Lecture19
+import Lectures.SlidesPt.Lecture20
 
 open Verso Doc
 open Verso.Genre Manual
@@ -232,6 +236,58 @@ def aula16Deck : SlideDeck where
   startLabel := "⇤ Início"
   prevSlideLabel := "Slide anterior"
   nextSlideLabel := "Próximo slide"
+  nextLink := some ("lecture-17.pt.html", "Próxima aula ›")
+
+def aula17Deck : SlideDeck where
+  fileName := "lecture-17.pt.html"
+  pageTitle := "Aula 17: Tipos Abstratos de Dados · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 17 · Linguagens de Programação"
+  label := "Aula 17 · Tipos Abstratos de Dados"
+  notesLink := some ("../pt/Aula-17___-Tipos-Abstratos-de-Dados/", "↩ Notas")
+  prevLink := some ("lecture-16.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-18.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula18Deck : SlideDeck where
+  fileName := "lecture-18.pt.html"
+  pageTitle := "Aula 18: Objetos e Classes · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 18 · Linguagens de Programação"
+  label := "Aula 18 · Objetos e Classes"
+  notesLink := some ("../pt/Aula-18___-Objetos-e-Classes/", "↩ Notas")
+  prevLink := some ("lecture-17.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-19.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula19Deck : SlideDeck where
+  fileName := "lecture-19.pt.html"
+  pageTitle := "Aula 19: Herança e Despacho · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 19 · Linguagens de Programação"
+  label := "Aula 19 · Herança e Despacho"
+  notesLink := some ("../pt/Aula-19___-Heran___a-e-Despacho/", "↩ Notas")
+  prevLink := some ("lecture-18.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-20.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula20Deck : SlideDeck where
+  fileName := "lecture-20.pt.html"
+  pageTitle := "Aula 20: Orientação a Objetos · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 20 · Linguagens de Programação"
+  label := "Aula 20 · Orientação a Objetos"
+  notesLink := some ("../pt/Aula-20___-Orienta______o-a-Objetos/", "↩ Notas")
+  prevLink := some ("lecture-19.pt.html", "‹ Aula anterior")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
 
 def main := slidesMain (decks :=
   [((%doc Lectures.SlidesPt.Lecture01), aula1Deck),
@@ -249,4 +305,8 @@ def main := slidesMain (decks :=
    ((%doc Lectures.SlidesPt.Lecture13), aula13Deck),
    ((%doc Lectures.SlidesPt.Lecture14), aula14Deck),
    ((%doc Lectures.SlidesPt.Lecture15), aula15Deck),
-   ((%doc Lectures.SlidesPt.Lecture16), aula16Deck)])
+   ((%doc Lectures.SlidesPt.Lecture16), aula16Deck),
+   ((%doc Lectures.SlidesPt.Lecture17), aula17Deck),
+   ((%doc Lectures.SlidesPt.Lecture18), aula18Deck),
+   ((%doc Lectures.SlidesPt.Lecture19), aula19Deck),
+   ((%doc Lectures.SlidesPt.Lecture20), aula20Deck)])

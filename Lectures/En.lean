@@ -19,6 +19,10 @@ import Lectures.En.Lecture13
 import Lectures.En.Lecture14
 import Lectures.En.Lecture15
 import Lectures.En.Lecture16
+import Lectures.En.Lecture17
+import Lectures.En.Lecture18
+import Lectures.En.Lecture19
+import Lectures.En.Lecture20
 
 open Verso.Genre Manual
 
@@ -26,7 +30,7 @@ set_option pp.rawOnError true
 
 #doc (Manual) "Programming Languages" =>
 
-Lecture notes of course 09022, Linguagens de Programação, of the Computer Engineering programme of the Instituto Militar de Engenharia. The course studies the meaning of the constructions of programming languages. It follows the structure of Watt and presents each construction as part of Core C++, a well behaved subset of C++17, with typing and evaluation rules in natural semantics and their implementation in Lean 4. Unit I, Introduction, takes the first four lectures, Unit II, Types, the next four, Unit III, Storage and Control, Lectures 9 to 12, and Unit IV, Abstraction, Lectures 13 to 16.
+Lecture notes of course 09022, Linguagens de Programação, of the Computer Engineering programme of the Instituto Militar de Engenharia. The course studies the meaning of the constructions of programming languages. It follows the structure of Watt and presents each construction as part of Core C++, a well behaved subset of C++17, with typing and evaluation rules in natural semantics and their implementation in Lean 4. Unit I, Introduction, takes the first four lectures, Unit II, Types, the next four, Unit III, Storage and Control, Lectures 9 to 12, Unit IV, Abstraction, Lectures 13 to 16, and Unit V, Encapsulation, Lectures 17 to 20.
 
 {include 0 Lectures.En.Lecture01}
 {include 0 Lectures.En.Lecture02}
@@ -44,3 +48,7 @@ Lecture notes of course 09022, Linguagens de Programação, of the Computer Engi
 {include 0 Lectures.En.Lecture14}
 {include 0 Lectures.En.Lecture15}
 {include 0 Lectures.En.Lecture16}
+{include 0 Lectures.En.Lecture17}
+{include 0 Lectures.En.Lecture18}
+{include 0 Lectures.En.Lecture19}
+{include 0 Lectures.En.Lecture20}

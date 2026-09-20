@@ -52,14 +52,12 @@ https://christianobraga.github.io/linguagens-de-programacao/.
 
 ## Estado em 2026-09-20
 
-UD I a IV completas nas duas línguas, dezesseis aulas com slides. Languages and
-Paradigms, Syntax, Semantics, Language Processors, Values and Types, Composite
-Types, Recursive Types and Vectors, Expressions, Variables and Storage,
-References and Aliasing, Commands and Control, Expressions with Side Effects,
-Functions and Call by Value, Call by Reference, Lambdas and Closures, Parameter
-Evaluation. As UD II a IV usam os fragmentos de `corecpp` especificados em
-`../.claude/spec-ud2.md`, `spec-ud3.md` e `spec-ud4.md`. As demais UD por
-escrever. O script `refresh_outputs.py`, guardado no scratchpad da sessão e
-recriável em poucas linhas, reexecuta cada bloco `lean (name := …)` contra o
-`corecpp` atual e reescreve o `leanOutput` correspondente, útil quando uma
-mudança do interpretador altera as árvores de derivação de aulas anteriores.
+UD I a V completas nas duas línguas, vinte aulas com slides. UD V, Aulas 17 a
+20, Abstract Data Types, Objects and Classes, Inheritance and Dispatch, Object
+Orientation, sobre o fragmento de classes de `corecpp`. As UD II a V usam os
+fragmentos de `corecpp` especificados em `../.claude/spec-ud2.md`, `spec-ud3.md`,
+`spec-ud4.md` e `spec-ud5.md`. UD VI e VII por escrever. O script
+`refresh_outputs.py`, guardado no scratchpad da sessão e recriável em poucas
+linhas, reexecuta cada bloco `lean (name := …)` contra o `corecpp` atual e
+reescreve o `leanOutput` correspondente, útil quando uma mudança do
+interpretador altera as árvores de derivação de aulas anteriores.

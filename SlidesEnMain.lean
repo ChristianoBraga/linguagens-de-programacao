@@ -21,6 +21,10 @@ import Lectures.SlidesEn.Lecture13
 import Lectures.SlidesEn.Lecture14
 import Lectures.SlidesEn.Lecture15
 import Lectures.SlidesEn.Lecture16
+import Lectures.SlidesEn.Lecture17
+import Lectures.SlidesEn.Lecture18
+import Lectures.SlidesEn.Lecture19
+import Lectures.SlidesEn.Lecture20
 
 open Verso Doc
 open Verso.Genre Manual
@@ -184,6 +188,46 @@ def lecture16Deck : SlideDeck where
   label := "Lecture 16 · Parameter Evaluation"
   notesLink := some ("../en/Lecture-16___-Parameter-Evaluation/", "↩ Notes")
   prevLink := some ("lecture-15.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-17.en.html", "Next lecture ›")
+
+def lecture17Deck : SlideDeck where
+  fileName := "lecture-17.en.html"
+  pageTitle := "Lecture 17: Abstract Data Types · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 17 · Programming Languages"
+  label := "Lecture 17 · Abstract Data Types"
+  notesLink := some ("../en/Lecture-17___-Abstract-Data-Types/", "↩ Notes")
+  prevLink := some ("lecture-16.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-18.en.html", "Next lecture ›")
+
+def lecture18Deck : SlideDeck where
+  fileName := "lecture-18.en.html"
+  pageTitle := "Lecture 18: Objects and Classes · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 18 · Programming Languages"
+  label := "Lecture 18 · Objects and Classes"
+  notesLink := some ("../en/Lecture-18___-Objects-and-Classes/", "↩ Notes")
+  prevLink := some ("lecture-17.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-19.en.html", "Next lecture ›")
+
+def lecture19Deck : SlideDeck where
+  fileName := "lecture-19.en.html"
+  pageTitle := "Lecture 19: Inheritance and Dispatch · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 19 · Programming Languages"
+  label := "Lecture 19 · Inheritance and Dispatch"
+  notesLink := some ("../en/Lecture-19___-Inheritance-and-Dispatch/", "↩ Notes")
+  prevLink := some ("lecture-18.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-20.en.html", "Next lecture ›")
+
+def lecture20Deck : SlideDeck where
+  fileName := "lecture-20.en.html"
+  pageTitle := "Lecture 20: Object Orientation · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 20 · Programming Languages"
+  label := "Lecture 20 · Object Orientation"
+  notesLink := some ("../en/Lecture-20___-Object-Orientation/", "↩ Notes")
+  prevLink := some ("lecture-19.en.html", "‹ Previous lecture")
 
 def main := slidesMain (decks :=
   [((%doc Lectures.SlidesEn.Lecture01), lecture1Deck),
@@ -201,4 +245,8 @@ def main := slidesMain (decks :=
    ((%doc Lectures.SlidesEn.Lecture13), lecture13Deck),
    ((%doc Lectures.SlidesEn.Lecture14), lecture14Deck),
    ((%doc Lectures.SlidesEn.Lecture15), lecture15Deck),
-   ((%doc Lectures.SlidesEn.Lecture16), lecture16Deck)])
+   ((%doc Lectures.SlidesEn.Lecture16), lecture16Deck),
+   ((%doc Lectures.SlidesEn.Lecture17), lecture17Deck),
+   ((%doc Lectures.SlidesEn.Lecture18), lecture18Deck),
+   ((%doc Lectures.SlidesEn.Lecture19), lecture19Deck),
+   ((%doc Lectures.SlidesEn.Lecture20), lecture20Deck)])
