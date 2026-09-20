@@ -14,6 +14,8 @@ The notes exist in two languages, with parallel document trees:
 - `Lectures/Pt/` — Portuguese lectures, root document `Lectures/Pt.lean`
 - `Lectures/SlidesEn/`, `Lectures/SlidesPt/` — one slide deck per lecture
 
+Units I and II are written, Lectures 1 to 8.
+
 Lean code is identical in both versions; only the prose differs.
 
 The course studies the meaning of the constructions of programming languages.

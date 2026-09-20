@@ -165,10 +165,10 @@ Except.ok (CoreCpp.Expr.binop
 * In `ExprStatement ::= Expr ( '=' Expr )?`, assignment and expression statement start with the same expression. The grammar joins them and the presence of `=` decides afterwards.
 
 ```lean (name := parseError)
-#eval parseExpr "1 + * 3"
+#eval parseExpr "1 + / 3"
 ```
 ```leanOutput parseError
-Except.error "syntax error at token 2 ('*'): expected primary expression"
+Except.error "syntax error at token 2 ('/'): expected primary expression"
 ```
 
 * The error is detected at the *first token* no production admits.

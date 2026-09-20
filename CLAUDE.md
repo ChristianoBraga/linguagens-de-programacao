@@ -50,7 +50,9 @@ https://christianobraga.github.io/linguagens-de-programacao/.
 - Dependências. Verso `v4.32.0` e `corecpp` de `main` no GitHub. Toolchain
   `v4.32.2`, a mesma de `corecpp`. Sem Mathlib.
 
-## Estado em 2026-09-18
+## Estado em 2026-09-20
 
-UD I completa nas duas línguas, quatro aulas com slides. Languages and
-Paradigms, Syntax, Semantics, Language Processors. As demais UD por escrever.
+UD I e UD II completas nas duas línguas, oito aulas com slides. Languages and
+Paradigms, Syntax, Semantics, Language Processors, Values and Types, Composite
+Types, Recursive Types and Vectors, Expressions. A UD II usa o fragmento de
+`corecpp` especificado em `../.claude/spec-ud2.md`. As demais UD por escrever.

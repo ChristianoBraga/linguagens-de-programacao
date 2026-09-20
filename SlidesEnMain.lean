@@ -9,6 +9,10 @@ import Lectures.SlidesEn.Lecture01
 import Lectures.SlidesEn.Lecture02
 import Lectures.SlidesEn.Lecture03
 import Lectures.SlidesEn.Lecture04
+import Lectures.SlidesEn.Lecture05
+import Lectures.SlidesEn.Lecture06
+import Lectures.SlidesEn.Lecture07
+import Lectures.SlidesEn.Lecture08
 
 open Verso Doc
 open Verso.Genre Manual
@@ -52,9 +56,53 @@ def lecture4Deck : SlideDeck where
   label := "Lecture 4 · Language Processors"
   notesLink := some ("../en/Lecture-4___-Language-Processors/", "↩ Notes")
   prevLink := some ("lecture-3.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-5.en.html", "Next lecture ›")
+
+def lecture5Deck : SlideDeck where
+  fileName := "lecture-5.en.html"
+  pageTitle := "Lecture 5: Values and Types · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 5 · Programming Languages"
+  label := "Lecture 5 · Values and Types"
+  notesLink := some ("../en/Lecture-5___-Values-and-Types/", "↩ Notes")
+  prevLink := some ("lecture-4.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-6.en.html", "Next lecture ›")
+
+def lecture6Deck : SlideDeck where
+  fileName := "lecture-6.en.html"
+  pageTitle := "Lecture 6: Composite Types · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 6 · Programming Languages"
+  label := "Lecture 6 · Composite Types"
+  notesLink := some ("../en/Lecture-6___-Composite-Types/", "↩ Notes")
+  prevLink := some ("lecture-5.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-7.en.html", "Next lecture ›")
+
+def lecture7Deck : SlideDeck where
+  fileName := "lecture-7.en.html"
+  pageTitle := "Lecture 7: Recursive Types and Vectors · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 7 · Programming Languages"
+  label := "Lecture 7 · Recursive Types and Vectors"
+  notesLink := some ("../en/Lecture-7___-Recursive-Types-and-Vectors/", "↩ Notes")
+  prevLink := some ("lecture-6.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-8.en.html", "Next lecture ›")
+
+def lecture8Deck : SlideDeck where
+  fileName := "lecture-8.en.html"
+  pageTitle := "Lecture 8: Expressions · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 8 · Programming Languages"
+  label := "Lecture 8 · Expressions"
+  notesLink := some ("../en/Lecture-8___-Expressions/", "↩ Notes")
+  prevLink := some ("lecture-7.en.html", "‹ Previous lecture")
 
 def main := slidesMain (decks :=
   [((%doc Lectures.SlidesEn.Lecture01), lecture1Deck),
    ((%doc Lectures.SlidesEn.Lecture02), lecture2Deck),
    ((%doc Lectures.SlidesEn.Lecture03), lecture3Deck),
-   ((%doc Lectures.SlidesEn.Lecture04), lecture4Deck)])
+   ((%doc Lectures.SlidesEn.Lecture04), lecture4Deck),
+   ((%doc Lectures.SlidesEn.Lecture05), lecture5Deck),
+   ((%doc Lectures.SlidesEn.Lecture06), lecture6Deck),
+   ((%doc Lectures.SlidesEn.Lecture07), lecture7Deck),
+   ((%doc Lectures.SlidesEn.Lecture08), lecture8Deck)])

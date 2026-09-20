@@ -204,16 +204,14 @@ Except.ok (CoreCpp.Cmd.ite
   [])
 ```
 
-Um programa é uma lista de funções, cada uma com tipo de retorno, nome, parâmetros e corpo.
+Um programa é uma lista de declarações. Nesta unidade toda declaração é uma função, com tipo de retorno, nome, parâmetros e corpo, e a UD II acrescenta classes.
 
 ```lean (name := parseProg)
 #eval parseProgram "int main() { return 42; }"
 ```
 ```leanOutput parseProg
-Except.ok [{ ret := CoreCpp.Ty.int,
-   name := "main",
-   params := [],
-   body := [CoreCpp.Cmd.ret (some (CoreCpp.Expr.intLit 42))] }]
+Except.ok [CoreCpp.Decl.fn
+   { ret := CoreCpp.Ty.int, name := "main", params := [], body := [CoreCpp.Cmd.ret (some (CoreCpp.Expr.intLit 42))] }]
 ```
 
 # Análise Descendente Recursiva e LL(1)
@@ -229,10 +227,10 @@ A condição LL(1) se verifica pelos conjuntos FIRST e FOLLOW da disciplina de L
 A gramática LL(1) tem uma consequência prática. O analisador detecta um erro no primeiro token que nenhuma produção admite e diz o que esperava.
 
 ```lean (name := parseError)
-#eval parseExpr "1 + * 3"
+#eval parseExpr "1 + / 3"
 ```
 ```leanOutput parseError
-Except.error "syntax error at token 2 ('*'): expected primary expression"
+Except.error "syntax error at token 2 ('/'): expected primary expression"
 ```
 
 A gramática de Core C++ exige inicializador em toda declaração local, uma decisão que remove da linguagem a leitura de variável não inicializada, indefinida em C++. A ausência do `=` é um erro sintático.
