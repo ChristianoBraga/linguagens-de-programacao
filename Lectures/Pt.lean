@@ -11,6 +11,10 @@ import Lectures.Pt.Lecture05
 import Lectures.Pt.Lecture06
 import Lectures.Pt.Lecture07
 import Lectures.Pt.Lecture08
+import Lectures.Pt.Lecture09
+import Lectures.Pt.Lecture10
+import Lectures.Pt.Lecture11
+import Lectures.Pt.Lecture12
 
 open Verso.Genre Manual
 
@@ -18,7 +22,7 @@ set_option pp.rawOnError true
 
 #doc (Manual) "Linguagens de Programação" =>
 
-Notas de aula da disciplina 09022, Linguagens de Programação, do curso de Engenharia de Computação do Instituto Militar de Engenharia. A disciplina estuda o significado das construções das linguagens de programação. Ela segue a estrutura de Watt e apresenta cada construção como parte de Core C++, um subconjunto bem comportado de C++17, com regras de tipos e de avaliação em semântica natural e a sua implementação em Lean 4. A unidade didática I, Introdução, ocupa as quatro primeiras aulas, e a UD II, Tipos, as quatro seguintes.
+Notas de aula da disciplina 09022, Linguagens de Programação, do curso de Engenharia de Computação do Instituto Militar de Engenharia. A disciplina estuda o significado das construções das linguagens de programação. Ela segue a estrutura de Watt e apresenta cada construção como parte de Core C++, um subconjunto bem comportado de C++17, com regras de tipos e de avaliação em semântica natural e a sua implementação em Lean 4. A unidade didática I, Introdução, ocupa as quatro primeiras aulas, a UD II, Tipos, as quatro seguintes, e a UD III, Armazenamento e Controle, as Aulas 9 a 12.
 
 {include 0 Lectures.Pt.Lecture01}
 {include 0 Lectures.Pt.Lecture02}
@@ -28,3 +32,7 @@ Notas de aula da disciplina 09022, Linguagens de Programação, do curso de Enge
 {include 0 Lectures.Pt.Lecture06}
 {include 0 Lectures.Pt.Lecture07}
 {include 0 Lectures.Pt.Lecture08}
+{include 0 Lectures.Pt.Lecture09}
+{include 0 Lectures.Pt.Lecture10}
+{include 0 Lectures.Pt.Lecture11}
+{include 0 Lectures.Pt.Lecture12}

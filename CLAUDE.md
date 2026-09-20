@@ -52,7 +52,9 @@ https://christianobraga.github.io/linguagens-de-programacao/.
 
 ## Estado em 2026-09-20
 
-UD I e UD II completas nas duas línguas, oito aulas com slides. Languages and
+UD I, II e III completas nas duas línguas, doze aulas com slides. Languages and
 Paradigms, Syntax, Semantics, Language Processors, Values and Types, Composite
-Types, Recursive Types and Vectors, Expressions. A UD II usa o fragmento de
-`corecpp` especificado em `../.claude/spec-ud2.md`. As demais UD por escrever.
+Types, Recursive Types and Vectors, Expressions, Variables and Storage,
+References and Aliasing, Commands and Control, Expressions with Side Effects.
+As UD II e III usam os fragmentos de `corecpp` especificados em
+`../.claude/spec-ud2.md` e `../.claude/spec-ud3.md`. As demais UD por escrever.
