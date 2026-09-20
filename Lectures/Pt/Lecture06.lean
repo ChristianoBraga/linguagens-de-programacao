@@ -186,7 +186,7 @@ A árvore de derivação de um programa pequeno mostra a memória crescer em tr�
       [a ↦ ℓ2], {ℓ0 ↦ 3, ℓ1 ↦ P{x ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ a->x ⇒ₗ ℓ0, {ℓ0 ↦ 3, ℓ1 ↦ P{x ↦ ℓ0}, ℓ2 ↦ ℓ1}   (LocArrow)
     [a ↦ ℓ2], {ℓ0 ↦ 3, ℓ1 ↦ P{x ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ a->x ⇒ 3, {ℓ0 ↦ 3, ℓ1 ↦ P{x ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Read)
   [a ↦ ℓ2], {ℓ0 ↦ 3, ℓ1 ↦ P{x ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ return a->x; ⇒ ret 3, [a ↦ ℓ2], {ℓ0 ↦ 3, ℓ1 ↦ P{x ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Return)
-[], {} ⊢ main() ⇒ 3, {ℓ0 ↦ 3, ℓ1 ↦ P{x ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Call)
+[], {} ⊢ main() ⇒ 3, {ℓ0 ↦ 3, ℓ1 ↦ P{x ↦ ℓ0}}   (Call)
 ```
 
 A variável `a` vive em ℓ2 e guarda ℓ1, o registro vive em ℓ1 e guarda a etiqueta `P` com o campo `x` em ℓ0, e o valor 3 chega a ℓ0. Os três níveis, variável, registro e campo, são todo o modelo de objetos desta disciplina, e a UD V acrescenta métodos e destrutores sobre ele sem o alterar.

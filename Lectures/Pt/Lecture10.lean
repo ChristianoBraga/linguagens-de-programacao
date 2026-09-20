@@ -140,7 +140,7 @@ def refScope : String :=
       [x ↦ ℓ0], {ℓ0 ↦ 5} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 5}   (LocVar)
     [x ↦ ℓ0], {ℓ0 ↦ 5} ⊢ x ⇒ 5, {ℓ0 ↦ 5}   (Var)
   [x ↦ ℓ0], {ℓ0 ↦ 5} ⊢ return x; ⇒ ret 5, [x ↦ ℓ0], {ℓ0 ↦ 5}   (Return)
-[], {} ⊢ main() ⇒ 5, {ℓ0 ↦ 5}   (Call)
+[], {} ⊢ main() ⇒ 5, {}   (Call)
 ```
 
 O bloco termina com a memória ainda guardando ℓ0, agora com o valor 5. Para obter isso, cada ligação de ρ registra se a declaração que a fez é *dona* da posição, como `Decl`, ou a toma de *empréstimo*, como `DeclRef`. A regra `Block` lê ρ' ∖ ρ como as ligações próprias que o bloco acrescentou, e libera só as posições delas. O ambiente impresso na árvore não mostra a marca, porque ela não muda nada na busca, só na saída do bloco.{fnref}[alternativa]

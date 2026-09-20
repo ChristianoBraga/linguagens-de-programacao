@@ -212,7 +212,7 @@ def sum : String :=
       [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 42}   (LocVar)
     [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ 42, {ℓ0 ↦ 42}   (Var)
   [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ return x; ⇒ ret 42, [x ↦ ℓ0], {ℓ0 ↦ 42}   (Return)
-[], {} ⊢ main() ⇒ 42, {ℓ0 ↦ 42}   (Call)
+[], {} ⊢ main() ⇒ 42, {}   (Call)
 ```
 
 * *Pós‑ordem*, premissas antes da conclusão, indentadas pela profundidade. A raiz é a última linha.

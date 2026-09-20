@@ -121,7 +121,7 @@ def halve : String :=
       [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
     [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ 1, {ℓ0 ↦ 1}   (Var)
   [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ return x; ⇒ ret 1, [x ↦ ℓ0], {ℓ0 ↦ 1}   (Return)
-[], {} ⊢ main() ⇒ 1, {ℓ0 ↦ 1}   (Call)
+[], {} ⊢ main() ⇒ 1, {}   (Call)
 ```
 
 # Repetição

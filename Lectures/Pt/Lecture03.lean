@@ -222,10 +222,10 @@ def sum : String :=
       [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 42}   (LocVar)
     [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ 42, {ℓ0 ↦ 42}   (Var)
   [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ return x; ⇒ ret 42, [x ↦ ℓ0], {ℓ0 ↦ 42}   (Return)
-[], {} ⊢ main() ⇒ 42, {ℓ0 ↦ 42}   (Call)
+[], {} ⊢ main() ⇒ 42, {}   (Call)
 ```
 
-A leitura começa pela raiz, a chamada de `main` com ambiente e memória vazios. Um nível acima estão os três comandos do corpo, e a declaração cria a posição ℓ0. A atribuição, nas linhas do meio, avalia primeiro `x + 41`, cuja derivação é a da {secref}[expressoes], e só depois a posição de `x`, na ordem que a regra `Assign` fixa. A memória final tem ℓ0 ↦ 42, e o `return` produz o controle `ret 42` que a chamada consome. No interpretador, os dois casos `Arith` e `Rel` aparecem sob o nome comum `Binary`.
+A leitura começa pela raiz, a chamada de `main` com ambiente e memória vazios. Um nível acima estão os três comandos do corpo, e a declaração cria a posição ℓ0. A atribuição, nas linhas do meio, avalia primeiro `x + 41`, cuja derivação é a da {secref}[expressoes], e só depois a posição de `x`, na ordem que a regra `Assign` fixa. A memória no `return` tem ℓ0 ↦ 42, e o `return` produz o controle `ret 42` que a chamada consome. A chamada libera então as variáveis locais de `main`, a memória final fica vazia, e o resultado do programa é só o valor 42. No interpretador, os dois casos `Arith` e `Rel` aparecem sob o nome comum `Binary`.
 
 # Erro, Determinismo e Divergência
 

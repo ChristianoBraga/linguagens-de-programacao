@@ -188,7 +188,7 @@ A árvore de derivação mostra as duas variáveis lado a lado. Dentro do bloco 
       [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
     [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ 1, {ℓ0 ↦ 1}   (Var)
   [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ return x; ⇒ ret 1, [x ↦ ℓ0], {ℓ0 ↦ 1}   (Return)
-[], {} ⊢ main() ⇒ 1, {ℓ0 ↦ 1}   (Call)
+[], {} ⊢ main() ⇒ 1, {}   (Call)
 ```
 
 O ambiente impresso lista as ligações da mais antiga para a mais nova, e a busca as lê da mais nova para a mais antiga, por isso `x ⇒ₗ ℓ1` dentro do bloco. C++ tem a mesma regra para o sombreamento e a mesma para o fim de um bloco, em que o armazenamento da variável interna é liberado. A diferença é que Core C++ torna a liberação visível em σ, e qualquer acesso posterior a ℓ1 seria `erro`, enquanto C++ deixa esse acesso indefinido. A próxima aula mostra como uma referência produz esse acesso em C++ e por que ela não o produz em Core C++.

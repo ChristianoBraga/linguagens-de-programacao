@@ -17,6 +17,10 @@ import Lectures.SlidesPt.Lecture09
 import Lectures.SlidesPt.Lecture10
 import Lectures.SlidesPt.Lecture11
 import Lectures.SlidesPt.Lecture12
+import Lectures.SlidesPt.Lecture13
+import Lectures.SlidesPt.Lecture14
+import Lectures.SlidesPt.Lecture15
+import Lectures.SlidesPt.Lecture16
 
 open Verso Doc
 open Verso.Genre Manual
@@ -173,6 +177,58 @@ def aula12Deck : SlideDeck where
   label := "Aula 12 · Expressões com Efeitos Colaterais"
   notesLink := some ("../pt/Aula-12___-Express___es-com-Efeitos-Colaterais/", "↩ Notas")
   prevLink := some ("lecture-11.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-13.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula13Deck : SlideDeck where
+  fileName := "lecture-13.pt.html"
+  pageTitle := "Aula 13: Funções e Passagem por Valor · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 13 · Linguagens de Programação"
+  label := "Aula 13 · Funções e Passagem por Valor"
+  notesLink := some ("../pt/Aula-13___-Fun______es-e-Passagem-por-Valor/", "↩ Notas")
+  prevLink := some ("lecture-12.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-14.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula14Deck : SlideDeck where
+  fileName := "lecture-14.pt.html"
+  pageTitle := "Aula 14: Passagem por Referência · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 14 · Linguagens de Programação"
+  label := "Aula 14 · Passagem por Referência"
+  notesLink := some ("../pt/Aula-14___-Passagem-por-Refer___ncia/", "↩ Notas")
+  prevLink := some ("lecture-13.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-15.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula15Deck : SlideDeck where
+  fileName := "lecture-15.pt.html"
+  pageTitle := "Aula 15: Lambdas e Closures · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 15 · Linguagens de Programação"
+  label := "Aula 15 · Lambdas e Closures"
+  notesLink := some ("../pt/Aula-15___-Lambdas-e-Closures/", "↩ Notas")
+  prevLink := some ("lecture-14.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-16.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula16Deck : SlideDeck where
+  fileName := "lecture-16.pt.html"
+  pageTitle := "Aula 16: Avaliação de Parâmetros · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 16 · Linguagens de Programação"
+  label := "Aula 16 · Avaliação de Parâmetros"
+  notesLink := some ("../pt/Aula-16___-Avalia______o-de-Par___metros/", "↩ Notas")
+  prevLink := some ("lecture-15.pt.html", "‹ Aula anterior")
   startLabel := "⇤ Início"
   prevSlideLabel := "Slide anterior"
   nextSlideLabel := "Próximo slide"
@@ -189,4 +245,8 @@ def main := slidesMain (decks :=
    ((%doc Lectures.SlidesPt.Lecture09), aula9Deck),
    ((%doc Lectures.SlidesPt.Lecture10), aula10Deck),
    ((%doc Lectures.SlidesPt.Lecture11), aula11Deck),
-   ((%doc Lectures.SlidesPt.Lecture12), aula12Deck)])
+   ((%doc Lectures.SlidesPt.Lecture12), aula12Deck),
+   ((%doc Lectures.SlidesPt.Lecture13), aula13Deck),
+   ((%doc Lectures.SlidesPt.Lecture14), aula14Deck),
+   ((%doc Lectures.SlidesPt.Lecture15), aula15Deck),
+   ((%doc Lectures.SlidesPt.Lecture16), aula16Deck)])

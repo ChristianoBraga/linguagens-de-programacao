@@ -17,6 +17,10 @@ import Lectures.SlidesEn.Lecture09
 import Lectures.SlidesEn.Lecture10
 import Lectures.SlidesEn.Lecture11
 import Lectures.SlidesEn.Lecture12
+import Lectures.SlidesEn.Lecture13
+import Lectures.SlidesEn.Lecture14
+import Lectures.SlidesEn.Lecture15
+import Lectures.SlidesEn.Lecture16
 
 open Verso Doc
 open Verso.Genre Manual
@@ -140,6 +144,46 @@ def lecture12Deck : SlideDeck where
   label := "Lecture 12 · Expressions with Side Effects"
   notesLink := some ("../en/Lecture-12___-Expressions-with-Side-Effects/", "↩ Notes")
   prevLink := some ("lecture-11.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-13.en.html", "Next lecture ›")
+
+def lecture13Deck : SlideDeck where
+  fileName := "lecture-13.en.html"
+  pageTitle := "Lecture 13: Functions and Call by Value · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 13 · Programming Languages"
+  label := "Lecture 13 · Functions and Call by Value"
+  notesLink := some ("../en/Lecture-13___-Functions-and-Call-by-Value/", "↩ Notes")
+  prevLink := some ("lecture-12.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-14.en.html", "Next lecture ›")
+
+def lecture14Deck : SlideDeck where
+  fileName := "lecture-14.en.html"
+  pageTitle := "Lecture 14: Call by Reference · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 14 · Programming Languages"
+  label := "Lecture 14 · Call by Reference"
+  notesLink := some ("../en/Lecture-14___-Call-by-Reference/", "↩ Notes")
+  prevLink := some ("lecture-13.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-15.en.html", "Next lecture ›")
+
+def lecture15Deck : SlideDeck where
+  fileName := "lecture-15.en.html"
+  pageTitle := "Lecture 15: Lambdas and Closures · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 15 · Programming Languages"
+  label := "Lecture 15 · Lambdas and Closures"
+  notesLink := some ("../en/Lecture-15___-Lambdas-and-Closures/", "↩ Notes")
+  prevLink := some ("lecture-14.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-16.en.html", "Next lecture ›")
+
+def lecture16Deck : SlideDeck where
+  fileName := "lecture-16.en.html"
+  pageTitle := "Lecture 16: Parameter Evaluation · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 16 · Programming Languages"
+  label := "Lecture 16 · Parameter Evaluation"
+  notesLink := some ("../en/Lecture-16___-Parameter-Evaluation/", "↩ Notes")
+  prevLink := some ("lecture-15.en.html", "‹ Previous lecture")
 
 def main := slidesMain (decks :=
   [((%doc Lectures.SlidesEn.Lecture01), lecture1Deck),
@@ -153,4 +197,8 @@ def main := slidesMain (decks :=
    ((%doc Lectures.SlidesEn.Lecture09), lecture9Deck),
    ((%doc Lectures.SlidesEn.Lecture10), lecture10Deck),
    ((%doc Lectures.SlidesEn.Lecture11), lecture11Deck),
-   ((%doc Lectures.SlidesEn.Lecture12), lecture12Deck)])
+   ((%doc Lectures.SlidesEn.Lecture12), lecture12Deck),
+   ((%doc Lectures.SlidesEn.Lecture13), lecture13Deck),
+   ((%doc Lectures.SlidesEn.Lecture14), lecture14Deck),
+   ((%doc Lectures.SlidesEn.Lecture15), lecture15Deck),
+   ((%doc Lectures.SlidesEn.Lecture16), lecture16Deck)])

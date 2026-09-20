@@ -139,7 +139,7 @@ def refScope : String :=
       [x ↦ ℓ0], {ℓ0 ↦ 5} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 5}   (LocVar)
     [x ↦ ℓ0], {ℓ0 ↦ 5} ⊢ x ⇒ 5, {ℓ0 ↦ 5}   (Var)
   [x ↦ ℓ0], {ℓ0 ↦ 5} ⊢ return x; ⇒ ret 5, [x ↦ ℓ0], {ℓ0 ↦ 5}   (Return)
-[], {} ⊢ main() ⇒ 5, {ℓ0 ↦ 5}   (Call)
+[], {} ⊢ main() ⇒ 5, {}   (Call)
 ```
 
 The block ends with the store still holding ℓ0, now with value 5. To obtain that, each binding of ρ records whether the declaration that made it *owns* the location, as `Decl` does, or *aliases* one, as `DeclRef` does. The rule `Block` reads ρ' ∖ ρ as the owned bindings the block added, and frees their locations only. The environment printed in the trace does not show the mark, because it changes nothing in lookup, only in block exit.{fnref}[alternative]

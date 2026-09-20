@@ -154,7 +154,7 @@ The derivation tree shows the skipped operand as an absent branch. Under the `An
       [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false} ⊢ 0 ⇒ 0, {ℓ0 ↦ 0, ℓ1 ↦ false}   (Lit)
     [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false} ⊢ b ? 1 : 0 ⇒ 0, {ℓ0 ↦ 0, ℓ1 ↦ false}   (Cond)
   [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false} ⊢ return b ? 1 : 0; ⇒ ret 0, [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false}   (Return)
-[], {} ⊢ main() ⇒ 0, {ℓ0 ↦ 0, ℓ1 ↦ false}   (Call)
+[], {} ⊢ main() ⇒ 0, {}   (Call)
 ```
 
 # The Conditional Expression

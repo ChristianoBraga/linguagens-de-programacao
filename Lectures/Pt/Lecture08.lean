@@ -155,7 +155,7 @@ A árvore de derivação mostra o operando pulado como um ramo ausente. Sob o n�
       [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false} ⊢ 0 ⇒ 0, {ℓ0 ↦ 0, ℓ1 ↦ false}   (Lit)
     [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false} ⊢ b ? 1 : 0 ⇒ 0, {ℓ0 ↦ 0, ℓ1 ↦ false}   (Cond)
   [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false} ⊢ return b ? 1 : 0; ⇒ ret 0, [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false}   (Return)
-[], {} ⊢ main() ⇒ 0, {ℓ0 ↦ 0, ℓ1 ↦ false}   (Call)
+[], {} ⊢ main() ⇒ 0, {}   (Call)
 ```
 
 # A Expressão Condicional

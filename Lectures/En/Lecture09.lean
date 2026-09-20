@@ -187,7 +187,7 @@ The derivation tree shows the two variables side by side. Inside the block ρ ho
       [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
     [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ 1, {ℓ0 ↦ 1}   (Var)
   [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ return x; ⇒ ret 1, [x ↦ ℓ0], {ℓ0 ↦ 1}   (Return)
-[], {} ⊢ main() ⇒ 1, {ℓ0 ↦ 1}   (Call)
+[], {} ⊢ main() ⇒ 1, {}   (Call)
 ```
 
 The printed environment lists the bindings oldest first, and the lookup reads them newest first, which is why `x ⇒ₗ ℓ1` inside the block. C++ has the same rule for shadowing, and the same rule for the end of a block, where the storage of the inner variable is released. The difference is that Core C++ makes the release visible in σ, and any later access to ℓ1 would be `error`, while C++ leaves such an access undefined. The next lecture shows how a reference can produce that access in C++ and why it cannot in Core C++.

@@ -221,10 +221,10 @@ def sum : String :=
       [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 42}   (LocVar)
     [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ 42, {ℓ0 ↦ 42}   (Var)
   [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ return x; ⇒ ret 42, [x ↦ ℓ0], {ℓ0 ↦ 42}   (Return)
-[], {} ⊢ main() ⇒ 42, {ℓ0 ↦ 42}   (Call)
+[], {} ⊢ main() ⇒ 42, {}   (Call)
 ```
 
-Reading starts at the root, the call of `main` with empty environment and store. One level up are the three commands of the body, and the declaration creates the location ℓ0. The assignment, in the middle lines, first evaluates `x + 41`, whose derivation is the one of {secref}[expressions], and only then the location of `x`, in the order the rule `Assign` fixes. The final store has ℓ0 ↦ 42, and the `return` yields the control `ret 42` that the call consumes. In the interpreter the two cases `Arith` and `Rel` appear under the common name `Binary`.
+Reading starts at the root, the call of `main` with empty environment and store. One level up are the three commands of the body, and the declaration creates the location ℓ0. The assignment, in the middle lines, first evaluates `x + 41`, whose derivation is the one of {secref}[expressions], and only then the location of `x`, in the order the rule `Assign` fixes. The store at the `return` has ℓ0 ↦ 42, and the `return` yields the control `ret 42` that the call consumes. The call then frees the locals of `main`, so the final store is empty, and the result of the program is the value 42 alone. In the interpreter the two cases `Arith` and `Rel` appear under the common name `Binary`.
 
 # Error, Determinism and Divergence
 
