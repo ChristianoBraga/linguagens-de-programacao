@@ -3,9 +3,9 @@
 Lecture notes for the course *09022, Linguagens de Programação* (IME, Computer
 Engineering, 5th year), written in [Verso](https://github.com/leanprover/verso).
 
-**Published site:** <https://christianobraga.github.io/linguagens-de-programacao/>
-([English](https://christianobraga.github.io/linguagens-de-programacao/en/) ·
-[Português](https://christianobraga.github.io/linguagens-de-programacao/pt/)).
+**Published site:** <https://christianobraga.github.io/programming-languages/>
+([English](https://christianobraga.github.io/programming-languages/en/) ·
+[Português](https://christianobraga.github.io/programming-languages/pt/)).
 Every push to `main` rebuilds and redeploys the site via GitHub Actions
 (`.github/workflows/deploy.yml`); the landing page lives in `site/`.
 The notes exist in two languages, with parallel document trees:

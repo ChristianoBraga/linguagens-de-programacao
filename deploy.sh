@@ -27,5 +27,5 @@ cd "$staging"
 git init -q -b gh-pages
 git add -A
 git commit -q -m "Deploy site"
-git push -f https://github.com/ChristianoBraga/linguagens-de-programacao.git gh-pages
-echo "Deployed to https://christianobraga.github.io/linguagens-de-programacao/"
+git push -f https://github.com/ChristianoBraga/programming-languages.git gh-pages
+echo "Deployed to https://christianobraga.github.io/programming-languages/"

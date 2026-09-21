@@ -3,8 +3,8 @@
 Notas de aula e slides da disciplina 09022, Linguagens de Programação, IME,
 em Verso, com a mesma infraestrutura do curso de Verificação Formal de
 Software em `~/Dropbox/IME/verificacao_formal/lectures`. Repositório
-`https://github.com/ChristianoBraga/linguagens-de-programacao`, sítio em
-https://christianobraga.github.io/linguagens-de-programacao/.
+`https://github.com/ChristianoBraga/programming-languages`, sítio em
+https://christianobraga.github.io/programming-languages/.
 
 ## Convenções
 
