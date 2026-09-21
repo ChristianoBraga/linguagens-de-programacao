@@ -19,7 +19,7 @@ The case study, the comparison, and what the seven units built
 
 Christiano Braga · Computer Engineering · IME
 
-[↩ Open the lecture notes](../en/Lecture-29___-Four-Paradigms,-One-Problem/)
+[↩ Open the lecture notes](../en/Lecture-29___-Four-Paradigms___-One-Problem/)
 
 ```lean -show
 namespace Slides29
@@ -208,7 +208,7 @@ S = 30
 
 * What remains is proof, and the course leaves it as the next step.
 
-Exercises: see the [lecture notes](../en/Lecture-29___-Four-Paradigms,-One-Problem/).
+Exercises: see the [lecture notes](../en/Lecture-29___-Four-Paradigms___-One-Problem/).
 
 ```lean -show
 end Slides29

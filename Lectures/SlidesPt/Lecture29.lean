@@ -19,7 +19,7 @@ O estudo de caso, a comparação, e o que as sete unidades construíram
 
 Christiano Braga · Engenharia de Computação · IME
 
-[↩ Abrir as notas de aula](../pt/Aula-29___-Quatro-Paradigmas,-Um-Problema/)
+[↩ Abrir as notas de aula](../pt/Aula-29___-Quatro-Paradigmas___-Um-Problema/)
 
 ```lean -show
 namespace Slides29
@@ -208,7 +208,7 @@ S = 30
 
 * O que resta é a prova, e o curso a deixa como o próximo passo.
 
-Exercícios: veja as [notas de aula](../pt/Aula-29___-Quatro-Paradigmas,-Um-Problema/).
+Exercícios: veja as [notas de aula](../pt/Aula-29___-Quatro-Paradigmas___-Um-Problema/).
 
 ```lean -show
 end Slides29

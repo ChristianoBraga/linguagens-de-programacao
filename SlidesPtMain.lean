@@ -408,7 +408,7 @@ def aula29Deck : SlideDeck where
   htmlLang := "pt"
   kicker := "Aula 29 · Linguagens de Programação"
   label := "Aula 29 · Quatro Paradigmas, Um Problema"
-  notesLink := some ("../pt/Aula-29___-Quatro-Paradigmas,-Um-Problema/", "↩ Notas")
+  notesLink := some ("../pt/Aula-29___-Quatro-Paradigmas___-Um-Problema/", "↩ Notas")
   prevLink := some ("lecture-28.pt.html", "‹ Aula anterior")
   startLabel := "⇤ Início"
   prevSlideLabel := "Slide anterior"

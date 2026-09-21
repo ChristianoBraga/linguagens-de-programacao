@@ -324,7 +324,7 @@ def lecture29Deck : SlideDeck where
   htmlLang := "en"
   kicker := "Lecture 29 · Programming Languages"
   label := "Lecture 29 · Four Paradigms, One Problem"
-  notesLink := some ("../en/Lecture-29___-Four-Paradigms,-One-Problem/", "↩ Notes")
+  notesLink := some ("../en/Lecture-29___-Four-Paradigms___-One-Problem/", "↩ Notes")
   prevLink := some ("lecture-28.en.html", "‹ Previous lecture")
 
 def main := slidesMain (decks :=
