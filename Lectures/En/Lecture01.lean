@@ -165,7 +165,7 @@ tag := "four-paradigms"
 The factorial of a natural number serves as comparison. The imperative version, in C++, accumulates the product in a variable along a loop.
 
 ```
-int fatorial(int n) {
+int factorial(int n) {
   int acc = 1;
   for (int i = 2; i <= n; i = i + 1) {
     acc = acc * i;
@@ -182,7 +182,7 @@ fatorial 0 = 1
 fatorial n = n * fatorial (n - 1)
 ```
 
-The logic version, in Prolog, defines the relation between a number and its factorial by a fact and a rule. The query `fatorial(5, F)` asks for an `F` that satisfies the relation, and the interpreter finds it by resolution.
+The logic version, in Prolog, defines the relation between a number and its factorial by a fact and a rule. The query `factorial(5, F)` asks for an `F` that satisfies the relation, and the interpreter finds it by resolution.
 
 ```
 fatorial(0, 1).
@@ -196,7 +196,7 @@ fatorial(N, F) :-
 The Python version is imperative in form, but without type declarations. The type of `acc` is decided at run time, and a type error only appears when the wrong operation is executed.
 
 ```
-def fatorial(n):
+def factorial(n):
     acc = 1
     for i in range(2, n + 1):
         acc = acc * i
@@ -223,12 +223,12 @@ The program below is the factorial in Core C++, equal to the C++ version of {sec
 
 ```lean (name := factorialCore)
 def factorial : String :=
-  "int fatorial(int n) {
+  "int factorial(int n) {
     int acc = 1;
     for (int i = 2; i <= n; i = i + 1) { acc = acc * i; }
     return acc;
   }
-  int main() { return fatorial(5); }"
+  int main() { return factorial(5); }"
 
 #eval (parseProgram factorial).map run
 ```
@@ -262,7 +262,7 @@ tag := "exercises-1"
 
 {exercise "exr-concepts-python"}[] For the Python version of the factorial, give the environment and the store at the end of the third iteration of the loop, with `n = 5`.
 
-{exercise "exr-prolog-query"}[] Write the sequence of queries the Prolog interpreter generates when answering `fatorial(3, F)`, with the rule of {secref}[four-paradigms].
+{exercise "exr-prolog-query"}[] Write the sequence of queries the Prolog interpreter generates when answering `factorial(3, F)`, with the rule of {secref}[four-paradigms].
 
 {exercise "exr-haskell-negative"}[] The Haskell version does not terminate on a negative argument. Say why and add an equation that returns 1 for negative arguments, without changing the two existing equations.
 

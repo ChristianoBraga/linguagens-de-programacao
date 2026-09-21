@@ -64,7 +64,7 @@ Um lambda não tem tipo próprio em Core C++. Em C++ todo lambda tem um *tipo de
   * o tipo declarado
 *
   * argumento de chamada
-  * `aplica([=](int x) -> int { … }, 3)`
+  * `apply([=](int x) -> int { … }, 3)`
   * o tipo do parâmetro
 *
   * expressão de `return`
@@ -112,13 +112,13 @@ O valor de um lambda é um closure. Ele guarda os parâmetros, o tipo de resulta
 
 A memória não muda, o lambda só a lê. O closure guarda *valores*, não posições. Esse é o significado da captura por cópia, e ele tem duas consequências que os programas abaixo tornam visíveis. Uma escrita posterior em uma variável capturada não é vista pelo closure. Um ponteiro capturado continua alcançando o seu objeto em σ, porque a cópia de um ponteiro é a mesma posição.
 
-O programa abaixo declara `soma` com `n` igual a 5, depois atribui 100 a `n`, e chama `soma`. O closure guardou a cópia 5.
+O programa abaixo declara `sum` com `n` igual a 5, depois atribui 100 a `n`, e chama `sum`. O closure guardou a cópia 5.
 
 ```lean (name := captureCopy)
 def captureCopy : String :=
   "int main() { int n = 5;
-   std::function<int(int)> soma = [=](int x) -> int { return x + n; };
-   n = 100; return soma(1); }"
+   std::function<int(int)> sum = [=](int x) -> int { return x + n; };
+   n = 100; return sum(1); }"
 
 #eval (parseProgram captureCopy).map run
 ```
@@ -202,34 +202,34 @@ def lambdaTrace : String :=
 tag := "higher-order"
 %%%
 
-Uma função que recebe ou devolve um valor de função é uma *função de ordem superior*. A função `multiplicador` abaixo devolve um lambda que capturou o seu parâmetro `k`, e `aplica` recebe um valor de função e o chama. A composição calcula 3 vezes 14.
+Uma função que recebe ou devolve um valor de função é uma *função de ordem superior*. A função `multiplier` abaixo devolve um lambda que capturou o seu parâmetro `k`, e `apply` recebe um valor de função e o chama. A composição calcula 3 vezes 14.
 
-```lean (name := multiplicador)
+```lean (name := multiplier)
 def multiplier : String :=
-  "std::function<int(int)> multiplicador(int k) {
+  "std::function<int(int)> multiplier(int k) {
      return [=](int x) -> int { return k * x; };
    }
-   int aplica(std::function<int(int)> f, int v) { return f(v); }
-   int main() { return aplica(multiplicador(3), 14); }"
+   int apply(std::function<int(int)> f, int v) { return f(v); }
+   int main() { return apply(multiplier(3), 14); }"
 
 #eval (parseProgram multiplier).map run
 ```
-```leanOutput multiplicador
+```leanOutput multiplier
 Except.ok (Except.ok (CoreCpp.Val.int 42))
 ```
 
-O closure devolvido por `multiplicador` sobrevive à chamada que o criou. A sua cópia de `k` é um valor dentro do closure, então nada aponta para uma posição que saiu da memória. É por isso que a captura por cópia é segura em uma linguagem cujas locais morrem com o seu bloco.
+O closure devolvido por `multiplier` sobrevive à chamada que o criou. A sua cópia de `k` é um valor dentro do closure, então nada aponta para uma posição que saiu da memória. É por isso que a captura por cópia é segura em uma linguagem cujas locais morrem com o seu bloco.
 
 Um lambda pode ser argumento diretamente, conferido com o tipo do parâmetro da função chamada.
 
-```lean (name := duasVezes)
+```lean (name := applyTwice)
 def twice : String :=
-  "int duasVezes(std::function<int(int)> f, int x) { return f(f(x)); }
-   int main() { return duasVezes([=](int x) -> int { return x * x; }, 3); }"
+  "int applyTwice(std::function<int(int)> f, int x) { return f(f(x)); }
+   int main() { return applyTwice([=](int x) -> int { return x * x; }, 3); }"
 
 #eval (parseProgram twice).map run
 ```
-```leanOutput duasVezes
+```leanOutput applyTwice
 Except.ok (Except.ok (CoreCpp.Val.int 81))
 ```
 
@@ -239,26 +239,26 @@ Except.ok (Except.ok (CoreCpp.Val.int 81))
 tag := "captured-pointer"
 %%%
 
-Um `int` capturado é uma cópia que o closure só pode ler. Um ponteiro capturado é uma cópia de uma posição, e por ela o closure lê e escreve um objeto que vive em σ, fora do closure. A função `contador` abaixo cria um objeto, captura o ponteiro para ele e devolve um closure que incrementa o campo. Cada chamada ao closure altera o mesmo objeto, e o objeto sobrevive ao bloco de `contador` porque objetos criados com `new` vivem até o fim do programa.
+Um `int` capturado é uma cópia que o closure só pode ler. Um ponteiro capturado é uma cópia de uma posição, e por ela o closure lê e escreve um objeto que vive em σ, fora do closure. A função `counter` abaixo cria um objeto, captura o ponteiro para ele e devolve um closure que incrementa o campo. Cada chamada ao closure altera o mesmo objeto, e o objeto sobrevive ao bloco de `counter` porque objetos criados com `new` vivem até o fim do programa.
 
-```lean (name := contador)
+```lean (name := counter)
 def counter : String :=
-  "class Caixa { public: int valor; };
-   std::function<int()> contador() {
-     Caixa* c = new Caixa();
-     c->valor = 0;
-     return [=]() -> int { c->valor = c->valor + 1; return c->valor; };
+  "class Box { public: int value; };
+   std::function<int()> counter() {
+     Box* c = new Box();
+     c->value = 0;
+     return [=]() -> int { c->value = c->value + 1; return c->value; };
    }
-   int main() { std::function<int()> k = contador();
-     int primeiro = k(); return k() + k() + primeiro; }"
+   int main() { std::function<int()> k = counter();
+     int first = k(); return k() + k() + first; }"
 
 #eval (parseProgram counter).map run
 ```
-```leanOutput contador
+```leanOutput counter
 Except.ok (Except.ok (CoreCpp.Val.int 6))
 ```
 
-As três chamadas devolvem 1, 2 e 3, e a soma é 6. A escrita `c->valor = …` é aceita pelo verificador de tipos, porque escreve no campo do objeto, uma posição alcançada pela cópia de `c`, e não em `c`. É por esse idioma que um closure guarda estado em Core C++, um objeto que ele possui por um ponteiro capturado.
+As três chamadas devolvem 1, 2 e 3, e a soma é 6. A escrita `c->value = …` é aceita pelo verificador de tipos, porque escreve no campo do objeto, uma posição alcançada pela cópia de `c`, e não em `c`. É por esse idioma que um closure guarda estado em Core C++, um objeto que ele possui por um ponteiro capturado.
 
 # Por que Só a Captura por Cópia
 
@@ -268,7 +268,7 @@ tag := "why-copy"
 
 C++ oferece `[&]`, a captura por referência. O closure guarda então as posições das variáveis capturadas, e uma escrita dentro do corpo altera a variável fora. O problema aparece quando o closure sobrevive ao bloco da variável. A posição saiu da memória, o closure ainda a guarda, e a próxima chamada lê ou escreve uma posição morta, comportamento indefinido em C++. Core C++ exclui `[&]` por essa razão. Todo closure guarda valores, um valor básico capturado é uma cópia, e um ponteiro capturado alcança um objeto que vive tanto quanto o programa. Nenhum closure de Core C++ pode guardar uma posição pendente, e a regra `Lambda` mostra por quê, ela lê σ e guarda o que leu.
 
-Os programas que `[&]` escreveria se escrevem com um ponteiro para um objeto, como `contador` faz. O objeto faz o papel da variável compartilhada, e o seu tempo de vida é o que torna o compartilhamento seguro. A {numref}[tbl-captures] contrasta as duas.
+Os programas que `[&]` escreveria se escrevem com um ponteiro para um objeto, como `counter` faz. O objeto faz o papel da variável compartilhada, e o seu tempo de vida é o que torna o compartilhamento seguro. A {numref}[tbl-captures] contrasta as duas.
 
 :::table +header
 *
@@ -307,7 +307,7 @@ tag := "exercises-15"
 
 {exercise "exr-adder-array"}[] Escreva uma função que recebe um ponteiro para vetor e um `std::function<int(int)>` e aplica a função a cada elemento no lugar. Diga quais regras das UD II e IV o corpo usa.
 
-{exercise "exr-two-counters"}[] Chame `contador` duas vezes e guarde os dois closures em `k1` e `k2`. Preveja o resultado de `k1() + k1() + k2()` e explique por que os dois closures não compartilham estado.
+{exercise "exr-two-counters"}[] Chame `counter` duas vezes e guarde os dois closures em `k1` e `k2`. Preveja o resultado de `k1() + k1() + k2()` e explique por que os dois closures não compartilham estado.
 
 {exercise "exr-capture-set"}[] A regra `Lambda` captura as variáveis livres do corpo que ρ liga. Escreva um lambda cujo corpo declara uma local com o mesmo nome de uma variável de fora, e explique o que é capturado e se o programa pode observar isso.
 

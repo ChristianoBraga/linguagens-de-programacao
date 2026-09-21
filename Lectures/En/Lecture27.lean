@@ -65,23 +65,23 @@ tag := "functional-fragment"
 A declaration survives, and it is worth saying why. In the fragment a declaration is not a variable in the imperative sense, it is a *let binding*, a name for the value of an expression, because nothing can write the location afterwards. The loop does not survive, so a program of the fragment iterates by recursion, and the expression statement does not survive either, since without update it could only be there for an effect the fragment does not have.
 
 ```lean (name := funCheck)
-def escala : String :=
-  "int soma(int n) {
-     return n == 0 ? 0 : n + soma(n - 1);
+def scale : String :=
+  "int sum(int n) {
+     return n == 0 ? 0 : n + sum(n - 1);
    }
-   std::function<int(int)> escala(int k) {
+   std::function<int(int)> scale(int k) {
      return [=](int x) -> int { return k * x; };
    }
-   int aplica(std::function<int(int)> f, int v) {
+   int apply(std::function<int(int)> f, int v) {
      return f(v);
    }
    int main() {
-     std::function<int(int)> triplo = escala(3);
-     int s = soma(4);
-     return aplica(triplo, s);
+     std::function<int(int)> triple = scale(3);
+     int s = sum(4);
+     return apply(triple, s);
    }"
 
-#eval (parseProgram escala).map fun p => (fragment .functional p, run p)
+#eval (parseProgram scale).map fun p => (fragment .functional p, run p)
 ```
 ```leanOutput funCheck
 Except.ok (Except.ok (), Except.ok (CoreCpp.Val.int 30))
@@ -142,12 +142,12 @@ Without the loop, a repetition is a recursive call, and the correspondence is ex
 
 ```lean (name := caseFun)
 def caseFun : String :=
-  "int somaAte(std::function<bool(int)> p, int n) {
-     return n == 0 ? 0 : (p(n) ? n : 0) + somaAte(p, n - 1);
+  "int sumTo(std::function<bool(int)> p, int n) {
+     return n == 0 ? 0 : (p(n) ? n : 0) + sumTo(p, n - 1);
    }
    int main() {
-     std::function<bool(int)> par = [=](int i) -> bool { return i % 2 == 0; };
-     return somaAte(par, 10);
+     std::function<bool(int)> even = [=](int i) -> bool { return i % 2 == 0; };
+     return sumTo(even, 10);
    }"
 
 #eval (parseProgram caseFun).map fun p => (fragment .functional p, run p)
@@ -156,7 +156,7 @@ def caseFun : String :=
 Except.ok (Except.ok (), Except.ok (CoreCpp.Val.int 30))
 ```
 
-The two versions of the case study, this one and the object oriented one of {secref}[lecture-26], place the extension point differently. Here the criterion is an argument, so a new criterion is a new value at the call site and `somaAte` does not change. There it is a `virtual` method, so a new criterion is a new class and `junta` does not change. The two are the same design freedom, spent in different currency.
+The two versions of the case study, this one and the object oriented one of {secref}[lecture-26], place the extension point differently. Here the criterion is an argument, so a new criterion is a new value at the call site and `sumTo` does not change. There it is a `virtual` method, so a new criterion is a new class and `add` does not change. The two are the same design freedom, spent in different currency.
 
 One cost of the recursive form is visible in the derivation. Each call allocates the locations of its parameters and releases them at the return, so a recursion of depth ten puts ten frames in σ at once, where the loop reuses one. A functional language answers with tail call elimination, which Core C++ does not have and the course does not claim.
 
@@ -186,9 +186,9 @@ tag := "exercises-27"
 
 {exercise "exr-fun-order"}[] Give two programs, one in the functional fragment and one outside it, in which `f() + g()` has one value in the first and two possible values in C++ for the second. Say which rule of the fragment rules the second case out.
 
-{exercise "exr-fun-transparency"}[] Take the case study and replace `par` by the lambda itself at the call site. Argue from write once that the two programs have the same value, and confirm it with the interpreter.
+{exercise "exr-fun-transparency"}[] Take the case study and replace `even` by the lambda itself at the call site. Argue from write once that the two programs have the same value, and confirm it with the interpreter.
 
-{exercise "exr-fun-depth"}[] Print the derivation of `somaAte(par, 3)` and count the locations live in σ at the deepest point. Say how many the loop version of {secref}[lecture-25] has at its deepest point.
+{exercise "exr-fun-depth"}[] Print the derivation of `sumTo(even, 3)` and count the locations live in σ at the deepest point. Say how many the loop version of {secref}[lecture-25] has at its deepest point.
 
 {exercise "exr-fun-capture"}[] The lambda of the case study captures nothing. Write one that captures a bound from the enclosing scope, and explain, from the rule `Lambda`, why the capture cannot break write once.
 

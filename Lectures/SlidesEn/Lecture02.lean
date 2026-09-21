@@ -38,7 +38,7 @@ open CoreCpp
 
 # §2.1 The initial convention
 
-* In `Pilha<int>` the `<` follows a type identifier and opens a template argument.
+* In `Stack<int>` the `<` follows a type identifier and opens a template argument.
 
 * In `x < y` the `<` follows a variable identifier and compares.
 

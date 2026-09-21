@@ -50,19 +50,19 @@ para cada i, da esquerda para a direita, σ'₀ = σ,
 
 # §14.2 Troca
 
-```lean (name := troca)
+```lean (name := swap)
 def swap : String :=
-  "void troca(int& a, int& b) { int t = a; a = b; b = t; }
-   int main() { int x = 1; int y = 2; troca(x, y);
+  "void swap(int& a, int& b) { int t = a; a = b; b = t; }
+   int main() { int x = 1; int y = 2; swap(x, y);
      return x * 10 + y; }"
 
 #eval (parseProgram swap).map run
 ```
-```leanOutput troca
+```leanOutput swap
 Except.ok (Except.ok (CoreCpp.Val.int 21))
 ```
 
-* O ambiente de `troca` é \[a ↦ ℓ0, b ↦ ℓ1\], as posições de `x` e `y` sob nomes novos. As escritas alcançam `main`.
+* O ambiente de `swap` é \[a ↦ ℓ0, b ↦ ℓ1\], as posições de `x` e `y` sob nomes novos. As escritas alcançam `main`.
 
 * Por valor o mesmo corpo permutaria duas cópias e devolveria 12.
 

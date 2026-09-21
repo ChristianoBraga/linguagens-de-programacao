@@ -38,22 +38,22 @@ A class `D : public B` *derives* from `B`. An object of `D` has every field of `
 
 ```lean (name := shapes)
 def shapes : String :=
-  "namespace Geometria {
-    class Forma {
+  "namespace Geometry {
+    class Shape {
     public:
       virtual int area() { return 0; }
-      virtual ~Forma() { }
+      virtual ~Shape() { }
     };
-    class Quadrado : public Forma {
+    class Square : public Shape {
     private:
-      int lado;
+      int side;
     public:
-      Quadrado(int l) { this->lado = l; }
-      int area() override { return lado * lado; }
+      Square(int l) { this->side = l; }
+      int area() override { return side * side; }
     };
   }
   int main() {
-    Geometria::Forma* f = new Geometria::Quadrado(4);
+    Geometry::Shape* f = new Geometry::Square(4);
     int a = f->area();
     delete f;
     return a;
@@ -65,7 +65,7 @@ def shapes : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 16))
 ```
 
-The program shows the three constructions of the lecture at once. A `Quadrado*` is stored in a variable of type `Forma*`, *subsumption*. The call `f->area()` runs the method of `Quadrado` although the pointer has type `Forma*`, *dispatch*. The `delete f` through the base pointer reaches the object because the destructor of `Forma` is `virtual`. The classes sit in a namespace, {secref}[lecture-20].
+The program shows the three constructions of the lecture at once. A `Square*` is stored in a variable of type `Shape*`, *subsumption*. The call `f->area()` runs the method of `Square` although the pointer has type `Shape*`, *dispatch*. The `delete f` through the base pointer reaches the object because the destructor of `Shape` is `virtual`. The classes sit in a namespace, {secref}[lecture-20].
 
 # Subsumption
 
@@ -86,19 +86,19 @@ The rule applies in declarations, assignments, arguments, returns, comparisons a
 ```lean (name := downcast)
 def downcast : String :=
   "class Base { public: int x; };
-  class Derivada : public Base { public: int y; };
-  int main() { Base* b = new Derivada(); Derivada* d = b; return 0; }"
+  class Derived : public Base { public: int y; };
+  int main() { Base* b = new Derived(); Derived* d = b; return 0; }"
 
 #eval (parseProgram downcast).map check
 ```
 ```leanOutput downcast
 Except.ok (Except.error (CoreCpp.TypeError.mismatch
    "initialiser of d"
-   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Derivada"))
+   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Derived"))
    (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Base"))))
 ```
 
-Subsumption gives the language *subtyping*, the concept of Unit VI, in its simplest form. The type of an expression, `Forma*`, may be a proper supertype of the type of the object it denotes, `Quadrado*`, and the two can differ at every point of the program. The type checker knows only the first, the *static type*. The evaluator sees only the second, the *class tag* of the object in σ. Dispatch is the rule that decides which one governs a method call.
+Subsumption gives the language *subtyping*, the concept of Unit VI, in its simplest form. The type of an expression, `Shape*`, may be a proper supertype of the type of the object it denotes, `Square*`, and the two can differ at every point of the program. The type checker knows only the first, the *static type*. The evaluator sees only the second, the *class tag* of the object in σ. Dispatch is the rule that decides which one governs a method call.
 
 # Dispatch
 
@@ -112,14 +112,14 @@ A method marked `virtual` is chosen by the class tag of the receiver, the neares
 def staticDyn : String :=
   "class Base {
   public:
-    int fixo() { return 1; }
-    virtual int variavel() { return 10; }
+    int fixed() { return 1; }
+    virtual int dispatched() { return 10; }
   };
-  class Derivada : public Base {
+  class Derived : public Base {
   public:
-    int variavel() override { return 20; }
+    int dispatched() override { return 20; }
   };
-  int main() { Base* b = new Derivada(); return b->fixo() + b->variavel(); }"
+  int main() { Base* b = new Derived(); return b->fixed() + b->dispatched(); }"
 
 #eval (parseProgram staticDyn).map run
 ```
@@ -140,20 +140,20 @@ Core C++ adds a restriction C++ lacks. A derived class redefines a method only w
 ```lean (name := hide)
 def hide : String :=
   "class Base { public: int f() { return 1; } };
-  class Derivada : public Base { public: int f() { return 2; } };
+  class Derived : public Base { public: int f() { return 2; } };
   int main() { return 0; }"
 
 #eval (parseProgram hide).map check
 ```
 ```leanOutput hide
-Except.ok (Except.error (CoreCpp.TypeError.redefinesNonVirtual "Derivada" "f"))
+Except.ok (Except.error (CoreCpp.TypeError.redefinesNonVirtual "Derived" "f"))
 ```
 
 The restriction has a pleasant consequence. For a non virtual method, the nearest declaration from $`S` and the nearest from $`T` are the same, because no class between $`T` and $`S` redeclares it. Static and dynamic dispatch then agree on every method that is not `virtual`, and a program that hides a method, the classical source of surprise in C++, cannot be written.{fnref}[hiding]
 
 :::footnotes
 
-{fnAnchor "hiding"}[] In C++ the call `b->f()` above runs `Base::f`, because `f` is not virtual and `b` has static type `Base*`, while `d->f()` on a `Derivada*` to the same object runs `Derivada::f`. The same object answers the same message in two ways depending on the type of the pointer that names it, and the compiler emits no diagnostic. The `override` keyword of C++11 catches only the opposite mistake, a method meant to override that does not. Core C++ requires `override` on every redefinition and forbids the hiding case, so the two dispatch policies can only differ on virtual methods, where the difference is the point.
+{fnAnchor "hiding"}[] In C++ the call `b->f()` above runs `Base::f`, because `f` is not virtual and `b` has static type `Base*`, while `d->f()` on a `Derived*` to the same object runs `Derived::f`. The same object answers the same message in two ways depending on the type of the pointer that names it, and the compiler emits no diagnostic. The `override` keyword of C++11 catches only the opposite mistake, a method meant to override that does not. Core C++ requires `override` on every redefinition and forbids the hiding case, so the two dispatch policies can only differ on virtual methods, where the difference is the point.
 
 :::
 
@@ -181,23 +181,23 @@ A destructor is a member `~C()` without parameters and without result, and a cla
 
 ```lean (name := dtors)
 def dtors : String :=
-  "class Registro { public: int n; };
+  "class Record { public: int n; };
   class Base {
   public:
-    Registro* r;
+    Record* r;
     virtual ~Base() { r->n = r->n + 1; }
   };
-  class Derivada : public Base {
+  class Derived : public Base {
   public:
-    ~Derivada() { r->n = r->n + 10; }
+    ~Derived() { r->n = r->n + 10; }
   };
   int main() {
-    Registro* reg = new Registro();
-    Derivada* d = new Derivada();
-    d->r = reg;
+    Record* rec = new Record();
+    Derived* d = new Derived();
+    d->r = rec;
     Base* b = d;
     delete b;
-    return reg->n;
+    return rec->n;
   }"
 
 #eval (parseProgram dtors).map run
@@ -211,21 +211,21 @@ The destructor of `Base` is `virtual`, and that is what makes `delete b` through
 ```lean (name := nonVirtual)
 def nonVirtual : String :=
   "class Base { public: int x; ~Base() { } };
-  class Derivada : public Base { public: int y; };
-  int main() { Base* b = new Derivada(); delete b; return 0; }"
+  class Derived : public Base { public: int y; };
+  int main() { Base* b = new Derived(); delete b; return 0; }"
 
 #eval (parseProgram nonVirtual).map run
 ```
 ```leanOutput nonVirtual
-Except.ok (Except.error (CoreCpp.Error.deleteWithoutVirtualDtor "Base" "Derivada"))
+Except.ok (Except.error (CoreCpp.Error.deleteWithoutVirtualDtor "Base" "Derived"))
 ```
 
 Two more cases are undefined in C++ and `error` in Core C++, both by the rule that a location outside σ is `error`. A second `delete` of the same object finds no object at the location.
 
 ```lean (name := twice)
 def twice : String :=
-  "class Caixa { public: int v; };
-  int main() { Caixa* c = new Caixa(); delete c; delete c; return 0; }"
+  "class Box { public: int v; };
+  int main() { Box* c = new Box(); delete c; delete c; return 0; }"
 
 #eval (parseProgram twice).map run
 ```
@@ -237,8 +237,8 @@ An access after `delete` finds no location for the field.
 
 ```lean (name := dangling)
 def dangling : String :=
-  "class Caixa { public: int v; };
-  int main() { Caixa* c = new Caixa(); delete c; return c->v; }"
+  "class Box { public: int v; };
+  int main() { Box* c = new Box(); delete c; return c->v; }"
 
 #eval (parseProgram dangling).map run
 ```
@@ -256,31 +256,31 @@ tag := "trace-19"
 
 ```lean (name := traceDelete)
 def traceDelete : String :=
-  "class Caixa {
+  "class Box {
   public:
     int v;
-    ~Caixa() { v = 0; }
+    ~Box() { v = 0; }
   };
-  int main() { Caixa* c = new Caixa(); c->v = 7; delete c; return 1; }"
+  int main() { Box* c = new Box(); c->v = 7; delete c; return 1; }"
 
 #eval match parseProgram traceDelete with
   | .ok p => IO.println (renderTrace (runWith true p).2)
   | .error e => IO.println e
 ```
 ```leanOutput traceDelete
-    [], {} ⊢ new Caixa() ⇒ ℓ1, {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}}   (New)
-  [], {} ⊢ Caixa* c = new Caixa(); ⇒ normal, [c ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Decl)
-    [c ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ 7 ⇒ 7, {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Lit)
-        [c ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ c ⇒ₗ ℓ2, {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (LocVar)
-      [c ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ c ⇒ ℓ1, {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Var)
-    [c ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ c->v ⇒ₗ ℓ0, {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (LocArrow)
-  [c ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ c->v = 7; ⇒ normal, [c ↦ ℓ2], {ℓ0 ↦ 7, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Assign)
-      [c ↦ ℓ2], {ℓ0 ↦ 7, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ c ⇒ₗ ℓ2, {ℓ0 ↦ 7, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (LocVar)
-    [c ↦ ℓ2], {ℓ0 ↦ 7, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ c ⇒ ℓ1, {ℓ0 ↦ 7, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Var)
-      [this ↦ ℓ1], {ℓ0 ↦ 7, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ 0 ⇒ 0, {ℓ0 ↦ 7, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Lit)
-      [this ↦ ℓ1], {ℓ0 ↦ 7, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ v ⇒ₗ ℓ0, {ℓ0 ↦ 7, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (LocVar)
-    [this ↦ ℓ1], {ℓ0 ↦ 7, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ v = 0; ⇒ normal, [this ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Assign)
-  [c ↦ ℓ2], {ℓ0 ↦ 7, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ delete c; ⇒ normal, [c ↦ ℓ2], {ℓ2 ↦ ℓ1}   (Delete)
+    [], {} ⊢ new Box() ⇒ ℓ1, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}}   (New)
+  [], {} ⊢ Box* c = new Box(); ⇒ normal, [c ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Decl)
+    [c ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ 7 ⇒ 7, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Lit)
+        [c ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ c ⇒ₗ ℓ2, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (LocVar)
+      [c ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ c ⇒ ℓ1, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Var)
+    [c ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ c->v ⇒ₗ ℓ0, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (LocArrow)
+  [c ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ c->v = 7; ⇒ normal, [c ↦ ℓ2], {ℓ0 ↦ 7, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Assign)
+      [c ↦ ℓ2], {ℓ0 ↦ 7, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ c ⇒ₗ ℓ2, {ℓ0 ↦ 7, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (LocVar)
+    [c ↦ ℓ2], {ℓ0 ↦ 7, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ c ⇒ ℓ1, {ℓ0 ↦ 7, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Var)
+      [this ↦ ℓ1], {ℓ0 ↦ 7, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ 0 ⇒ 0, {ℓ0 ↦ 7, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Lit)
+      [this ↦ ℓ1], {ℓ0 ↦ 7, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ v ⇒ₗ ℓ0, {ℓ0 ↦ 7, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (LocVar)
+    [this ↦ ℓ1], {ℓ0 ↦ 7, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ v = 0; ⇒ normal, [this ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1}   (Assign)
+  [c ↦ ℓ2], {ℓ0 ↦ 7, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ delete c; ⇒ normal, [c ↦ ℓ2], {ℓ2 ↦ ℓ1}   (Delete)
     [c ↦ ℓ2], {ℓ2 ↦ ℓ1} ⊢ 1 ⇒ 1, {ℓ2 ↦ ℓ1}   (Lit)
   [c ↦ ℓ2], {ℓ2 ↦ ℓ1} ⊢ return 1; ⇒ ret 1, [c ↦ ℓ2], {ℓ2 ↦ ℓ1}   (Return)
 [], {} ⊢ main() ⇒ 1, {}   (Call)
@@ -296,9 +296,9 @@ tag := "exercises-19"
 
 {exercise "exr-chain-fields"}[] Write three classes in a chain, each with one field, create an object of the most derived one and write the record the rule `New` builds, with the order of the fields.
 
-{exercise "exr-dispatch-both"}[] Add a non virtual method to `Derivada` in {secref}[dispatch] that does not exist in `Base`, and call it through a `Derivada*` and through a `Base*`. Explain both outcomes by the rules.
+{exercise "exr-dispatch-both"}[] Add a non virtual method to `Derived` in {secref}[dispatch] that does not exist in `Base`, and call it through a `Derived*` and through a `Base*`. Explain both outcomes by the rules.
 
-{exercise "exr-hiding-cpp"}[] Compile the program of `hide` with `g++`, call `f` through a `Base*` and through a `Derivada*` to the same object, and report the two results. Explain why Core C++ rejects the program instead.
+{exercise "exr-hiding-cpp"}[] Compile the program of `hide` with `g++`, call `f` through a `Base*` and through a `Derived*` to the same object, and report the two results. Explain why Core C++ rejects the program instead.
 
 {exercise "exr-dtor-order"}[] Extend the chain of {secref}[delete] with a third class whose destructor adds 100 to the record, and predict the result before running.
 

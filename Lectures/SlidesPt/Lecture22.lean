@@ -28,7 +28,7 @@ open CoreCpp
 
 # §22.1 Uma declaração, vários tipos
 
-* Uma pilha de `int` e uma pilha de `Ponto*` são o mesmo programa com uma palavra trocada. Escrever as duas é copiar.
+* Uma pilha de `int` e uma pilha de `Point*` são o mesmo programa com uma palavra trocada. Escrever as duas é copiar.
 
 * Um *template de classe* declara a classe uma vez, com o tipo como parâmetro.
 
@@ -48,30 +48,30 @@ Except.error "syntax error at token 23 (','): a class template of this subset ha
 ```lean (name := stack)
 def stack : String :=
   "template<typename T>
-  class Pilha {
+  class Stack {
   private:
-    std::vector<T>* itens;
-    int topo;
+    std::vector<T>* items;
+    int top;
   public:
-    Pilha(int n) {
-      this->itens = new std::vector<T>(n);
-      this->topo = 0;
+    Stack(int n) {
+      this->items = new std::vector<T>(n);
+      this->top = 0;
     }
-    void empilha(T x) { (*itens)[topo] = x; topo = topo + 1; }
-    T desempilha() { topo = topo - 1; return (*itens)[topo]; }
-    bool vazia() { return topo == 0; }
+    void push(T x) { (*items)[top] = x; top = top + 1; }
+    T pop() { top = top - 1; return (*items)[top]; }
+    bool empty() { return top == 0; }
   };
-  class Ponto { public: int x; };
+  class Point { public: int x; };
   int main() {
-    Pilha<int>* p = new Pilha<int>(4);
-    p->empilha(3);
-    p->empilha(4);
-    int s = p->desempilha() + p->desempilha();
-    Pilha<Ponto*>* q = new Pilha<Ponto*>(2);
-    Ponto* a = new Ponto();
+    Stack<int>* p = new Stack<int>(4);
+    p->push(3);
+    p->push(4);
+    int s = p->pop() + p->pop();
+    Stack<Point*>* q = new Stack<Point*>(2);
+    Point* a = new Point();
     a->x = 35;
-    q->empilha(a);
-    return s + q->desempilha()->x;
+    q->push(a);
+    return s + q->pop()->x;
   }"
 
 #eval (parseProgram stack).map run
@@ -90,7 +90,7 @@ p ⟶ p, class C<τ> { … [T := τ] … }
 
 * Aplicada até o *ponto fixo*, porque a classe que ela acrescenta pode mencionar outra instanciação. Idempotente.
 
-* A substituição alcança todo tipo e todo *nome* de classe, então `No<T>*` em `Lista<T>` vira `No<int>*` em `Lista<int>`.
+* A substituição alcança todo tipo e todo *nome* de classe, então `Node<T>*` em `Lista<T>` vira `Node<int>*` em `Lista<int>`.
 
 * *Custo*. A expansão precede a execução, então uma classe instanciada é uma classe comum.
 
@@ -101,24 +101,24 @@ p ⟶ p, class C<τ> { … [T := τ] … }
 ```lean (name := instantiatedTwo)
 def instantiatedTwo : String :=
   "template<typename T>
-  class Caixa {
+  class Box {
   private:
     T v;
   public:
-    Caixa(T x) { this->v = x; }
-    T abre() { return v; }
+    Box(T x) { this->v = x; }
+    T get() { return v; }
   };
   int main() {
-    Caixa<int>* a = new Caixa<int>(40);
-    Caixa<bool>* b = new Caixa<bool>(true);
-    return a->abre() + (b->abre() ? 2 : 0);
+    Box<int>* a = new Box<int>(40);
+    Box<bool>* b = new Box<bool>(true);
+    return a->get() + (b->get() ? 2 : 0);
   }"
 
 #eval (parseProgram instantiatedTwo).map fun p =>
   (Templates.instantiate p).map fun q => q.classes.map (·.name)
 ```
 ```leanOutput instantiatedTwo
-Except.ok (Except.ok ["Caixa<int>", "Caixa<bool>"])
+Except.ok (Except.ok ["Box<int>", "Box<bool>"])
 ```
 
 ```lean (name := instantiatedRun)
@@ -139,22 +139,22 @@ Except.ok (Except.ok (CoreCpp.Val.int 42))
 ```lean (name := badInstance)
 def badInstance : String :=
   "template<typename T>
-  class Par {
+  class Pair {
   public:
     T a;
     T b;
-    bool ordenado() { return a < b; }
+    bool sorted() { return a < b; }
   };
-  class Ponto { public: int x; };
+  class Point { public: int x; };
   int main() {
-    Par<Ponto*>* p = new Par<Ponto*>();
-    return p->ordenado() ? 1 : 0;
+    Pair<Point*>* p = new Pair<Point*>();
+    return p->sorted() ? 1 : 0;
   }"
 
 #eval (parseProgram badInstance).map check
 ```
 ```leanOutput badInstance
-Except.ok (Except.error (CoreCpp.TypeError.badOperand "<" (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Ponto"))))
+Except.ok (Except.error (CoreCpp.TypeError.badOperand "<" (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Point"))))
 ```
 
 * O `concept` de C++20 existe para enunciar o requisito na declaração, de modo que o erro caia no uso.

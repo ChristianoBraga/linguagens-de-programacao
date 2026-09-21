@@ -30,20 +30,20 @@ open CoreCpp
 
 ```lean (name := ns)
 def ns : String :=
-  "namespace Banco {
-    class Conta {
+  "namespace Bank {
+    class Account {
     private:
-      int saldo;
+      int balance;
     public:
-      Conta(int inicial) { saldo = inicial; }
-      void deposita(int v) { saldo = saldo + v; }
-      int consulta() { return saldo; }
+      Account(int initial) { balance = initial; }
+      void deposit(int v) { balance = balance + v; }
+      int query() { return balance; }
     };
   }
   int main() {
-    Banco::Conta* c = new Banco::Conta(100);
-    c->deposita(20);
-    return c->consulta();
+    Bank::Account* c = new Bank::Account(100);
+    c->deposit(20);
+    return c->query();
   }"
 
 #eval (parseProgram ns).map run
@@ -56,7 +56,7 @@ Except.ok (Except.ok (CoreCpp.Val.int 120))
 #eval (parseProgram ns).map fun p => p.classes.map (·.name)
 ```
 ```leanOutput nsNames
-Except.ok ["Banco::Conta"]
+Except.ok ["Bank::Account"]
 ```
 
 * Flattened by the parser. No rule of typing or evaluation.
@@ -67,7 +67,7 @@ Except.ok ["Banco::Conta"]
 
 * *Identity and state*. An object is a record in σ, reached by pointers. Two pointers to one location name one object.
 
-* *Substitutability*. `Subsumption` lets a client of `Forma*` receive any derived class, including ones written later.
+* *Substitutability*. `Subsumption` lets a client of `Shape*` receive any derived class, including ones written later.
 
 * *Late binding*. The `virtual` premise of `MethodCall` decides the method by the object, at every call.
 
@@ -86,16 +86,16 @@ Except.ok ["Banco::Conta"]
 # §20.3 Separate compilation
 
 ```
-// pilha.hh                          // pilha.cpp
-class Pilha {                         #include "pilha.hh"
-private:                              Pilha::Pilha(int n) { … }
-  std::vector<int>* itens;            void Pilha::empilha(int x) { … }
-  int topo;                           int Pilha::desempilha() { … }
-public:                               bool Pilha::vazia() { … }
-  Pilha(int n);
-  void empilha(int x);
-  int desempilha();
-  bool vazia();
+// stack.hh                          // stack.cpp
+class Stack {                         #include "stack.hh"
+private:                              Stack::Stack(int n) { … }
+  std::vector<int>* items;            void Stack::push(int x) { … }
+  int top;                           int Stack::pop() { … }
+public:                               bool Stack::empty() { … }
+  Stack(int n);
+  void push(int x);
+  int pop();
+  bool empty();
 };
 ```
 

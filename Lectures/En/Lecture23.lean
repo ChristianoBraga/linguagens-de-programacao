@@ -42,21 +42,21 @@ A type τ is a *subtype* of a type τ' when an expression of type τ may stand w
 Γ ⊢ e : B*
 ```
 
-The rule reads from the specific to the general. Whoever has a pointer to a `Quadrado` has a pointer to a `Forma`, because every `Quadrado` is a `Forma`. The converse fails, and the type checker says so.
+The rule reads from the specific to the general. Whoever has a pointer to a `Square` has a pointer to a `Shape`, because every `Square` is a `Shape`. The converse fails, and the type checker says so.
 
 ```lean (name := notSuper)
 def notSuper : String :=
-  "class Forma { public: int lado; };
-  class Quadrado : public Forma { public: int marca; };
-  int main() { Forma* f = new Quadrado(); Quadrado* q = f; return 0; }"
+  "class Shape { public: int side; };
+  class Square : public Shape { public: int mark; };
+  int main() { Shape* f = new Square(); Square* q = f; return 0; }"
 
 #eval (parseProgram notSuper).map check
 ```
 ```leanOutput notSuper
 Except.ok (Except.error (CoreCpp.TypeError.mismatch
    "initialiser of q"
-   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Quadrado"))
-   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Forma"))))
+   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Square"))
+   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Shape"))))
 ```
 
 Subsumption is not a separate judgment. It lives inside the relation τ ≈ τ' that the earlier units used for declarations, assignments, arguments, results, comparisons and the branches of a conditional, so it holds in all of them at once. {numref}[tbl-subsumption] lists the positions.
@@ -94,27 +94,27 @@ Subsumption is not a separate judgment. It lives inside the relation τ ≈ τ' 
 
 {tabcap "tbl-subsumption"}[The positions where subsumption holds, all through the relation τ ≈ τ'.]
 
-At run time the conversion does nothing. A pointer value is a location, and the location of a `Quadrado` is the location of a `Quadrado` whether the expression that names it has type `Quadrado*` or `Forma*`. The object in the store keeps its class tag, which is why the dispatch of {secref}[lecture-19] can find the method of the derived class through a pointer to the base. Subsumption is a statement about types and costs nothing at run time, exactly as instantiation does, and for the same reason, it happens in Γ.
+At run time the conversion does nothing. A pointer value is a location, and the location of a `Square` is the location of a `Square` whether the expression that names it has type `Square*` or `Shape*`. The object in the store keeps its class tag, which is why the dispatch of {secref}[lecture-19] can find the method of the derived class through a pointer to the base. Subsumption is a statement about types and costs nothing at run time, exactly as instantiation does, and for the same reason, it happens in Γ.
 
 ```lean (name := dispatch)
 def dispatch : String :=
-  "class Forma {
+  "class Shape {
   public:
     virtual int area() { return 0; }
-    virtual ~Forma() { }
+    virtual ~Shape() { }
   };
-  class Quadrado : public Forma {
+  class Square : public Shape {
   private:
-    int lado;
+    int side;
   public:
-    Quadrado(int l) { this->lado = l; }
-    int area() override { return lado * lado; }
+    Square(int l) { this->side = l; }
+    int area() override { return side * side; }
   };
-  int soma(Forma& f, Forma& g) { return f.area() + g.area(); }
+  int sum(Shape& f, Shape& g) { return f.area() + g.area(); }
   int main() {
-    Forma* a = new Quadrado(3);
-    Forma* b = new Quadrado(4);
-    int r = soma(*a, *b);
+    Shape* a = new Square(3);
+    Shape* b = new Square(4);
+    int r = sum(*a, *b);
     delete a;
     delete b;
     return r;
@@ -126,7 +126,7 @@ def dispatch : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 25))
 ```
 
-The function `soma` knows only `Forma`, and it reaches the `area` of `Quadrado` through the tag. A function that serves every subtype of a type without knowing them is the practical gain of subtyping, and it is what the literature calls *inclusion polymorphism*.{margin}[L. Cardelli and P. Wegner, *On Understanding Types, Data Abstraction, and Polymorphism*, ACM Computing Surveys 17(4), 1985, pp. 471 to 523.]
+The function `sum` knows only `Shape`, and it reaches the `area` of `Square` through the tag. A function that serves every subtype of a type without knowing them is the practical gain of subtyping, and it is what the literature calls *inclusion polymorphism*.{margin}[L. Cardelli and P. Wegner, *On Understanding Types, Data Abstraction, and Polymorphism*, ACM Computing Surveys 17(4), 1985, pp. 471 to 523.]
 
 # Two Kinds of Polymorphism
 
@@ -171,24 +171,24 @@ Only the third costs anything at run time, the indirection of the dispatch, and 
 tag := "variance"
 %%%
 
-A natural question follows from the two tables. If `Quadrado*` is a subtype of `Forma*`, is `Pilha<Quadrado*>` a subtype of `Pilha<Forma*>`. The answer in Core C++, as in C++ and Java, is no. Two instantiations of one template are two unrelated classes, and the type checker treats them as it treats `Ponto` and `Conta`.
+A natural question follows from the two tables. If `Square*` is a subtype of `Shape*`, is `Stack<Square*>` a subtype of `Stack<Shape*>`. The answer in Core C++, as in C++ and Java, is no. Two instantiations of one template are two unrelated classes, and the type checker treats them as it treats `Point` and `Account`.
 
 ```lean (name := invariance)
 def invariance : String :=
   "template<typename T>
-  class Caixa {
+  class Box {
   private:
     T v;
   public:
-    Caixa(T x) { this->v = x; }
-    T abre() { return v; }
-    void guarda(T x) { v = x; }
+    Box(T x) { this->v = x; }
+    T get() { return v; }
+    void store(T x) { v = x; }
   };
-  class Forma { public: int lado; };
-  class Quadrado : public Forma { public: int marca; };
+  class Shape { public: int side; };
+  class Square : public Shape { public: int mark; };
   int main() {
-    Caixa<Quadrado*>* c = new Caixa<Quadrado*>(new Quadrado());
-    Caixa<Forma*>* d = c;
+    Box<Square*>* c = new Box<Square*>(new Square());
+    Box<Shape*>* d = c;
     return 0;
   }"
 
@@ -197,15 +197,15 @@ def invariance : String :=
 ```leanOutput invariance
 Except.ok (Except.error (CoreCpp.TypeError.mismatch
    "initialiser of d"
-   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Caixa<Forma*>"))
-   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Caixa<Quadrado*>"))))
+   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Box<Shape*>"))
+   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Box<Square*>"))))
 ```
 
-The refusal is not a limitation of the implementation, it protects the program. Suppose the conversion were allowed, so that `d` and `c` named one object of class `Caixa<Quadrado*>`. The type of `d` says that `d->guarda(x)` accepts any `Forma*`, so a program could store a `Forma` that is not a `Quadrado` in a box whose `abre` promises a `Quadrado*`, and the next `c->abre()->marca` would read a field of an object that has none. The store would hold an object whose tag contradicts the type of the expression that reaches it, which is exactly what a type system exists to prevent.
+The refusal is not a limitation of the implementation, it protects the program. Suppose the conversion were allowed, so that `d` and `c` named one object of class `Box<Square*>`. The type of `d` says that `d->store(x)` accepts any `Shape*`, so a program could store a `Shape` that is not a `Square` in a box whose `get` promises a `Square*`, and the next `c->get()->mark` would read a field of an object that has none. The store would hold an object whose tag contradicts the type of the expression that reaches it, which is exactly what a type system exists to prevent.
 
-The general statement belongs to the theory of subtyping. A parameter that appears only in results may vary with the subtype relation, *covariance*, one that appears only in parameters must vary against it, *contravariance*, and one that appears in both, as `T` does in `Caixa`, may not vary at all, *invariance*. C++ and Core C++ make every instantiation invariant, which is the safe choice and needs no analysis of where the parameter occurs. Java allows the programmer to ask for variance at the use, with the wildcards `? extends` and `? super`, and Scala and Kotlin allow it at the declaration.{margin}[A. Igarashi and M. Viroli, *On Variance-Based Subtyping for Parametric Types*, ECOOP 2002, LNCS 2374, Springer, pp. 441 to 469.]
+The general statement belongs to the theory of subtyping. A parameter that appears only in results may vary with the subtype relation, *covariance*, one that appears only in parameters must vary against it, *contravariance*, and one that appears in both, as `T` does in `Box`, may not vary at all, *invariance*. C++ and Core C++ make every instantiation invariant, which is the safe choice and needs no analysis of where the parameter occurs. Java allows the programmer to ask for variance at the use, with the wildcards `? extends` and `? super`, and Scala and Kotlin allow it at the declaration.{margin}[A. Igarashi and M. Viroli, *On Variance-Based Subtyping for Parametric Types*, ECOOP 2002, LNCS 2374, Springer, pp. 441 to 469.]
 
-One place in C++ does allow covariance, the result type of a redefined method, where a `Forma* clona()` may be redefined as `Quadrado* clona()`. Core C++ requires the signature of a redefinition to be equal, so it leaves this case out, and a program of the subset writes the base result type in both.
+One place in C++ does allow covariance, the result type of a redefined method, where a `Shape* clona()` may be redefined as `Square* clona()`. Core C++ requires the signature of a redefinition to be equal, so it leaves this case out, and a program of the subset writes the base result type in both.
 
 # Exercises
 
@@ -215,11 +215,11 @@ tag := "exercises-23"
 
 {exercise "exr-sub-positions"}[] For each line of {numref}[tbl-subsumption], write a small program of the subset where subsumption is what makes the line type check, and check each one with the type checker.
 
-{exercise "exr-sub-runtime"}[] Print the derivation of the program of {secref}[subsumption-rule] and point to the step where the conversion from `Quadrado*` to `Forma*` happens. Explain the answer.
+{exercise "exr-sub-runtime"}[] Print the derivation of the program of {secref}[subsumption-rule] and point to the step where the conversion from `Square*` to `Shape*` happens. Explain the answer.
 
-{exercise "exr-sub-array"}[] Java allows `Quadrado[]` where `Forma[]` is expected, and checks at each store whether the value fits the actual array, throwing an exception otherwise. Say which of the two decisions, the Java one and the Core C++ one, you would take for the subset, and what the other one would cost in the rules.
+{exercise "exr-sub-array"}[] Java allows `Square[]` where `Shape[]` is expected, and checks at each store whether the value fits the actual array, throwing an exception otherwise. Say which of the two decisions, the Java one and the Core C++ one, you would take for the subset, and what the other one would cost in the rules.
 
-{exercise "exr-variance-counterexample"}[] Write, in comments over a program of the subset, the sequence of calls that would corrupt the store if `Caixa<Quadrado*>` were a subtype of `Caixa<Forma*>`. Say which rule would have to change to allow it.
+{exercise "exr-variance-counterexample"}[] Write, in comments over a program of the subset, the sequence of calls that would corrupt the store if `Box<Square*>` were a subtype of `Box<Shape*>`. Say which rule would have to change to allow it.
 
 {exercise "exr-variance-readonly"}[] Give a template whose parameter appears only in results, and argue in two sentences why the conversion would be harmless for it.
 

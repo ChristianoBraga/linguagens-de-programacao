@@ -66,21 +66,21 @@ f ↦ (τ f (p₁ x₁, …, pₖ xₖ) { c })
 tag := "swap"
 %%%
 
-The function `troca` exchanges the contents of two locations. Under call by value it would exchange two copies and leave the arguments untouched. Under call by reference the parameters are the arguments, and the exchange is visible in `main`.
+The function `swap` exchanges the contents of two locations. Under call by value it would exchange two copies and leave the arguments untouched. Under call by reference the parameters are the arguments, and the exchange is visible in `main`.
 
-```lean (name := troca)
+```lean (name := swap)
 def swap : String :=
-  "void troca(int& a, int& b) { int t = a; a = b; b = t; }
-   int main() { int x = 1; int y = 2; troca(x, y);
+  "void swap(int& a, int& b) { int t = a; a = b; b = t; }
+   int main() { int x = 1; int y = 2; swap(x, y);
      return x * 10 + y; }"
 
 #eval (parseProgram swap).map run
 ```
-```leanOutput troca
+```leanOutput swap
 Except.ok (Except.ok (CoreCpp.Val.int 21))
 ```
 
-The trace shows the mechanism. The arguments `x` and `y` are evaluated with ⇒ₗ to ℓ0 and ℓ1, and the environment of `troca` is \[a ↦ ℓ0, b ↦ ℓ1\], the same locations under new names. The local `t` receives a fresh location ℓ2. The two assignments write to ℓ0 and ℓ1, and after the call `main` reads the exchanged values through `x` and `y`. Only ℓ2 leaves the store on return, the local of the body, and the referents ℓ0 and ℓ1 stay.{fnref}[locals]
+The trace shows the mechanism. The arguments `x` and `y` are evaluated with ⇒ₗ to ℓ0 and ℓ1, and the environment of `swap` is \[a ↦ ℓ0, b ↦ ℓ1\], the same locations under new names. The local `t` receives a fresh location ℓ2. The two assignments write to ℓ0 and ℓ1, and after the call `main` reads the exchanged values through `x` and `y`. Only ℓ2 leaves the store on return, the local of the body, and the referents ℓ0 and ℓ1 stay.{fnref}[locals]
 
 ```lean (name := trocaTrace)
 #eval match parseProgram swap with
@@ -105,8 +105,8 @@ The trace shows the mechanism. The arguments `x` and `y` are evaluated with ⇒�
         [a ↦ ℓ0, b ↦ ℓ1, t ↦ ℓ2], {ℓ0 ↦ 2, ℓ1 ↦ 2, ℓ2 ↦ 1} ⊢ t ⇒ 1, {ℓ0 ↦ 2, ℓ1 ↦ 2, ℓ2 ↦ 1}   (Var)
         [a ↦ ℓ0, b ↦ ℓ1, t ↦ ℓ2], {ℓ0 ↦ 2, ℓ1 ↦ 2, ℓ2 ↦ 1} ⊢ b ⇒ₗ ℓ1, {ℓ0 ↦ 2, ℓ1 ↦ 2, ℓ2 ↦ 1}   (LocVar)
       [a ↦ ℓ0, b ↦ ℓ1, t ↦ ℓ2], {ℓ0 ↦ 2, ℓ1 ↦ 2, ℓ2 ↦ 1} ⊢ b = t; ⇒ normal, [a ↦ ℓ0, b ↦ ℓ1, t ↦ ℓ2], {ℓ0 ↦ 2, ℓ1 ↦ 1, ℓ2 ↦ 1}   (Assign)
-    [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 2} ⊢ troca(x, y) ⇒ void, {ℓ0 ↦ 2, ℓ1 ↦ 1}   (Call)
-  [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 2} ⊢ troca(x, y); ⇒ normal, [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 2, ℓ1 ↦ 1}   (ExprStmt)
+    [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 2} ⊢ swap(x, y) ⇒ void, {ℓ0 ↦ 2, ℓ1 ↦ 1}   (Call)
+  [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 2} ⊢ swap(x, y); ⇒ normal, [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 2, ℓ1 ↦ 1}   (ExprStmt)
           [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 2, ℓ1 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 2, ℓ1 ↦ 1}   (LocVar)
         [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 2, ℓ1 ↦ 1} ⊢ x ⇒ 2, {ℓ0 ↦ 2, ℓ1 ↦ 1}   (Var)
         [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 2, ℓ1 ↦ 1} ⊢ 10 ⇒ 10, {ℓ0 ↦ 2, ℓ1 ↦ 1}   (Lit)
@@ -237,11 +237,11 @@ The third line is the important one. A C++ function may return a reference to on
 tag := "exercises-14"
 %%%
 
-{exercise "exr-swap-value"}[] Rewrite `troca` with parameters by value, run it, and explain by the two versions of the rule `Call` why the result changes.
+{exercise "exr-swap-value"}[] Rewrite `swap` with parameters by value, run it, and explain by the two versions of the rule `Call` why the result changes.
 
 {exercise "exr-free-locals"}[] The rule `Call` frees the copies and the locals of the body. Say which information the rule uses to tell the locals from the referents of the reference parameters, and where the interpreter keeps it.
 
-{exercise "exr-alias-vector"}[] Write a function `void copia(int& de, int& para)` and call it with two elements of one vector, then with the same element twice. Predict both results by the rule `Call` and check with the interpreter.
+{exercise "exr-alias-vector"}[] Write a function `void copy(int& from, int& to)` and call it with two elements of one vector, then with the same element twice. Predict both results by the rule `Call` and check with the interpreter.
 
 {exercise "exr-ref-pointer"}[] A parameter `P*& q` is a reference to a pointer variable. Write a function that assigns `new P()` to such a parameter and show, with a trace, that the caller's pointer changes.
 

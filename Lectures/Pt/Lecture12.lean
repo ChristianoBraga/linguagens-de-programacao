@@ -35,18 +35,18 @@ Esta aula fecha a UD III com a interação entre expressões e memória. Uma exp
 tag := "efeitos"
 %%%
 
-Uma expressão da UD I não tem efeito. As suas regras levam a memória pelas premissas, ρ, σ ⊢ e ⇒ v, σ', mas toda regra devolve a memória que recebeu, e a ordem dos operandos não importa para o valor. A {secref}[aula-8] mostrou a primeira expressão com efeito, uma chamada a uma função que escreve por um ponteiro. A função `prox` abaixo incrementa um contador alcançado pelo seu parâmetro e devolve o valor novo.
+Uma expressão da UD I não tem efeito. As suas regras levam a memória pelas premissas, ρ, σ ⊢ e ⇒ v, σ', mas toda regra devolve a memória que recebeu, e a ordem dos operandos não importa para o valor. A {secref}[aula-8] mostrou a primeira expressão com efeito, uma chamada a uma função que escreve por um ponteiro. A função `next` abaixo incrementa um contador alcançado pelo seu parâmetro e devolve o valor novo.
 
 ```lean (name := proxDef)
 def counter : String :=
-  "class Cont { public: int n; };
-   int prox(Cont* c) {
+  "class Cell { public: int n; };
+   int next(Cell* c) {
      c->n = c->n + 1;
      return c->n;
    }
    int main() {
-     Cont* c = new Cont();
-     return prox(c) + 10 * prox(c);
+     Cell* c = new Cell();
+     return next(c) + 10 * next(c);
    }"
 
 #eval (parseProgram counter).map run
@@ -133,16 +133,16 @@ Sob `Binary-RL` o programa da {secref}[efeitos] devolve 12. As duas derivações
 
 Core C++ tem uma regra e um resultado, a propriedade que a {secref}[aula-3] chamou de determinismo. O preço é uma diferença em relação a C++ que a disciplina enuncia uma vez. Um programa de Core C++ com duas chamadas com efeito em uma expressão tem o valor que Core C++ lhe dá, e um compilador C++ pode lhe dar outro. O exemplo `call_order.cpp` do repositório devolve 21 sob o interpretador, e devolve 21 ou 12 sob `g++`, conforme a versão e as opções.
 
-A atribuição mostra a ordem fixada em ação. O lado direito é avaliado primeiro, então `prox(c)` devolve 1 ali, e o índice do lado esquerdo é avaliado depois e devolve 2.
+A atribuição mostra a ordem fixada em ação. O lado direito é avaliado primeiro, então `next(c)` devolve 1 ali, e o índice do lado esquerdo é avaliado depois e devolve 2.
 
 ```lean (name := assignOrder)
 def assignOrder : String :=
-  "class Cont { public: int n; };
-   int prox(Cont* c) { c->n = c->n + 1; return c->n; }
+  "class Cell { public: int n; };
+   int next(Cell* c) { c->n = c->n + 1; return c->n; }
    int main() {
-     Cont* c = new Cont();
+     Cell* c = new Cell();
      std::vector<int>* v = new std::vector<int>(3);
-     (*v)[prox(c)] = prox(c);
+     (*v)[next(c)] = next(c);
      return (*v)[1] * 10 + (*v)[2];
    }"
 
@@ -158,12 +158,12 @@ Os argumentos de uma chamada seguem a mesma disciplina. O primeiro argumento é 
 
 ```lean (name := callOrder)
 def callOrder : String :=
-  "class Cont { public: int n; };
-   int prox(Cont* c) { c->n = c->n + 1; return c->n; }
+  "class Cell { public: int n; };
+   int next(Cell* c) { c->n = c->n + 1; return c->n; }
    int f(int a, int b) { return a * 10 + b; }
    int main() {
-     Cont* c = new Cont();
-     return f(prox(c), prox(c));
+     Cell* c = new Cell();
+     return f(next(c), next(c));
    }"
 
 #eval (parseProgram callOrder).map run
@@ -204,7 +204,7 @@ tag := "exercicios-12"
 
 {exercise "exr-atribuicao-antiga"}[] Escreva a regra de atribuição de C++14, em que a ordem dos dois lados não é especificada, como duas regras, e dê um programa de Core C++ que produz duas memórias finais diferentes sob elas.
 
-{exercise "exr-argumentos"}[] Escreva a regra `Call-RL` que avalia os argumentos da direita para a esquerda e compute, sob ela, o resultado do programa da {secref}[alternativa] que chama `f(prox(c), prox(c))`.
+{exercise "exr-argumentos"}[] Escreva a regra `Call-RL` que avalia os argumentos da direita para a esquerda e compute, sob ela, o resultado do programa da {secref}[alternativa] que chama `f(next(c), next(c))`.
 
 {exercise "exr-fragmento-puro"}[] Identifique o maior subconjunto das expressões de Core C++ em que a ordem de avaliação é irrelevante, e prove, por indução nas regras, que nele ρ, σ ⊢ e ⇒ v, σ' implica σ' = σ.
 

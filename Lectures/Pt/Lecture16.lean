@@ -35,16 +35,16 @@ Esta aula fecha a UD IV com a pergunta de *quando* um argumento é avaliado. Cor
 tag := "strict"
 %%%
 
-A regra `Call` da {secref}[aula-13] avalia todo argumento antes de o corpo começar, nas premissas ρ, σᵢ₋₁ ⊢ eᵢ ⇒ vᵢ, σᵢ. Que o corpo use ou não o parâmetro não faz diferença. A função `primeiro` abaixo ignora o seu segundo parâmetro, e a chamada avalia `10 / 0` mesmo assim, então o programa termina em `erro`.
+A regra `Call` da {secref}[aula-13] avalia todo argumento antes de o corpo começar, nas premissas ρ, σᵢ₋₁ ⊢ eᵢ ⇒ vᵢ, σᵢ. Que o corpo use ou não o parâmetro não faz diferença. A função `first` abaixo ignora o seu segundo parâmetro, e a chamada avalia `10 / 0` mesmo assim, então o programa termina em `erro`.
 
-```lean (name := primeiro)
+```lean (name := first)
 def first : String :=
-  "int primeiro(int a, int b) { return a; }
-   int main() { return primeiro(1, 10 / 0); }"
+  "int first(int a, int b) { return a; }
+   int main() { return first(1, 10 / 0); }"
 
 #eval (parseProgram first).map run
 ```
-```leanOutput primeiro
+```leanOutput first
 Except.ok (Except.error (CoreCpp.Error.divisionByZero))
 ```
 
@@ -83,7 +83,7 @@ f ↦ (τ f (τ₁ name x₁) { c })
 ρ, σ ⊢ x ⇒ v, σ'
 ```
 
-Duas coisas rompem o modelo de Core C++. O ambiente deixa de levar identificadores só a posições, um parâmetro por nome é ligado a um par de expressão e ambiente, chamado *thunk*. E uma leitura de variável pode ter efeitos e erros, porque avalia uma expressão. Com essa disciplina `primeiro(1, 10 / 0)` devolve 1, já que `b` nunca é lido, e um parâmetro lido duas vezes avalia o seu argumento duas vezes, o que repete qualquer efeito que o argumento tenha.
+Duas coisas rompem o modelo de Core C++. O ambiente deixa de levar identificadores só a posições, um parâmetro por nome é ligado a um par de expressão e ambiente, chamado *thunk*. E uma leitura de variável pode ter efeitos e erros, porque avalia uma expressão. Com essa disciplina `first(1, 10 / 0)` devolve 1, já que `b` nunca é lido, e um parâmetro lido duas vezes avalia o seu argumento duas vezes, o que repete qualquer efeito que o argumento tenha.
 
 # Simulando um Argumento Adiado
 
@@ -91,13 +91,13 @@ Duas coisas rompem o modelo de Core C++. O ambiente deixa de levar identificador
 tag := "thunks"
 %%%
 
-Os lambdas da {secref}[aula-15] permitem a um programa de Core C++ adiar um argumento. Em vez de um valor, quem chama passa uma função sem parâmetros cujo corpo é a expressão do argumento, e a função chamada a chama quando, e tantas vezes quantas, precisa do valor. A função `primeiro` abaixo tem essa forma, e a chamada com `10 / z` devolve 1, porque o closure nunca é chamado.
+Os lambdas da {secref}[aula-15] permitem a um programa de Core C++ adiar um argumento. Em vez de um valor, quem chama passa uma função sem parâmetros cujo corpo é a expressão do argumento, e a função chamada a chama quando, e tantas vezes quantas, precisa do valor. A função `first` abaixo tem essa forma, e a chamada com `10 / z` devolve 1, porque o closure nunca é chamado.
 
 ```lean (name := primeiroPreguicoso)
 def firstLazy : String :=
-  "int primeiro(int a, std::function<int()> b) { return a; }
+  "int first(int a, std::function<int()> b) { return a; }
    int main() { int z = 0;
-   return primeiro(1, [=]() -> int { return 10 / z; }); }"
+   return first(1, [=]() -> int { return 10 / z; }); }"
 
 #eval (parseProgram firstLazy).map run
 ```
@@ -107,15 +107,15 @@ Except.ok (Except.ok (CoreCpp.Val.int 1))
 
 O closure faz o papel do thunk, e as suas cópias capturadas fazem o papel do ambiente ρ₀ da regra `Var-Name`. A diferença é que o programador escreve o adiamento, com `[=]() -> int { … }` na chamada e `b()` em cada uso, onde ALGOL 60 o fazia para todo parâmetro.
 
-A simulação também mostra a avaliação repetida da passagem por nome. A função `duasVezes` chama o seu argumento duas vezes, e o argumento incrementa um contador alcançado por um ponteiro capturado, então as duas chamadas veem 1 e 2 e a soma é 3. Uma disciplina que avaliasse o argumento uma vez e lembrasse o valor, a *passagem por necessidade*, daria 2.
+A simulação também mostra a avaliação repetida da passagem por nome. A função `applyTwice` chama o seu argumento duas vezes, e o argumento incrementa um contador alcançado por um ponteiro capturado, então as duas chamadas veem 1 e 2 e a soma é 3. Uma disciplina que avaliasse o argumento uma vez e lembrasse o valor, a *passagem por necessidade*, daria 2.
 
 ```lean (name := duasVezesEfeito)
 def twiceEffect : String :=
-  "class Caixa { public: int valor; };
-   int duasVezes(std::function<int()> t) { return t() + t(); }
-   int main() { Caixa* c = new Caixa(); c->valor = 0;
-     return duasVezes([=]() -> int {
-       c->valor = c->valor + 1; return c->valor; }); }"
+  "class Box { public: int value; };
+   int applyTwice(std::function<int()> t) { return t() + t(); }
+   int main() { Box* c = new Box(); c->value = 0;
+     return applyTwice([=]() -> int {
+       c->value = c->value + 1; return c->value; }); }"
 
 #eval (parseProgram twiceEffect).map run
 ```
@@ -129,7 +129,7 @@ Except.ok (Except.ok (CoreCpp.Val.int 3))
 tag := "lazy"
 %%%
 
-Haskell avalia todo argumento por necessidade. Um argumento é avaliado na primeira vez em que o seu valor é exigido e nunca mais, e um argumento cujo valor nunca é exigido nunca é avaliado.{margin}[S. Peyton Jones, *The Implementation of Functional Programming Languages*, Prentice Hall, 1987, capítulo 11.] A função `primeiro` em Haskell devolve o seu primeiro argumento, e a chamada com uma divisão por zero devolve 1.
+Haskell avalia todo argumento por necessidade. Um argumento é avaliado na primeira vez em que o seu valor é exigido e nunca mais, e um argumento cujo valor nunca é exigido nunca é avaliado.{margin}[S. Peyton Jones, *The Implementation of Functional Programming Languages*, Prentice Hall, 1987, capítulo 11.] A função `first` em Haskell devolve o seu primeiro argumento, e a chamada com uma divisão por zero devolve 1.
 
 ```
 primeiro :: Int -> Int -> Int
@@ -146,7 +146,7 @@ O mesmo programa em Core C++ termina em `erro`, como a {secref}[strict] mostrou.
 ρ, σ ⊢ x ⇒ v, σ'    e a ligação passa a x ↦ v
 ```
 
-A passagem por necessidade só é equivalente à passagem por nome quando o argumento não tem efeitos, o que é o caso em Haskell, em que expressões não alteram memória alguma. Em uma linguagem com atribuição as duas disciplinas diferem, como `duasVezes` mostrou, e essa é uma razão para as linguagens imperativas manterem a disciplina estrita para argumentos. A {numref}[tbl-disciplines] resume.
+A passagem por necessidade só é equivalente à passagem por nome quando o argumento não tem efeitos, o que é o caso em Haskell, em que expressões não alteram memória alguma. Em uma linguagem com atribuição as duas disciplinas diferem, como `applyTwice` mostrou, e essa é uma razão para as linguagens imperativas manterem a disciplina estrita para argumentos. A {numref}[tbl-disciplines] resume.
 
 :::table +header
 *
@@ -237,7 +237,7 @@ tag := "exercises-16"
 
 {exercise "exr-strict-effects"}[] Escreva uma chamada cujo argumento tem um efeito e cujo parâmetro nunca é lido, execute, e explique pela regra `Call` por que o efeito acontece mesmo assim.
 
-{exercise "exr-name-twice"}[] Na passagem por nome, o corpo `return x + x;` com o argumento `prox(c)` da {secref}[aula-12] avalia a chamada duas vezes. Dê o resultado para um contador que começa em 0 nas passagens por nome, por necessidade e por valor.
+{exercise "exr-name-twice"}[] Na passagem por nome, o corpo `return x + x;` com o argumento `next(c)` da {secref}[aula-12] avalia a chamada duas vezes. Dê o resultado para um contador que começa em 0 nas passagens por nome, por necessidade e por valor.
 
 {exercise "exr-simulate-if"}[] Escreva uma função `seNao` que recebe um `bool` e dois valores de tipo `std::function<int()>` e devolve o valor de um deles, e explique por que os dois argumentos precisam ser closures para a função se comportar como `?:`.
 

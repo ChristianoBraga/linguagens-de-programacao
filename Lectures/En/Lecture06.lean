@@ -34,10 +34,10 @@ This lecture adds the first composite type to Core C++, the class with fields. I
 tag := "classes-fields"
 %%%
 
-A *class* declares a composite type by listing its *fields*, each with a type and a name. In this unit a class has public fields only, and methods, constructors and access control come in Unit V. The declaration below defines the type `Ponto` with two integer fields.
+A *class* declares a composite type by listing its *fields*, each with a type and a name. In this unit a class has public fields only, and methods, constructors and access control come in Unit V. The declaration below defines the type `Point` with two integer fields.
 
 ```
-class Ponto {
+class Point {
 public:
   int x;
   int y;
@@ -132,13 +132,13 @@ Assignment to a field needs no new rule. The rule `Assign` of {secref}[lecture-3
 
 ```lean (name := ponto)
 def ponto : String :=
-  "class Ponto {
+  "class Point {
   public:
     int x;
     int y;
   };
   int main() {
-    Ponto* p = new Ponto();
+    Point* p = new Point();
     p->x = 3;
     p->y = p->x + 1;
     return p->x * 10 + p->y;
@@ -200,10 +200,10 @@ Two pointers to the same object share its fields, because assignment copies the 
 
 ```lean (name := alias)
 def alias : String :=
-  "class Ponto { public: int x; int y; };
+  "class Point { public: int x; int y; };
   int main() {
-    Ponto* a = new Ponto();
-    Ponto* b = a;
+    Point* a = new Point();
+    Point* b = a;
     b->x = 7;
     return a->x + (a == b ? 10 : 0);
   }"
@@ -222,15 +222,15 @@ In C++ the same program has the same result, and the decision that objects are n
 tag := "exercises-6"
 %%%
 
-{exercise "exr-store-after-new"}[] Write the store after `Ponto* p = new Ponto(); Ponto* q = new Ponto(); q->x = p->x + 5;`, with the locations numbered as the interpreter numbers them, and check with the trace.
+{exercise "exr-store-after-new"}[] Write the store after `Point* p = new Point(); Point* q = new Point(); q->x = p->x + 5;`, with the locations numbered as the interpreter numbers them, and check with the trace.
 
-{exercise "exr-field-rules"}[] Build the derivation of `p->y = p->x + 1` in the environment and store left by `Ponto* p = new Ponto(); p->x = 3;`, naming the rules `Assign`, `LocArrow`, `Read` and `Arith` where they apply.
+{exercise "exr-field-rules"}[] Build the derivation of `p->y = p->x + 1` in the environment and store left by `Point* p = new Point(); p->x = 3;`, naming the rules `Assign`, `LocArrow`, `Read` and `Arith` where they apply.
 
-{exercise "exr-object-by-value"}[] Explain, by the rules `T-Decl` and `New`, why `Ponto q = *p;` is rejected, and say what C++ does with that declaration.
+{exercise "exr-object-by-value"}[] Explain, by the rules `T-Decl` and `New`, why `Point q = *p;` is rejected, and say what C++ does with that declaration.
 
 {exercise "exr-sharing"}[] Give a program with three pointers in which writing through one changes the value read through exactly one of the other two, and draw the store that explains it.
 
-{exercise "exr-field-class"}[] The declaration `class Par { public: Ponto a; Ponto b; };` is rejected. Rewrite it in Core C++, write the `main` that creates a pair of points, and count the locations the store holds after it.
+{exercise "exr-field-class"}[] The declaration `class Pair { public: Point a; Point b; };` is rejected. Rewrite it in Core C++, write the `main` that creates a pair of points, and count the locations the store holds after it.
 
 ```lean -show
 end Lecture6

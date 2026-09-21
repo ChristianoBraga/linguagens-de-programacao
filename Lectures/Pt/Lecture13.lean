@@ -87,16 +87,16 @@ f ↦ (τ f (τ₁ x₁, …, τₖ xₖ) { c })    Γ ⊢ eᵢ : τᵢ' com τ�
 Γ ⊢ f(e₁, …, eₖ) : τ
 ```
 
-O programa abaixo chama `quadrado` com um argumento que é ele próprio uma expressão. O argumento é avaliado para 7 antes de o corpo executar, e o parâmetro `n` é uma posição nova que guarda 7.
+O programa abaixo chama `square` com um argumento que é ele próprio uma expressão. O argumento é avaliado para 7 antes de o corpo executar, e o parâmetro `n` é uma posição nova que guarda 7.
 
-```lean (name := quadrado)
+```lean (name := square)
 def square : String :=
-  "int quadrado(int n) { return n * n; }
-   int main() { int a = 6; return quadrado(a + 1); }"
+  "int square(int n) { return n * n; }
+   int main() { int a = 6; return square(a + 1); }"
 
 #eval (parseProgram square).map run
 ```
-```leanOutput quadrado
+```leanOutput square
 Except.ok (Except.ok (CoreCpp.Val.int 49))
 ```
 
@@ -106,18 +106,18 @@ Except.ok (Except.ok (CoreCpp.Val.int 49))
 tag := "copy"
 %%%
 
-A função `dobro` abaixo atribui ao seu parâmetro. Na passagem por valor a atribuição escreve na cópia, e a variável `x` de `main` mantém o seu valor. O resultado soma o 42 devolvido ao 21 inalterado.
+A função `twice` abaixo atribui ao seu parâmetro. Na passagem por valor a atribuição escreve na cópia, e a variável `x` de `main` mantém o seu valor. O resultado soma o 42 devolvido ao 21 inalterado.
 
-```lean (name := dobro)
+```lean (name := twice)
 def double : String :=
-  "int dobro(int n) { n = n * 2; return n; }
-   int main() { int x = 21; return dobro(x) + x; }"
+  "int twice(int n) { n = n * 2; return n; }
+   int main() { int x = 21; return twice(x) + x; }"
 
 #eval match parseProgram double with
   | .ok p => IO.println (renderTrace (runWith true p).2)
   | .error e => IO.println e
 ```
-```leanOutput dobro
+```leanOutput twice
     [], {} ⊢ 21 ⇒ 21, {}   (Lit)
   [], {} ⊢ int x = 21; ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 21}   (Decl)
           [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 21}   (LocVar)
@@ -131,11 +131,11 @@ def double : String :=
             [n ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ 42} ⊢ n ⇒ₗ ℓ1, {ℓ0 ↦ 21, ℓ1 ↦ 42}   (LocVar)
           [n ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ 42} ⊢ n ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ 42}   (Var)
         [n ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ 42} ⊢ return n; ⇒ ret 42, [n ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ 42}   (Return)
-      [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ dobro(x) ⇒ 42, {ℓ0 ↦ 21}   (Call)
+      [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ twice(x) ⇒ 42, {ℓ0 ↦ 21}   (Call)
         [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 21}   (LocVar)
       [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ x ⇒ 21, {ℓ0 ↦ 21}   (Var)
-    [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ dobro(x) + x ⇒ 63, {ℓ0 ↦ 21}   (Binary)
-  [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ return dobro(x) + x; ⇒ ret 63, [x ↦ ℓ0], {ℓ0 ↦ 21}   (Return)
+    [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ twice(x) + x ⇒ 63, {ℓ0 ↦ 21}   (Binary)
+  [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ return twice(x) + x; ⇒ ret 63, [x ↦ ℓ0], {ℓ0 ↦ 21}   (Return)
 [], {} ⊢ main() ⇒ 63, {}   (Call)
 ```
 
@@ -166,14 +166,14 @@ O verificador de tipos não detecta esse caso, porque precisaria saber quais cam
 
 Um procedimento é chamado como statement, e o seu valor void é descartado pela regra `ExprStmt`.
 
-```lean (name := nada)
+```lean (name := noop)
 def procedure : String :=
-  "void nada() { int x = 1; }
-   int main() { nada(); return 3; }"
+  "void noop() { int x = 1; }
+   int main() { noop(); return 3; }"
 
 #eval (parseProgram procedure).map run
 ```
-```leanOutput nada
+```leanOutput noop
 Except.ok (Except.ok (CoreCpp.Val.int 3))
 ```
 
@@ -209,9 +209,9 @@ Dentro do corpo, os parâmetros são as únicas variáveis do contexto inicial, 
 tag := "exercises-13"
 %%%
 
-{exercise "exr-trace-two-params"}[] Desenhe a derivação de `int soma(int a, int b) { return a + b; } int main() { return soma(2, 3); }` até o corpo de `soma`, mostrando as duas posições novas e o ambiente da chamada, e compare com a árvore do interpretador.
+{exercise "exr-trace-two-params"}[] Desenhe a derivação de `int sum(int a, int b) { return a + b; } int main() { return sum(2, 3); }` até o corpo de `sum`, mostrando as duas posições novas e o ambiente da chamada, e compare com a árvore do interpretador.
 
-{exercise "exr-copy-pointer"}[] Um parâmetro de tipo ponteiro também é uma cópia. Escreva uma função `void zera(P* p)` que põe `p->a` em 0 e uma função que atribui `nullptr` ao seu parâmetro ponteiro, e explique, pela regra `Call`, por que a primeira tem efeito visível em `main` e a segunda não.
+{exercise "exr-copy-pointer"}[] Um parâmetro de tipo ponteiro também é uma cópia. Escreva uma função `void zero(P* p)` que põe `p->a` em 0 e uma função que atribui `nullptr` ao seu parâmetro ponteiro, e explique, pela regra `Call`, por que a primeira tem efeito visível em `main` e a segunda não.
 
 {exercise "exr-missing-return"}[] Escreva uma função com dois comandos `if` cujos caminhos terminam todos em um `return` e uma em que um caminho não termina, execute as duas com o interpretador, e explique por que o verificador de tipos aceita ambas.
 

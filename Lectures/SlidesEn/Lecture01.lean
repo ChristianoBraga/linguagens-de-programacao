@@ -143,7 +143,7 @@ open CoreCpp
 {lbl}[Imperative, C++]
 
 ```
-int fatorial(int n) {
+int factorial(int n) {
   int acc = 1;
   for (int i = 2; i <= n; i = i + 1) {
     acc = acc * i;
@@ -182,7 +182,7 @@ fatorial(N, F) :-
 {lbl}[Imperative without declared types, Python]
 
 ```
-def fatorial(n):
+def factorial(n):
     acc = 1
     for i in range(2, n + 1):
         acc = acc * i
@@ -209,12 +209,12 @@ def fatorial(n):
 
 ```lean (name := factorialCore)
 def factorial : String :=
-  "int fatorial(int n) {
+  "int factorial(int n) {
     int acc = 1;
     for (int i = 2; i <= n; i = i + 1) { acc = acc * i; }
     return acc;
   }
-  int main() { return fatorial(5); }"
+  int main() { return factorial(5); }"
 
 #eval (parseProgram factorial).map run
 ```

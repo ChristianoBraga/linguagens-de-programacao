@@ -63,7 +63,7 @@ A lambda has no type of its own in Core C++. In C++ every lambda has an anonymou
   * the declared type
 *
   * argument of a call
-  * `aplica([=](int x) -> int { … }, 3)`
+  * `apply([=](int x) -> int { … }, 3)`
   * the parameter type
 *
   * expression of `return`
@@ -111,13 +111,13 @@ The value of a lambda is a closure. It holds the parameters, the result type, th
 
 The store does not change, the lambda only reads it. The closure holds *values*, not locations. That is the meaning of capture by copy, and it has two consequences the programs below make visible. A later write to a captured variable is not seen by the closure. A captured pointer still reaches its object in σ, because the copy of a pointer is the same location.
 
-The program below declares `soma` with `n` equal to 5, then assigns 100 to `n`, and calls `soma`. The closure kept the copy 5.
+The program below declares `sum` with `n` equal to 5, then assigns 100 to `n`, and calls `sum`. The closure kept the copy 5.
 
 ```lean (name := captureCopy)
 def captureCopy : String :=
   "int main() { int n = 5;
-   std::function<int(int)> soma = [=](int x) -> int { return x + n; };
-   n = 100; return soma(1); }"
+   std::function<int(int)> sum = [=](int x) -> int { return x + n; };
+   n = 100; return sum(1); }"
 
 #eval (parseProgram captureCopy).map run
 ```
@@ -201,34 +201,34 @@ def lambdaTrace : String :=
 tag := "higher-order"
 %%%
 
-A function that receives or returns a function value is a *higher order function*. The function `multiplicador` below returns a lambda that captured its parameter `k`, and `aplica` receives a function value and calls it. The composition computes 3 times 14.
+A function that receives or returns a function value is a *higher order function*. The function `multiplier` below returns a lambda that captured its parameter `k`, and `apply` receives a function value and calls it. The composition computes 3 times 14.
 
-```lean (name := multiplicador)
+```lean (name := multiplier)
 def multiplier : String :=
-  "std::function<int(int)> multiplicador(int k) {
+  "std::function<int(int)> multiplier(int k) {
      return [=](int x) -> int { return k * x; };
    }
-   int aplica(std::function<int(int)> f, int v) { return f(v); }
-   int main() { return aplica(multiplicador(3), 14); }"
+   int apply(std::function<int(int)> f, int v) { return f(v); }
+   int main() { return apply(multiplier(3), 14); }"
 
 #eval (parseProgram multiplier).map run
 ```
-```leanOutput multiplicador
+```leanOutput multiplier
 Except.ok (Except.ok (CoreCpp.Val.int 42))
 ```
 
-The closure returned by `multiplicador` outlives the call that created it. Its copy of `k` is a value inside the closure, so nothing points to a location that has left the store. This is why capture by copy is safe in a language whose locals die with their block.
+The closure returned by `multiplier` outlives the call that created it. Its copy of `k` is a value inside the closure, so nothing points to a location that has left the store. This is why capture by copy is safe in a language whose locals die with their block.
 
 A lambda may be an argument directly, checked against the parameter type of the callee.
 
-```lean (name := duasVezes)
+```lean (name := applyTwice)
 def twice : String :=
-  "int duasVezes(std::function<int(int)> f, int x) { return f(f(x)); }
-   int main() { return duasVezes([=](int x) -> int { return x * x; }, 3); }"
+  "int applyTwice(std::function<int(int)> f, int x) { return f(f(x)); }
+   int main() { return applyTwice([=](int x) -> int { return x * x; }, 3); }"
 
 #eval (parseProgram twice).map run
 ```
-```leanOutput duasVezes
+```leanOutput applyTwice
 Except.ok (Except.ok (CoreCpp.Val.int 81))
 ```
 
@@ -238,26 +238,26 @@ Except.ok (Except.ok (CoreCpp.Val.int 81))
 tag := "captured-pointer"
 %%%
 
-A captured `int` is a copy that the closure can only read. A captured pointer is a copy of a location, and through it the closure reads and writes an object that lives in σ, outside the closure. The function `contador` below creates an object, captures the pointer to it and returns a closure that increments the field. Each call to the closure changes the same object, and the object survives the block of `contador` because objects created with `new` live until the end of the program.
+A captured `int` is a copy that the closure can only read. A captured pointer is a copy of a location, and through it the closure reads and writes an object that lives in σ, outside the closure. The function `counter` below creates an object, captures the pointer to it and returns a closure that increments the field. Each call to the closure changes the same object, and the object survives the block of `counter` because objects created with `new` live until the end of the program.
 
-```lean (name := contador)
+```lean (name := counter)
 def counter : String :=
-  "class Caixa { public: int valor; };
-   std::function<int()> contador() {
-     Caixa* c = new Caixa();
-     c->valor = 0;
-     return [=]() -> int { c->valor = c->valor + 1; return c->valor; };
+  "class Box { public: int value; };
+   std::function<int()> counter() {
+     Box* c = new Box();
+     c->value = 0;
+     return [=]() -> int { c->value = c->value + 1; return c->value; };
    }
-   int main() { std::function<int()> k = contador();
-     int primeiro = k(); return k() + k() + primeiro; }"
+   int main() { std::function<int()> k = counter();
+     int first = k(); return k() + k() + first; }"
 
 #eval (parseProgram counter).map run
 ```
-```leanOutput contador
+```leanOutput counter
 Except.ok (Except.ok (CoreCpp.Val.int 6))
 ```
 
-The three calls return 1, 2 and 3, and the sum is 6. The write `c->valor = …` is accepted by the type checker, because it writes to the field of the object, a location reached through the copy of `c`, and not to `c` itself. This is the idiom by which a closure keeps state in Core C++, an object it owns through a captured pointer.
+The three calls return 1, 2 and 3, and the sum is 6. The write `c->value = …` is accepted by the type checker, because it writes to the field of the object, a location reached through the copy of `c`, and not to `c` itself. This is the idiom by which a closure keeps state in Core C++, an object it owns through a captured pointer.
 
 # Why Only Capture by Copy
 
@@ -267,7 +267,7 @@ tag := "why-copy"
 
 C++ offers `[&]`, capture by reference. The closure then holds the locations of the captured variables, and a write inside the body changes the variable outside. The trouble appears when the closure outlives the block of the variable. The location has left the store, the closure still holds it, and the next call reads or writes a dead location, undefined behaviour in C++. Core C++ excludes `[&]` for that reason. Every closure holds values, a captured basic value is a copy, and a captured pointer reaches an object that lives as long as the program. No closure of Core C++ can hold a dangling location, and the rule `Lambda` shows why, it reads σ and stores what it read.
 
-The programs that `[&]` would write are written with a pointer to an object, as `contador` does. The object plays the role of the shared variable, and its lifetime is the one that makes sharing safe. {numref}[tbl-captures] contrasts the two.
+The programs that `[&]` would write are written with a pointer to an object, as `counter` does. The object plays the role of the shared variable, and its lifetime is the one that makes sharing safe. {numref}[tbl-captures] contrasts the two.
 
 :::table +header
 *
@@ -306,7 +306,7 @@ tag := "exercises-15"
 
 {exercise "exr-adder-array"}[] Write a function that receives a vector pointer and a `std::function<int(int)>` and applies the function to every element in place. Say which rules of Units II and IV the body uses.
 
-{exercise "exr-two-counters"}[] Call `contador` twice and store the two closures in `k1` and `k2`. Predict the result of `k1() + k1() + k2()` and explain why the two closures do not share state.
+{exercise "exr-two-counters"}[] Call `counter` twice and store the two closures in `k1` and `k2`. Predict the result of `k1() + k1() + k2()` and explain why the two closures do not share state.
 
 {exercise "exr-capture-set"}[] The rule `Lambda` captures the free variables of the body that ρ binds. Write a lambda whose body declares a local with the same name as a variable outside, and explain what is captured and whether the program can observe it.
 

@@ -40,14 +40,14 @@ open CoreCpp
 
 ```lean (name := ordem)
 def ordem : String :=
-  "class Cont { public: int n; };
-  int prox(Cont* c) {
+  "class Cell { public: int n; };
+  int next(Cell* c) {
     c->n = c->n + 1;
     return c->n;
   }
   int main() {
-    Cont* c = new Cont();
-    return prox(c) + 10 * prox(c);
+    Cell* c = new Cell();
+    return next(c) + 10 * next(c);
   }"
 
 #eval (parseProgram ordem).map run
@@ -158,7 +158,7 @@ Except.ok (Except.ok (CoreCpp.Val.int 42))
 
 * Os ramos têm *um tipo*, `T-Cond`, porque a expressão tem um tipo decida a execução o que decidir.
 
-* É o que faz de `soma` sobre uma lista uma única expressão.
+* É o que faz de `sum` sobre uma lista uma única expressão.
 
 # §8.5 Detalhes da aritmética
 

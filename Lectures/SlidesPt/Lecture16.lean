@@ -28,14 +28,14 @@ open CoreCpp
 
 # §16.1 Avaliação estrita
 
-```lean (name := primeiro)
+```lean (name := first)
 def first : String :=
-  "int primeiro(int a, int b) { return a; }
-   int main() { return primeiro(1, 10 / 0); }"
+  "int first(int a, int b) { return a; }
+   int main() { return first(1, 10 / 0); }"
 
 #eval (parseProgram first).map run
 ```
-```leanOutput primeiro
+```leanOutput first
 Except.ok (Except.error (CoreCpp.Error.divisionByZero))
 ```
 
@@ -65,9 +65,9 @@ f ↦ (τ f (τ₁ name x₁) { c })
 
 ```lean (name := primeiroPreguicoso)
 def firstLazy : String :=
-  "int primeiro(int a, std::function<int()> b) { return a; }
+  "int first(int a, std::function<int()> b) { return a; }
    int main() { int z = 0;
-   return primeiro(1, [=]() -> int { return 10 / z; }); }"
+   return first(1, [=]() -> int { return 10 / z; }); }"
 
 #eval (parseProgram firstLazy).map run
 ```
@@ -81,11 +81,11 @@ Except.ok (Except.ok (CoreCpp.Val.int 1))
 
 ```lean (name := duasVezesEfeito)
 def twiceEffect : String :=
-  "class Caixa { public: int valor; };
-   int duasVezes(std::function<int()> t) { return t() + t(); }
-   int main() { Caixa* c = new Caixa(); c->valor = 0;
-     return duasVezes([=]() -> int {
-       c->valor = c->valor + 1; return c->valor; }); }"
+  "class Box { public: int value; };
+   int applyTwice(std::function<int()> t) { return t() + t(); }
+   int main() { Box* c = new Box(); c->value = 0;
+     return applyTwice([=]() -> int {
+       c->value = c->value + 1; return c->value; }); }"
 
 #eval (parseProgram twiceEffect).map run
 ```

@@ -18,6 +18,10 @@ https://christianobraga.github.io/linguagens-de-programacao/.
   cada seção de nível superior é um slide. O código Lean é idêntico nas duas
   línguas, só a prosa muda. A página de entrada `site/index.html` é em inglês
   e aponta para as duas árvores. O inglês é escrito primeiro.
+- Os programas Core C++ das aulas usam os mesmos identificadores em inglês nas
+  duas árvores, como o repositório `corecpp`. Uma classe é `Stack`, `Node` ou
+  `Shape`, um campo é `value` ou `next`, um método é `push` ou `pop`. Só a
+  prosa em volta muda de língua.
 - Cada aula abre com `namespace LectureN` e `open CoreCpp` em um bloco
   `lean -show`, e fecha o namespace no fim. Os decks usam `SlidesN`. As saídas
   de `#eval` vão em blocos `leanOutput` e o Verso as confere na construção.

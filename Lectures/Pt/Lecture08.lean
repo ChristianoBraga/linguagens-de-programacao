@@ -45,18 +45,18 @@ A separação é uma decisão do projeto da linguagem, e C++ toma a outra, em qu
 tag := "ordem"
 %%%
 
-Quando uma expressão não tem efeito na memória, a ordem em que os seus operandos são avaliados não muda o seu valor, e as regras da {secref}[aula-3] poderiam avaliá‑los em qualquer ordem. Quando uma chamada dentro de uma expressão escreve por um ponteiro, a ordem importa. O programa abaixo chama `prox` duas vezes sobre o mesmo contador, e o valor da soma depende de qual chamada roda primeiro.
+Quando uma expressão não tem efeito na memória, a ordem em que os seus operandos são avaliados não muda o seu valor, e as regras da {secref}[aula-3] poderiam avaliá‑los em qualquer ordem. Quando uma chamada dentro de uma expressão escreve por um ponteiro, a ordem importa. O programa abaixo chama `next` duas vezes sobre o mesmo contador, e o valor da soma depende de qual chamada roda primeiro.
 
 ```lean (name := ordem)
 def ordem : String :=
-  "class Cont { public: int n; };
-  int prox(Cont* c) {
+  "class Cell { public: int n; };
+  int next(Cell* c) {
     c->n = c->n + 1;
     return c->n;
   }
   int main() {
-    Cont* c = new Cont();
-    return prox(c) + 10 * prox(c);
+    Cell* c = new Cell();
+    return next(c) + 10 * next(c);
   }"
 
 #eval (parseProgram ordem).map run
@@ -173,7 +173,7 @@ O condicional `e₁ ? e₂ : e₃` é a contraparte em expressão do comando `if
 Except.ok (Except.ok (CoreCpp.Val.int 42))
 ```
 
-O condicional é o que torna possível a recursão sobre um tipo recursivo em uma única expressão, como `soma` na {secref}[aula-7] mostra. Sem ele, o caso base precisaria de um comando `if` e de dois comandos `return`.
+O condicional é o que torna possível a recursão sobre um tipo recursivo em uma única expressão, como `sum` na {secref}[aula-7] mostra. Sem ele, o caso base precisaria de um comando `if` e de dois comandos `return`.
 
 # Detalhes da Aritmética
 
@@ -243,13 +243,13 @@ Cada regra está no comentário do caso que a implementa, e o [blueprint](https:
 tag := "exercicios-8"
 %%%
 
-{exercise "exr-ordem-resultado"}[] Preveja o valor de `prox(c) * 10 + prox(c) - prox(c)` depois de `Cont* c = new Cont();`, com `prox` como na {secref}[ordem], e depois os dois outros valores que um compilador C++ pode computar para ele.
+{exercise "exr-ordem-resultado"}[] Preveja o valor de `next(c) * 10 + next(c) - next(c)` depois de `Cell* c = new Cell();`, com `next` como na {secref}[ordem], e depois os dois outros valores que um compilador C++ pode computar para ele.
 
 {exercise "exr-regras-curto-circuito"}[] Escreva as duas regras de `||` na notação da disciplina, e construa a derivação de `z == 0 || 10 / z > 1` em uma memória em que `z` vale 0.
 
 {exercise "exr-atribuicao-expressao"}[] Suponha que a atribuição fosse uma expressão cujo valor é o valor atribuído, como em C++. Escreva as suas regras de tipos e de avaliação, e diga quais programas passariam a tipar que Core C++ rejeita hoje.
 
-{exercise "exr-cond-versus-if"}[] Reescreva `soma` da {secref}[aula-7] com um comando `if` e dois comandos `return`, e compare as duas árvores de derivação para uma lista de um nó.
+{exercise "exr-cond-versus-if"}[] Reescreva `sum` da {secref}[aula-7] com um comando `if` e dois comandos `return`, e compare as duas árvores de derivação para uma lista de um nó.
 
 {exercise "exr-truncamento"}[] Calcule `a / b` e `a % b` para as quatro combinações de sinal de `a = 7` e `b = 2`, pelas regras de Core C++, e confira a identidade `(a / b) * b + a % b = a` em cada caso.
 

@@ -59,7 +59,7 @@ Watt divide os tipos em *primitivos*, cujos valores são atômicos, e *compostos
   * {secref}[aula-6]
 *
   * recursivo
-  * `class No` com um campo `No*`
+  * `class Node` com um campo `Node*`
   * cadeias finitas de registros
   * {secref}[aula-7]
 *

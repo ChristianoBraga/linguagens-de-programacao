@@ -40,14 +40,14 @@ open CoreCpp
 
 ```lean (name := ordem)
 def ordem : String :=
-  "class Cont { public: int n; };
-  int prox(Cont* c) {
+  "class Cell { public: int n; };
+  int next(Cell* c) {
     c->n = c->n + 1;
     return c->n;
   }
   int main() {
-    Cont* c = new Cont();
-    return prox(c) + 10 * prox(c);
+    Cell* c = new Cell();
+    return next(c) + 10 * next(c);
   }"
 
 #eval (parseProgram ordem).map run
@@ -158,7 +158,7 @@ Except.ok (Except.ok (CoreCpp.Val.int 42))
 
 * The branches have *one type*, `T-Cond`, because the expression has one type whatever the run time decides.
 
-* It is what makes `soma` over a list a single expression.
+* It is what makes `sum` over a list a single expression.
 
 # §8.5 Arithmetic details
 

@@ -51,11 +51,11 @@ Os tokens de Core C++ caem em cinco classes, e a {numref}[tbl-tokens] as descrev
 *
   * identificador de tipo
   * inicial maiúscula
-  * `Pilha`, `Forma`, `T`
+  * `Stack`, `Shape`, `T`
 *
   * identificador de variável
   * inicial minúscula
-  * `x`, `acc`, `fatorial`
+  * `x`, `acc`, `factorial`
 *
   * literal inteiro
   * dígitos decimais
@@ -68,7 +68,7 @@ Os tokens de Core C++ caem em cinco classes, e a {numref}[tbl-tokens] as descrev
 
 {tabcap "tbl-tokens"}[As cinco classes de tokens de Core C++.]
 
-A distinção entre identificador de tipo e identificador de variável pela inicial é uma *convenção léxica* de Core C++ que C++ não tem. Ela existe para que o analisador léxico decida, sem contexto, se `<` abre uma lista de argumentos de template ou compara dois valores. Em `Pilha<int>` o `<` segue um identificador de tipo, e em `x < y` segue um identificador de variável. C++ resolve essa ambiguidade com uma tabela de símbolos consultada durante a análise sintática, e Core C++ a resolve no léxico.{fnref}[stdfunction]
+A distinção entre identificador de tipo e identificador de variável pela inicial é uma *convenção léxica* de Core C++ que C++ não tem. Ela existe para que o analisador léxico decida, sem contexto, se `<` abre uma lista de argumentos de template ou compara dois valores. Em `Stack<int>` o `<` segue um identificador de tipo, e em `x < y` segue um identificador de variável. C++ resolve essa ambiguidade com uma tabela de símbolos consultada durante a análise sintática, e Core C++ a resolve no léxico.{fnref}[stdfunction]
 
 O analisador léxico de Core C++ é uma função de `String` em `Array Token`, escrita em Lean como um autômato finito sobre a lista de caracteres. Ele aplica a regra do *maior prefixo*, isto é, em cada posição lê o token mais longo que as regras admitem. Assim `<=` é um token, e não `<` seguido de `=`, e `y2` é um identificador, e não `y` seguido de `2`.
 
@@ -101,7 +101,7 @@ Except.error "unexpected character '@'"
 
 :::footnotes
 
-{fnAnchor "stdfunction"}[] Os nomes `std::function` e `std::vector` começam com minúscula, então a convenção os classificaria como identificadores de variável. O analisador léxico os reconhece antes da regra de identificador e os trata como palavras reservadas, um token cada. Pelo mesmo motivo Core C++ não tem o token `>>`, e `Pilha<Pilha<int>>` fecha com dois tokens `>`, o que C++ só passou a aceitar em C++11.
+{fnAnchor "stdfunction"}[] Os nomes `std::function` e `std::vector` começam com minúscula, então a convenção os classificaria como identificadores de variável. O analisador léxico os reconhece antes da regra de identificador e os trata como palavras reservadas, um token cada. Pelo mesmo motivo Core C++ não tem o token `>>`, e `Stack<Stack<int>>` fecha com dois tokens `>`, o que C++ só passou a aceitar em C++11.
 
 :::
 
@@ -250,7 +250,7 @@ A gramática completa de Core C++, com classes, templates e lambdas, está no [b
 tag := "exercicios-2"
 %%%
 
-{exercise "exr-lexico"}[] Liste os tokens de `Pilha<int>* p = new Pilha<int>(8);` com a classe de cada um. Diga em que posição a convenção da inicial maiúscula decide a leitura de `<`.
+{exercise "exr-lexico"}[] Liste os tokens de `Stack<int>* p = new Stack<int>(8);` com a classe de cada um. Diga em que posição a convenção da inicial maiúscula decide a leitura de `<`.
 
 {exercise "exr-derivacao"}[] Desenhe a árvore de derivação de `x < 10 && !fim` pela gramática da {secref}[gramaticas], e depois a sua árvore de sintaxe abstrata. Indique o que a segunda omite.
 

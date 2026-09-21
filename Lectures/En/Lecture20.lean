@@ -38,20 +38,20 @@ A program with many classes needs a way to group them and to keep their names ap
 
 ```lean (name := ns)
 def ns : String :=
-  "namespace Banco {
-    class Conta {
+  "namespace Bank {
+    class Account {
     private:
-      int saldo;
+      int balance;
     public:
-      Conta(int inicial) { saldo = inicial; }
-      void deposita(int v) { saldo = saldo + v; }
-      int consulta() { return saldo; }
+      Account(int initial) { balance = initial; }
+      void deposit(int v) { balance = balance + v; }
+      int query() { return balance; }
     };
   }
   int main() {
-    Banco::Conta* c = new Banco::Conta(100);
-    c->deposita(20);
-    return c->consulta();
+    Bank::Account* c = new Bank::Account(100);
+    c->deposit(20);
+    return c->query();
   }"
 
 #eval (parseProgram ns).map run
@@ -60,16 +60,16 @@ def ns : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 120))
 ```
 
-The namespace adds no rule of typing or of evaluation. The parser flattens it, so the class table receives a class named `Banco::Conta` and every rule works on that name.
+The namespace adds no rule of typing or of evaluation. The parser flattens it, so the class table receives a class named `Bank::Account` and every rule works on that name.
 
 ```lean (name := nsNames)
 #eval (parseProgram ns).map fun p => p.classes.map (·.name)
 ```
 ```leanOutput nsNames
-Except.ok ["Banco::Conta"]
+Except.ok ["Bank::Account"]
 ```
 
-Inside the namespace an unqualified class name denotes the class of the namespace, so the constructor `Conta(int)` and a field of type `Conta*` need no prefix there. Core C++ keeps only this much of the C++ namespace. There is no `using`, no functions or variables inside a namespace, and no way to reach a class of an enclosing scope from inside a namespace but by its qualified name.{fnref}[nested]
+Inside the namespace an unqualified class name denotes the class of the namespace, so the constructor `Account(int)` and a field of type `Account*` need no prefix there. Core C++ keeps only this much of the C++ namespace. There is no `using`, no functions or variables inside a namespace, and no way to reach a class of an enclosing scope from inside a namespace but by its qualified name.{fnref}[nested]
 
 :::footnotes
 
@@ -89,11 +89,11 @@ The constructions of Unit V, classes with visibility, objects with identity in �
 
 *Identity and state.* An object is a record of locations in σ, {secref}[lecture-6], reached through pointers. Two pointers to the same location name the same object, changes through one are seen through the other, and an object outlives the block that created it. This is the model of a mutable entity with an identity, the opposite of the value semantics of Unit II, where two equal integers are indistinguishable.
 
-*Substitutability.* The rule `Subsumption` of {secref}[lecture-19] lets a client written against `Forma*` receive a `Quadrado*`. Any operation of the signature of `Forma` applies to the object, so the client works unchanged for every class that derives from `Forma`, including classes written after the client.{margin}[B. Meyer, *Object-Oriented Software Construction*, 2nd ed., Prentice Hall, 1997, chapters 14 and 16.]
+*Substitutability.* The rule `Subsumption` of {secref}[lecture-19] lets a client written against `Shape*` receive a `Square*`. Any operation of the signature of `Shape` applies to the object, so the client works unchanged for every class that derives from `Shape`, including classes written after the client.{margin}[B. Meyer, *Object-Oriented Software Construction*, 2nd ed., Prentice Hall, 1997, chapters 14 and 16.]
 
 *Late binding.* The premise on `virtual` in `MethodCall` decides the method by the object, not by the pointer. A client that calls `f->area()` need not know which shape it holds, and the choice is made at run time, at every call.
 
-Cook observes that an abstract data type and an object differ in where the operations live.{margin}[W. R. Cook, *On Understanding Data Abstraction, Revisited*, Proceedings of OOPSLA 2009, pp. 557 to 572.] An abstract data type has one representation and operations that see it, like the stack of {secref}[lecture-17], whose methods read the vector and the counter of the receiver and of any other stack passed to them. An object exposes only its signature, even to other objects of the same class, so two objects may have different representations behind the same signature, as `Quadrado` and a hypothetical `Circulo` behind `Forma`. Core C++ offers both, and the difference is one of design, not of language.
+Cook observes that an abstract data type and an object differ in where the operations live.{margin}[W. R. Cook, *On Understanding Data Abstraction, Revisited*, Proceedings of OOPSLA 2009, pp. 557 to 572.] An abstract data type has one representation and operations that see it, like the stack of {secref}[lecture-17], whose methods read the vector and the counter of the receiver and of any other stack passed to them. An object exposes only its signature, even to other objects of the same class, so two objects may have different representations behind the same signature, as `Square` and a hypothetical `Circulo` behind `Shape`. Core C++ offers both, and the difference is one of design, not of language.
 
 # Separate Compilation
 
@@ -101,27 +101,27 @@ Cook observes that an abstract data type and an object differ in where the opera
 tag := "separate"
 %%%
 
-C++ programs of any size are split into files. A *header* `.hh` declares a class, its fields and the signatures of its methods, and a *source* `.cpp` defines the methods with the qualified syntax `Pilha::empilha`. Clients include the header and never see the source. The compiler translates each source into an object file, and the linker joins them into a program.
+C++ programs of any size are split into files. A *header* `.hh` declares a class, its fields and the signatures of its methods, and a *source* `.cpp` defines the methods with the qualified syntax `Stack::push`. Clients include the header and never see the source. The compiler translates each source into an object file, and the linker joins them into a program.
 
 ```
-// pilha.hh
-class Pilha {
+// stack.hh
+class Stack {
 private:
-  std::vector<int>* itens;
-  int topo;
+  std::vector<int>* items;
+  int top;
 public:
-  Pilha(int n);
-  void empilha(int x);
-  int desempilha();
-  bool vazia();
+  Stack(int n);
+  void push(int x);
+  int pop();
+  bool empty();
 };
 
-// pilha.cpp
-#include "pilha.hh"
-Pilha::Pilha(int n) { this->itens = new std::vector<int>(n); this->topo = 0; }
-void Pilha::empilha(int x) { (*itens)[topo] = x; topo = topo + 1; }
-int Pilha::desempilha() { topo = topo - 1; return (*itens)[topo]; }
-bool Pilha::vazia() { return topo == 0; }
+// stack.cpp
+#include "stack.hh"
+Stack::Stack(int n) { this->items = new std::vector<int>(n); this->top = 0; }
+void Stack::push(int x) { (*items)[top] = x; top = top + 1; }
+int Stack::pop() { top = top - 1; return (*items)[top]; }
+bool Stack::empty() { return top == 0; }
 ```
 
 Separate compilation is the C++ idiom for the abstract data type at the scale of files. The header is the signature, the source is the representation of the operations, and a change to the source does not force the clients to be recompiled, only relinked. It rests on the preprocessor, `#include`, and on the definition of methods outside the class, and Core C++ has neither. The design keeps a program as one file and one translation unit, because the idiom adds no rule of typing or of evaluation to the ones of {secref}[lecture-17] and {secref}[lecture-18]. The header still exposes the private fields, since the compiler needs the size of an object, and the fully opaque type needs the pointer to implementation idiom, a class whose only field is a pointer to a private class defined in the source.
@@ -197,9 +197,9 @@ tag := "exercises-20"
 
 {exercise "exr-ns-nested"}[] Write two namespaces, one nested in the other, each with a class, and a `main` that creates one object of each. Print the class table with `Program.classes` and explain the names.
 
-{exercise "exr-adt-vs-object"}[] Add to the stack of {secref}[lecture-17] a method `igual(Pilha* outra)` that compares two stacks by reading the fields of `outra`. Explain, with Cook's distinction, why this method is possible for an abstract data type and would not be for an object known only by its signature.
+{exercise "exr-adt-vs-object"}[] Add to the stack of {secref}[lecture-17] a method `igual(Stack* outra)` that compares two stacks by reading the fields of `outra`. Explain, with Cook's distinction, why this method is possible for an abstract data type and would not be for an object known only by its signature.
 
-{exercise "exr-substitution"}[] Write a function that receives a `Forma*` and returns twice its area, and call it with a `Quadrado*` and with a `Forma*`. Explain, by `Subsumption` and `MethodCall`, why one function serves both.
+{exercise "exr-substitution"}[] Write a function that receives a `Shape*` and returns twice its area, and call it with a `Square*` and with a `Shape*`. Explain, by `Subsumption` and `MethodCall`, why one function serves both.
 
 {exercise "exr-header"}[] Split the program of {secref}[namespaces] into a header and a source in real C++, compile them with `g++` and describe which change to the source forces the client to be recompiled and which does not.
 

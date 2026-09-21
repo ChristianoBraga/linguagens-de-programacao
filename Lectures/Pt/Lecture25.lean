@@ -48,14 +48,14 @@ O que muda é o que se pode *dizer* de um programa. As regras de Core C++ admite
 O predicado é uma varredura da sintaxe abstrata, e o interpretador o executa.
 
 ```lean (name := fragCheck)
-def mdc : String :=
-  "int mdc(int a, int b) {
+def gcd : String :=
+  "int gcd(int a, int b) {
     while (b != 0) { int t = b; b = a % b; a = t; }
     return a;
   }
-  int main() { int x = mdc(48, 18); int& y = x; y = y + 1; return y; }"
+  int main() { int x = gcd(48, 18); int& y = x; y = y + 1; return y; }"
 
-#eval (parseProgram mdc).map (fragment .imperative)
+#eval (parseProgram gcd).map (fragment .imperative)
 ```
 ```leanOutput fragCheck
 Except.ok (Except.ok ())
@@ -95,7 +95,7 @@ O fragmento imperativo conserva o que as quatro primeiras unidades construíram 
 O programa da {secref}[restricao] pertence ao fragmento, e é um programa imperativo comum, um laço com duas variáveis, uma função, uma referência local e uma atribuição.
 
 ```lean (name := mdcRun)
-#eval (parseProgram mdc).map run
+#eval (parseProgram gcd).map run
 ```
 ```leanOutput mdcRun
 Except.ok (Except.ok (CoreCpp.Val.int 7))

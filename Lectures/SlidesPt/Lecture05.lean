@@ -53,7 +53,7 @@ open CoreCpp
   * registros de posições, alcançados por `C*`
 *
   * recursivo
-  * `class No` com um campo `No*`
+  * `class Node` com um campo `Node*`
   * cadeias finitas de registros
 *
   * composto

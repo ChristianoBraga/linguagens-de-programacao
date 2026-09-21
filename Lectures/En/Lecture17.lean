@@ -42,21 +42,21 @@ In Core C++ an abstract data type is a `class` with two sections. The `public` s
 
 ```lean (name := stack)
 def stack : String :=
-  "class Pilha {
+  "class Stack {
   private:
-    std::vector<int>* itens;
-    int topo;
+    std::vector<int>* items;
+    int top;
   public:
-    Pilha(int n) { this->itens = new std::vector<int>(n); this->topo = 0; }
-    void empilha(int x) { (*itens)[topo] = x; topo = topo + 1; }
-    int desempilha() { topo = topo - 1; return (*itens)[topo]; }
-    bool vazia() { return topo == 0; }
+    Stack(int n) { this->items = new std::vector<int>(n); this->top = 0; }
+    void push(int x) { (*items)[top] = x; top = top + 1; }
+    int pop() { top = top - 1; return (*items)[top]; }
+    bool empty() { return top == 0; }
   };
   int main() {
-    Pilha* p = new Pilha(8);
-    p->empilha(1);
-    p->empilha(41);
-    return p->desempilha() + p->desempilha();
+    Stack* p = new Stack(8);
+    p->push(1);
+    p->push(41);
+    return p->pop() + p->pop();
   }"
 
 #eval (parseProgram stack).map run
@@ -65,7 +65,7 @@ def stack : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 42))
 ```
 
-The client, the function `main`, creates a stack, pushes two values and pops them. It never mentions `itens` or `topo`. The constructor `Pilha(int n)` runs when `new Pilha(8)` creates the object and gives the fields their first values, and each method reads and writes the fields through `this`, or through the bare field name, which inside a method denotes the field of `this`.
+The client, the function `main`, creates a stack, pushes two values and pops them. It never mentions `items` or `top`. The constructor `Stack(int n)` runs when `new Stack(8)` creates the object and gives the fields their first values, and each method reads and writes the fields through `this`, or through the bare field name, which inside a method denotes the field of `this`.
 
 # Visibility as a Typing Rule
 
@@ -77,19 +77,19 @@ The separation is enforced before the program runs. A client that reaches into t
 
 ```lean (name := peek)
 def peek : String :=
-  "class Pilha {
+  "class Stack {
   private:
-    std::vector<int>* itens;
-    int topo;
+    std::vector<int>* items;
+    int top;
   public:
-    Pilha(int n) { this->itens = new std::vector<int>(n); this->topo = 0; }
+    Stack(int n) { this->items = new std::vector<int>(n); this->top = 0; }
   };
-  int main() { Pilha* p = new Pilha(8); return p->topo; }"
+  int main() { Stack* p = new Stack(8); return p->top; }"
 
 #eval (parseProgram peek).map check
 ```
 ```leanOutput peek
-Except.ok (Except.error (CoreCpp.TypeError.privateMember "Pilha" "topo"))
+Except.ok (Except.error (CoreCpp.TypeError.privateMember "Stack" "top"))
 ```
 
 The rule is a premise on every access to a member. Inside a member body the typing context Γ binds `this` to a pointer to the class, and the *current class* is the class of `this`. A private member declared in class $`K` is visible exactly when the current class is $`K`.
@@ -175,9 +175,9 @@ The premise on the constructor of the base exists because Core C++ has no initia
 tag := "invariants"
 %%%
 
-A representation usually satisfies a property that every operation preserves, the *representation invariant*. For the stack, the counter `topo` stays between zero and the capacity of the vector, and the values below `topo` are the ones pushed and not yet popped. Visibility is what makes the invariant provable. Since only the methods write the fields, checking that each method preserves the property, assuming it holds on entry, is enough to know that it holds at every point of every client.
+A representation usually satisfies a property that every operation preserves, the *representation invariant*. For the stack, the counter `top` stays between zero and the capacity of the vector, and the values below `top` are the ones pushed and not yet popped. Visibility is what makes the invariant provable. Since only the methods write the fields, checking that each method preserves the property, assuming it holds on entry, is enough to know that it holds at every point of every client.
 
-Core C++ makes one consequence of a broken invariant visible. The stack above does not check its bounds, and a client that pushes nine values on a stack of capacity eight makes `empilha` write at index eight of a vector of size eight. In C++ that write is undefined behaviour. In Core C++ it is the result `error`, by the rule `LocIndex` of {secref}[lecture-7], and the program stops at the operation that broke the contract. A stack that checks `topo` against the capacity, and reports the overflow to the client through a `bool` result, keeps the invariant by itself.
+Core C++ makes one consequence of a broken invariant visible. The stack above does not check its bounds, and a client that pushes nine values on a stack of capacity eight makes `push` write at index eight of a vector of size eight. In C++ that write is undefined behaviour. In Core C++ it is the result `error`, by the rule `LocIndex` of {secref}[lecture-7], and the program stops at the operation that broke the contract. A stack that checks `top` against the capacity, and reports the overflow to the client through a `bool` result, keeps the invariant by itself.
 
 # Exercises
 
@@ -189,11 +189,11 @@ tag := "exercises-17"
 
 {exercise "exr-visibility-derived"}[] Write a class `Base` with a private field and a class `Derivada : public Base` whose method reads that field, run the type checker and explain the message by the rule `Visible`.
 
-{exercise "exr-swap-representation"}[] Rewrite the stack of {secref}[signature] over a linked list of `No` objects instead of a vector, keeping the signature. Check that the function `main` of the example runs without change.
+{exercise "exr-swap-representation"}[] Rewrite the stack of {secref}[signature] over a linked list of `Node` objects instead of a vector, keeping the signature. Check that the function `main` of the example runs without change.
 
-{exercise "exr-invariant-check"}[] Change `empilha` to return a `bool`, false when the stack is full, and explain why the invariant then holds for every client, with the rule that would otherwise produce `error`.
+{exercise "exr-invariant-check"}[] Change `push` to return a `bool`, false when the stack is full, and explain why the invariant then holds for every client, with the rule that would otherwise produce `error`.
 
-{exercise "exr-class-table"}[] For the classes of {secref}[signature], write the class table as the type checker sees it, and the context Γ under which the body of `desempilha` is checked.
+{exercise "exr-class-table"}[] For the classes of {secref}[signature], write the class table as the type checker sees it, and the context Γ under which the body of `pop` is checked.
 
 {exercise "exr-tclass"}[] Give a class that violates each premise of `T-Class` in turn, run the type checker on each one and match the message to the premise.
 

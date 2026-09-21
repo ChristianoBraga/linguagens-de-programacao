@@ -34,19 +34,19 @@ This lecture builds the recursive types out of the classes of {secref}[lecture-6
 tag := "recursive"
 %%%
 
-A type is *recursive* when its values contain values of the same type. In Core C++ a recursive type is a class with a field of pointer type to the class itself. The class `No` below is the node of a linked list, with a value and a pointer to the next node.
+A type is *recursive* when its values contain values of the same type. In Core C++ a recursive type is a class with a field of pointer type to the class itself. The class `Node` below is the node of a linked list, with a value and a pointer to the next node.
 
 ```
-class No {
+class Node {
 public:
-  int valor;
-  No* prox;
+  int value;
+  Node* next;
 };
 ```
 
-A value of type `No*` is either `nullptr` or a pointer to a record whose field `prox` is again a value of type `No*`. Every chain is finite, because every record was created by a `new` that ran before, and the end of the chain is `nullptr`. The recursion is in the type, and the store holds only finitely many records.
+A value of type `Node*` is either `nullptr` or a pointer to a record whose field `next` is again a value of type `Node*`. Every chain is finite, because every record was created by a `new` that ran before, and the end of the chain is `nullptr`. The recursion is in the type, and the store holds only finitely many records.
 
-The literal `nullptr` has an internal type, `nullptr_t`, compatible with every pointer type and with nothing else. It is the reason the relation ≈ of {secref}[lecture-5] exists. A declaration `No* p = nullptr` types because `nullptr_t ≈ No*`, and the comparison `p == nullptr` types by `T-Eq`. Its value is `null`.
+The literal `nullptr` has an internal type, `nullptr_t`, compatible with every pointer type and with nothing else. It is the reason the relation ≈ of {secref}[lecture-5] exists. A declaration `Node* p = nullptr` types because `nullptr_t ≈ Node*`, and the comparison `p == nullptr` types by `T-Eq`. Its value is `null`.
 
 ```
 ────────────────────────── (T-Null)      ──────────────────────────── (Null)
@@ -55,31 +55,31 @@ The literal `nullptr` has an internal type, `nullptr_t`, compatible with every p
 
 A function over a recursive type follows the recursion of the type. The sum of a list is zero for `nullptr` and, for a node, the value of the node plus the sum of the rest.
 
-```lean (name := lista)
-def lista : String :=
-  "class No {
+```lean (name := list)
+def list : String :=
+  "class Node {
   public:
-    int valor;
-    No* prox;
+    int value;
+    Node* next;
   };
-  int soma(No* p) {
-    return p == nullptr ? 0 : p->valor + soma(p->prox);
+  int sum(Node* p) {
+    return p == nullptr ? 0 : p->value + sum(p->next);
   }
   int main() {
-    No* lista = new No();
-    lista->valor = 1;
-    lista->prox = new No();
-    lista->prox->valor = 2;
-    return soma(lista);
+    Node* list = new Node();
+    list->value = 1;
+    list->next = new Node();
+    list->next->value = 2;
+    return sum(list);
   }"
 
-#eval (parseProgram lista).map run
+#eval (parseProgram list).map run
 ```
-```leanOutput lista
+```leanOutput list
 Except.ok (Except.ok (CoreCpp.Val.int 3))
 ```
 
-The field `prox` of a fresh node is `nullptr`, by the default values of `New`, so the second node ends the list without an explicit assignment. The conditional evaluates only the chosen branch, so the recursive call is not made at the end of the list, and the recursion terminates because every chain is finite.
+The field `next` of a fresh node is `nullptr`, by the default values of `New`, so the second node ends the list without an explicit assignment. The conditional evaluates only the chosen branch, so the recursive call is not made at the end of the list, and the recursion terminates because every chain is finite.
 
 # The Null Dereference
 
@@ -90,14 +90,14 @@ tag := "null"
 The rules `LocDeref` and `LocArrow` of {secref}[lecture-6] require the pointer to evaluate to a location. When it evaluates to `null` there is no rule with a location as result, and the result is `error`. This is the first of the two runtime errors of the lecture, and the point where Core C++ and C++ part ways. C++ leaves the dereference of a null pointer undefined, and on most machines the process is killed by the operating system. Core C++ gives it the defined result `error`, which the interpreter reports and which ends the program.
 
 ```lean (name := nullDeref)
-#eval (parseProgram "class No { public: int valor; No* prox; };
-  int main() { No* p = nullptr; return p->valor; }").map run
+#eval (parseProgram "class Node { public: int value; Node* next; };
+  int main() { Node* p = nullptr; return p->value; }").map run
 ```
 ```leanOutput nullDeref
 Except.ok (Except.error (CoreCpp.Error.nullDereference))
 ```
 
-The check is dynamic, because whether a pointer is null depends on the execution. A type system that separates nullable from non nullable pointers moves part of the check to the static side, and Unit VI mentions the languages that do so. In Core C++ the type `No*` includes `nullptr`, and the programmer tests it, as `soma` does.
+The check is dynamic, because whether a pointer is null depends on the execution. A type system that separates nullable from non nullable pointers moves part of the check to the static side, and Unit VI mentions the languages that do so. In Core C++ the type `Node*` includes `nullptr`, and the programmer tests it, as `sum` does.
 
 # Vectors
 
@@ -196,10 +196,10 @@ Every field and every element starts with the default value of its type, `0`, `f
 
 ```lean (name := campos)
 def campos : String :=
-  "class Reg { public: int n; bool ok; Reg* prox; };
+  "class Rec { public: int n; bool ok; Rec* next; };
   int main() {
-    Reg* r = new Reg();
-    return r->n + (r->ok ? 10 : 1) + (r->prox == nullptr ? 100 : 0);
+    Rec* r = new Rec();
+    return r->n + (r->ok ? 10 : 1) + (r->next == nullptr ? 100 : 0);
   }"
 
 #eval (parseProgram campos).map run
@@ -214,11 +214,11 @@ Except.ok (Except.ok (CoreCpp.Val.int 101))
 tag := "exercises-7"
 %%%
 
-{exercise "exr-list-length"}[] Write in Core C++ a function that counts the nodes of a list of `No`, and a `main` that builds a list of three nodes and returns the count. Run it with the interpreter.
+{exercise "exr-list-length"}[] Write in Core C++ a function that counts the nodes of a list of `Node`, and a `main` that builds a list of three nodes and returns the count. Run it with the interpreter.
 
-{exercise "exr-list-store"}[] Draw the store after the `main` of {secref}[recursive] has built its two nodes, before the call to `soma`, with one box per location, and mark the records, the fields and the variable.
+{exercise "exr-list-store"}[] Draw the store after the `main` of {secref}[recursive] has built its two nodes, before the call to `sum`, with one box per location, and mark the records, the fields and the variable.
 
-{exercise "exr-null-static"}[] Explain why the type checker cannot reject `No* p = nullptr; return p->valor;`, and propose a typing rule that would reject it while still accepting the function `soma`.
+{exercise "exr-null-static"}[] Explain why the type checker cannot reject `Node* p = nullptr; return p->value;`, and propose a typing rule that would reject it while still accepting the function `sum`.
 
 {exercise "exr-vector-reverse"}[] Write in Core C++ a `main` that creates a vector of five elements, fills it with 1 to 5, reverses it in place with a loop, and returns the first element. Say how many locations the store holds at the end.
 

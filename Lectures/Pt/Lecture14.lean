@@ -67,21 +67,21 @@ f ↦ (τ f (p₁ x₁, …, pₖ xₖ) { c })
 tag := "swap"
 %%%
 
-A função `troca` permuta os conteúdos de duas posições. Na passagem por valor ela permutaria duas cópias e deixaria os argumentos intactos. Na passagem por referência os parâmetros são os argumentos, e a permuta é visível em `main`.
+A função `swap` permuta os conteúdos de duas posições. Na passagem por valor ela permutaria duas cópias e deixaria os argumentos intactos. Na passagem por referência os parâmetros são os argumentos, e a permuta é visível em `main`.
 
-```lean (name := troca)
+```lean (name := swap)
 def swap : String :=
-  "void troca(int& a, int& b) { int t = a; a = b; b = t; }
-   int main() { int x = 1; int y = 2; troca(x, y);
+  "void swap(int& a, int& b) { int t = a; a = b; b = t; }
+   int main() { int x = 1; int y = 2; swap(x, y);
      return x * 10 + y; }"
 
 #eval (parseProgram swap).map run
 ```
-```leanOutput troca
+```leanOutput swap
 Except.ok (Except.ok (CoreCpp.Val.int 21))
 ```
 
-A árvore mostra o mecanismo. Os argumentos `x` e `y` são avaliados com ⇒ₗ para ℓ0 e ℓ1, e o ambiente de `troca` é \[a ↦ ℓ0, b ↦ ℓ1\], as mesmas posições sob nomes novos. A local `t` recebe uma posição nova ℓ2. As duas atribuições escrevem em ℓ0 e ℓ1, e depois da chamada `main` lê os valores permutados por `x` e `y`. Só ℓ2 sai da memória no retorno, a variável local do corpo, e os referentes ℓ0 e ℓ1 ficam.{fnref}[locals]
+A árvore mostra o mecanismo. Os argumentos `x` e `y` são avaliados com ⇒ₗ para ℓ0 e ℓ1, e o ambiente de `swap` é \[a ↦ ℓ0, b ↦ ℓ1\], as mesmas posições sob nomes novos. A local `t` recebe uma posição nova ℓ2. As duas atribuições escrevem em ℓ0 e ℓ1, e depois da chamada `main` lê os valores permutados por `x` e `y`. Só ℓ2 sai da memória no retorno, a variável local do corpo, e os referentes ℓ0 e ℓ1 ficam.{fnref}[locals]
 
 ```lean (name := trocaTrace)
 #eval match parseProgram swap with
@@ -106,8 +106,8 @@ A árvore mostra o mecanismo. Os argumentos `x` e `y` são avaliados com ⇒ₗ 
         [a ↦ ℓ0, b ↦ ℓ1, t ↦ ℓ2], {ℓ0 ↦ 2, ℓ1 ↦ 2, ℓ2 ↦ 1} ⊢ t ⇒ 1, {ℓ0 ↦ 2, ℓ1 ↦ 2, ℓ2 ↦ 1}   (Var)
         [a ↦ ℓ0, b ↦ ℓ1, t ↦ ℓ2], {ℓ0 ↦ 2, ℓ1 ↦ 2, ℓ2 ↦ 1} ⊢ b ⇒ₗ ℓ1, {ℓ0 ↦ 2, ℓ1 ↦ 2, ℓ2 ↦ 1}   (LocVar)
       [a ↦ ℓ0, b ↦ ℓ1, t ↦ ℓ2], {ℓ0 ↦ 2, ℓ1 ↦ 2, ℓ2 ↦ 1} ⊢ b = t; ⇒ normal, [a ↦ ℓ0, b ↦ ℓ1, t ↦ ℓ2], {ℓ0 ↦ 2, ℓ1 ↦ 1, ℓ2 ↦ 1}   (Assign)
-    [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 2} ⊢ troca(x, y) ⇒ void, {ℓ0 ↦ 2, ℓ1 ↦ 1}   (Call)
-  [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 2} ⊢ troca(x, y); ⇒ normal, [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 2, ℓ1 ↦ 1}   (ExprStmt)
+    [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 2} ⊢ swap(x, y) ⇒ void, {ℓ0 ↦ 2, ℓ1 ↦ 1}   (Call)
+  [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 2} ⊢ swap(x, y); ⇒ normal, [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 2, ℓ1 ↦ 1}   (ExprStmt)
           [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 2, ℓ1 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 2, ℓ1 ↦ 1}   (LocVar)
         [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 2, ℓ1 ↦ 1} ⊢ x ⇒ 2, {ℓ0 ↦ 2, ℓ1 ↦ 1}   (Var)
         [x ↦ ℓ0, y ↦ ℓ1], {ℓ0 ↦ 2, ℓ1 ↦ 1} ⊢ 10 ⇒ 10, {ℓ0 ↦ 2, ℓ1 ↦ 1}   (Lit)
@@ -238,11 +238,11 @@ A terceira linha é a importante. Uma função de C++ pode devolver uma referên
 tag := "exercises-14"
 %%%
 
-{exercise "exr-swap-value"}[] Reescreva `troca` com parâmetros por valor, execute, e explique pelas duas versões da regra `Call` por que o resultado muda.
+{exercise "exr-swap-value"}[] Reescreva `swap` com parâmetros por valor, execute, e explique pelas duas versões da regra `Call` por que o resultado muda.
 
 {exercise "exr-free-locals"}[] A regra `Call` libera as cópias e as locais do corpo. Diga que informação a regra usa para distinguir as locais dos referentes dos parâmetros por referência, e onde o interpretador a guarda.
 
-{exercise "exr-alias-vector"}[] Escreva uma função `void copia(int& de, int& para)` e chame‑a com dois elementos de um vetor, depois com o mesmo elemento duas vezes. Preveja os dois resultados pela regra `Call` e confira com o interpretador.
+{exercise "exr-alias-vector"}[] Escreva uma função `void copy(int& from, int& to)` e chame‑a com dois elementos de um vetor, depois com o mesmo elemento duas vezes. Preveja os dois resultados pela regra `Call` e confira com o interpretador.
 
 {exercise "exr-ref-pointer"}[] Um parâmetro `P*& q` é uma referência a uma variável ponteiro. Escreva uma função que atribui `new P()` a esse parâmetro e mostre, com uma árvore, que o ponteiro de quem chamou muda.
 

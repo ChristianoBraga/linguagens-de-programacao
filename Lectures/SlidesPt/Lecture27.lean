@@ -62,23 +62,23 @@ open CoreCpp
 # §27.1 O verificador corre
 
 ```lean (name := funCheck)
-def escala : String :=
-  "int soma(int n) {
-     return n == 0 ? 0 : n + soma(n - 1);
+def scale : String :=
+  "int sum(int n) {
+     return n == 0 ? 0 : n + sum(n - 1);
    }
-   std::function<int(int)> escala(int k) {
+   std::function<int(int)> scale(int k) {
      return [=](int x) -> int { return k * x; };
    }
-   int aplica(std::function<int(int)> f, int v) {
+   int apply(std::function<int(int)> f, int v) {
      return f(v);
    }
    int main() {
-     std::function<int(int)> triplo = escala(3);
-     int s = soma(4);
-     return aplica(triplo, s);
+     std::function<int(int)> triple = scale(3);
+     int s = sum(4);
+     return apply(triple, s);
    }"
 
-#eval (parseProgram escala).map fun p => (fragment .functional p, run p)
+#eval (parseProgram scale).map fun p => (fragment .functional p, run p)
 ```
 ```leanOutput funCheck
 Except.ok (Except.ok (), Except.ok (CoreCpp.Val.int 30))
@@ -108,12 +108,12 @@ Except.ok (Except.ok (), Except.ok (CoreCpp.Val.int 30))
 
 ```lean (name := caseFun)
 def caseFun : String :=
-  "int somaAte(std::function<bool(int)> p, int n) {
-     return n == 0 ? 0 : (p(n) ? n : 0) + somaAte(p, n - 1);
+  "int sumTo(std::function<bool(int)> p, int n) {
+     return n == 0 ? 0 : (p(n) ? n : 0) + sumTo(p, n - 1);
    }
    int main() {
-     std::function<bool(int)> par = [=](int i) -> bool { return i % 2 == 0; };
-     return somaAte(par, 10);
+     std::function<bool(int)> even = [=](int i) -> bool { return i % 2 == 0; };
+     return sumTo(even, 10);
    }"
 
 #eval (parseProgram caseFun).map fun p => (fragment .functional p, run p)

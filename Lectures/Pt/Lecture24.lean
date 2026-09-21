@@ -48,16 +48,16 @@ A regra é a da {secref}[aula-9], e a UD VI não lhe acrescenta caso algum. Ela 
 ```lean (name := autoInst)
 def autoInst : String :=
   "template<typename T>
-  class Caixa {
+  class Box {
   private:
     T v;
   public:
-    Caixa(T x) { this->v = x; }
-    T abre() { return v; }
+    Box(T x) { this->v = x; }
+    T get() { return v; }
   };
   int main() {
-    auto c = new Caixa<int>(42);
-    auto n = c->abre();
+    auto c = new Box<int>(42);
+    auto n = c->get();
     delete c;
     return n;
   }"
@@ -68,7 +68,7 @@ def autoInst : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 42))
 ```
 
-O ganho é na escrita, não na verificação. As duas variáveis têm tipo tão definido quanto se ele tivesse sido escrito, e o programa que corre é o mesmo. O leitor de `auto c = new Caixa<int>(42)` vê o tipo no inicializador, que é o caso em que `auto` ajuda, e o leitor de `auto n = c->abre()` precisa olhar a declaração de `abre` para saber que `n` é um `int`, que é o caso em que ele custa.
+O ganho é na escrita, não na verificação. As duas variáveis têm tipo tão definido quanto se ele tivesse sido escrito, e o programa que corre é o mesmo. O leitor de `auto c = new Box<int>(42)` vê o tipo no inicializador, que é o caso em que `auto` ajuda, e o leitor de `auto n = c->get()` precisa olhar a declaração de `get` para saber que `n` é um `int`, que é o caso em que ele custa.
 
 Duas premissas da regra recusam uma declaração. Um tipo sem valores, `void` ou um tipo de objeto, não pode ser o tipo de uma variável, como as unidades anteriores decidiram, e `nullptr` tem um tipo próprio que não nomeia variável.
 
@@ -117,7 +117,7 @@ comprimento (x : xs) = 1 + comprimento xs
 
 O algoritmo dá a cada desconhecido uma variável de tipo, percorre a definição coletando equações entre tipos, as *restrições*, e as resolve por unificação. A primeira equação diz que o argumento é uma lista, a segunda que o resultado é um número, e nada no corpo diz quais são os elementos, então o tipo do elemento continua uma variável. A resposta é `comprimento :: [a] -> Int`, lida como, para todo tipo `a`, uma função de listas de `a` em inteiros.
 
-A diferença com respeito a um template merece enunciado preciso. A definição em Haskell é *uma* implementação que serve a todo `a`, e o compilador a verificou uma vez, para todo `a` de uma vez, porque o corpo nunca olha um elemento. Uma `Pilha<T>` é um texto expandido uma vez por instanciação, e cada expansão é verificada por si. O tipo em Haskell também enuncia o que a função exige, nada neste caso, enquanto o template nada enuncia e deixa a instanciação falhar.
+A diferença com respeito a um template merece enunciado preciso. A definição em Haskell é *uma* implementação que serve a todo `a`, e o compilador a verificou uma vez, para todo `a` de uma vez, porque o corpo nunca olha um elemento. Uma `Stack<T>` é um texto expandido uma vez por instanciação, e cada expansão é verificada por si. O tipo em Haskell também enuncia o que a função exige, nada neste caso, enquanto o template nada enuncia e deixa a instanciação falhar.
 
 O que o algoritmo compra é que um programa não precisa de anotação e ainda assim tem tipos. O que ele custa é que os tipos que ele acha se limitam a uma disciplina em que uma variável designa um tipo de cada vez, e no momento em que uma linguagem admite subtipagem, sobrecarga ou um parâmetro usado em dois tipos dentro de um corpo, as equações deixam de ter uma única solução mais geral. C++ tem os três, e é por isso que C++ infere localmente e pede ao programador que escreva o resto, e Haskell não tem nenhum deles nessa forma, e é por isso que ele infere tudo. Haskell recupera a sobrecarga por um mecanismo à parte, a classe de tipos, que mantém a restrição no tipo em vez de a resolver na chamada.
 
@@ -155,33 +155,33 @@ O programa abaixo usa toda construção da UD VI. Um template de classe com um m
 ```lean (name := whole)
 def whole : String :=
   "template<typename T>
-  class Vetor {
+  class Vect {
   private:
-    std::vector<T>* dados;
+    std::vector<T>* data;
   public:
-    Vetor(int n) { this->dados = new std::vector<T>(n); }
-    T& operator[](int i) { return (*dados)[i]; }
-    ~Vetor() { delete dados; }
+    Vect(int n) { this->data = new std::vector<T>(n); }
+    T& operator[](int i) { return (*data)[i]; }
+    ~Vect() { delete data; }
   };
-  class Ponto {
+  class Point {
   public:
     int x;
-    Ponto* operator+(Ponto& o) {
-      Ponto* r = new Ponto();
+    Point* operator+(Point& o) {
+      Point* r = new Point();
       r->x = x + o.x;
       return r;
     }
   };
-  int soma(int a) { return a; }
-  int soma(int a, int b) { return a + b; }
+  int sum(int a) { return a; }
+  int sum(int a, int b) { return a + b; }
   int main() {
-    auto v = new Vetor<int>(2);
+    auto v = new Vect<int>(2);
     (*v)[0] = 20;
-    (*v)[1] = soma(20, 2);
-    int s = soma((*v)[0]) + (*v)[1];
-    Ponto* p = new Ponto();
+    (*v)[1] = sum(20, 2);
+    int s = sum((*v)[0]) + (*v)[1];
+    Point* p = new Point();
     p->x = 0;
-    Ponto* q = *p + *p;
+    Point* q = *p + *p;
     int r = s + q->x;
     delete v;
     delete p;
@@ -214,12 +214,12 @@ Ler a derivação do mesmo programa mostra para onde foi cada construção. A in
   | .error e => IO.println e
 ```
 ```leanOutput wholeTrace
-        [this ↦ ℓ1, i ↦ ℓ7], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ7 ↦ 0} ⊢ &(*dados)[i] ⇒ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ7 ↦ 0}   (LocOf)
-    [v ↦ ℓ6], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1} ⊢ (*v)[0] ⇒ₗ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1}   (MethodLoc)
-        [this ↦ ℓ1, i ↦ ℓ10], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ10 ↦ 1} ⊢ &(*dados)[i] ⇒ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ10 ↦ 1}   (LocOf)
-    [v ↦ ℓ6], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1} ⊢ (*v)[1] ⇒ₗ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1}   (MethodLoc)
-            [this ↦ ℓ1, i ↦ ℓ11], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ11 ↦ 0} ⊢ &(*dados)[i] ⇒ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ11 ↦ 0}   (LocOf)
-          [this ↦ ℓ1, i ↦ ℓ13], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ13 ↦ 1} ⊢ &(*dados)[i] ⇒ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ13 ↦ 1}   (LocOf)
+        [this ↦ ℓ1, i ↦ ℓ7], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ7 ↦ 0} ⊢ &(*data)[i] ⇒ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ7 ↦ 0}   (LocOf)
+    [v ↦ ℓ6], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1} ⊢ (*v)[0] ⇒ₗ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1}   (MethodLoc)
+        [this ↦ ℓ1, i ↦ ℓ10], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ10 ↦ 1} ⊢ &(*data)[i] ⇒ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ10 ↦ 1}   (LocOf)
+    [v ↦ ℓ6], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1} ⊢ (*v)[1] ⇒ₗ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1}   (MethodLoc)
+            [this ↦ ℓ1, i ↦ ℓ11], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ11 ↦ 0} ⊢ &(*data)[i] ⇒ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ11 ↦ 0}   (LocOf)
+          [this ↦ ℓ1, i ↦ ℓ13], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ13 ↦ 1} ⊢ &(*data)[i] ⇒ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ13 ↦ 1}   (LocOf)
 ```
 
 A regra `MethodLoc` é a chamada de `operator[]` em posição que pede posição, e `LocOf` é o `return` desse membro, que devolve a posição do elemento em vez do seu valor. Juntas elas são todo o conteúdo da frase "`v[i]` é uma chamada de método que devolve `int&`", que o projeto da linguagem enunciou e que esta unidade tornou verdadeira.
@@ -238,7 +238,7 @@ tag := "exercicios-24"
 
 {exercise "exr-hm-subtyping"}[] Dê um programa com duas classes de uma cadeia e uma função que devolve uma ou outra conforme uma condição. Diga que tipo o algoritmo de Hindley e Milner tentaria achar para ela, e por que a subtipagem atrapalha.
 
-{exercise "exr-whole-unit"}[] Estenda o programa da {secref}[unidade-inteira] com uma segunda instanciação de `Vetor` e uma sobrecarga de `soma` sobre ponteiros, rode o verificador de tipos e o interpretador, e diga que linhas da derivação mudaram.
+{exercise "exr-whole-unit"}[] Estenda o programa da {secref}[unidade-inteira] com uma segunda instanciação de `Vect` e uma sobrecarga de `sum` sobre ponteiros, rode o verificador de tipos e o interpretador, e diga que linhas da derivação mudaram.
 
 {exercise "exr-unit-summary"}[] Escreva, em uma página, as quatro construções da UD VI com a regra de cada uma, e diga para cada uma se ela custa algo em tempo de execução.
 

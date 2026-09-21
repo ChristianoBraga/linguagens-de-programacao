@@ -47,16 +47,16 @@ The rule is the one of {secref}[lecture-9], and Unit VI adds no case to it. It a
 ```lean (name := autoInst)
 def autoInst : String :=
   "template<typename T>
-  class Caixa {
+  class Box {
   private:
     T v;
   public:
-    Caixa(T x) { this->v = x; }
-    T abre() { return v; }
+    Box(T x) { this->v = x; }
+    T get() { return v; }
   };
   int main() {
-    auto c = new Caixa<int>(42);
-    auto n = c->abre();
+    auto c = new Box<int>(42);
+    auto n = c->get();
     delete c;
     return n;
   }"
@@ -67,7 +67,7 @@ def autoInst : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 42))
 ```
 
-The gain is in the writing, not in the checking. Both variables have a type as definite as if it had been written, and the program that runs is the same. The reader of `auto c = new Caixa<int>(42)` sees the type in the initialiser, which is the case where `auto` helps, and the reader of `auto n = c->abre()` has to look at the declaration of `abre` to know that `n` is an `int`, which is the case where it costs.
+The gain is in the writing, not in the checking. Both variables have a type as definite as if it had been written, and the program that runs is the same. The reader of `auto c = new Box<int>(42)` sees the type in the initialiser, which is the case where `auto` helps, and the reader of `auto n = c->get()` has to look at the declaration of `get` to know that `n` is an `int`, which is the case where it costs.
 
 Two premises of the rule refuse a declaration. A type with no values, `void` or an object type, cannot be the type of a variable, as the earlier units decided, and `nullptr` has a type of its own that names no variable.
 
@@ -116,7 +116,7 @@ comprimento (x : xs) = 1 + comprimento xs
 
 The algorithm gives each unknown a type variable, walks the definition collecting equations between types, the *constraints*, and solves them by unification. The first equation says the argument is a list, the second that the result is a number, and nothing in the body says what the elements are, so the element type stays a variable. The answer is `comprimento :: [a] -> Int`, read as, for every type `a`, a function from lists of `a` to integers.
 
-The difference from a template is worth stating precisely. The Haskell definition is *one* implementation that works for every `a`, and the compiler checked it once, for all `a` at once, because the body never looks at an element. A `Pilha<T>` is a text expanded once per instantiation, and each expansion is checked on its own. The Haskell type also states what the function requires, nothing at all in this case, while the template states nothing and lets the instantiation fail.
+The difference from a template is worth stating precisely. The Haskell definition is *one* implementation that works for every `a`, and the compiler checked it once, for all `a` at once, because the body never looks at an element. A `Stack<T>` is a text expanded once per instantiation, and each expansion is checked on its own. The Haskell type also states what the function requires, nothing at all in this case, while the template states nothing and lets the instantiation fail.
 
 What the algorithm buys is that a program needs no annotation and still has types. What it costs is that the types it can find are limited to a discipline in which a variable stands for one type at a time, and the moment a language admits subtyping, overloading or a parameter used at two types inside one body, the equations stop having a single most general solution. C++ has all three, which is why C++ infers locally and asks the programmer to write the rest, and Haskell has none of them in that form, which is why it infers everything. Haskell recovers overloading by a separate mechanism, the type class, which keeps the constraint in the type instead of resolving it at the call.
 
@@ -154,33 +154,33 @@ The program below uses every construction of Unit VI. A class template with a me
 ```lean (name := whole)
 def whole : String :=
   "template<typename T>
-  class Vetor {
+  class Vect {
   private:
-    std::vector<T>* dados;
+    std::vector<T>* data;
   public:
-    Vetor(int n) { this->dados = new std::vector<T>(n); }
-    T& operator[](int i) { return (*dados)[i]; }
-    ~Vetor() { delete dados; }
+    Vect(int n) { this->data = new std::vector<T>(n); }
+    T& operator[](int i) { return (*data)[i]; }
+    ~Vect() { delete data; }
   };
-  class Ponto {
+  class Point {
   public:
     int x;
-    Ponto* operator+(Ponto& o) {
-      Ponto* r = new Ponto();
+    Point* operator+(Point& o) {
+      Point* r = new Point();
       r->x = x + o.x;
       return r;
     }
   };
-  int soma(int a) { return a; }
-  int soma(int a, int b) { return a + b; }
+  int sum(int a) { return a; }
+  int sum(int a, int b) { return a + b; }
   int main() {
-    auto v = new Vetor<int>(2);
+    auto v = new Vect<int>(2);
     (*v)[0] = 20;
-    (*v)[1] = soma(20, 2);
-    int s = soma((*v)[0]) + (*v)[1];
-    Ponto* p = new Ponto();
+    (*v)[1] = sum(20, 2);
+    int s = sum((*v)[0]) + (*v)[1];
+    Point* p = new Point();
     p->x = 0;
-    Ponto* q = *p + *p;
+    Point* q = *p + *p;
     int r = s + q->x;
     delete v;
     delete p;
@@ -213,12 +213,12 @@ Reading the derivation of the same program shows where each construction went. T
   | .error e => IO.println e
 ```
 ```leanOutput wholeTrace
-        [this ↦ ℓ1, i ↦ ℓ7], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ7 ↦ 0} ⊢ &(*dados)[i] ⇒ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ7 ↦ 0}   (LocOf)
-    [v ↦ ℓ6], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1} ⊢ (*v)[0] ⇒ₗ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1}   (MethodLoc)
-        [this ↦ ℓ1, i ↦ ℓ10], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ10 ↦ 1} ⊢ &(*dados)[i] ⇒ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ10 ↦ 1}   (LocOf)
-    [v ↦ ℓ6], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1} ⊢ (*v)[1] ⇒ₗ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1}   (MethodLoc)
-            [this ↦ ℓ1, i ↦ ℓ11], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ11 ↦ 0} ⊢ &(*dados)[i] ⇒ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ11 ↦ 0}   (LocOf)
-          [this ↦ ℓ1, i ↦ ℓ13], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ13 ↦ 1} ⊢ &(*dados)[i] ⇒ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vetor<int>{dados ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ13 ↦ 1}   (LocOf)
+        [this ↦ ℓ1, i ↦ ℓ7], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ7 ↦ 0} ⊢ &(*data)[i] ⇒ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ7 ↦ 0}   (LocOf)
+    [v ↦ ℓ6], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1} ⊢ (*v)[0] ⇒ₗ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1}   (MethodLoc)
+        [this ↦ ℓ1, i ↦ ℓ10], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ10 ↦ 1} ⊢ &(*data)[i] ⇒ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ10 ↦ 1}   (LocOf)
+    [v ↦ ℓ6], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1} ⊢ (*v)[1] ⇒ₗ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1}   (MethodLoc)
+            [this ↦ ℓ1, i ↦ ℓ11], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ11 ↦ 0} ⊢ &(*data)[i] ⇒ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ11 ↦ 0}   (LocOf)
+          [this ↦ ℓ1, i ↦ ℓ13], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ13 ↦ 1} ⊢ &(*data)[i] ⇒ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ13 ↦ 1}   (LocOf)
 ```
 
 The rule `MethodLoc` is the call of `operator[]` in a position that asks for a location, and `LocOf` is the `return` of that member, which hands back the location of the element rather than its value. Between them they are the whole content of the sentence "`v[i]` is a method call that returns `int&`", which the design of the language stated and this unit made true.
@@ -237,7 +237,7 @@ tag := "exercises-24"
 
 {exercise "exr-hm-subtyping"}[] Give a program with two classes in one chain and a function that returns one or the other according to a condition. Say what type the algorithm of Hindley and Milner would try to find for it, and why subtyping gets in the way.
 
-{exercise "exr-whole-unit"}[] Extend the program of {secref}[whole-unit] with a second instantiation of `Vetor` and an overload of `soma` over pointers, run the type checker and the interpreter, and say which lines of the derivation changed.
+{exercise "exr-whole-unit"}[] Extend the program of {secref}[whole-unit] with a second instantiation of `Vect` and an overload of `sum` over pointers, run the type checker and the interpreter, and say which lines of the derivation changed.
 
 {exercise "exr-unit-summary"}[] Write, in one page, the four constructions of Unit VI with the rule of each one, and say for each whether it costs anything at run time.
 

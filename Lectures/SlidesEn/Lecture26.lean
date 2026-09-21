@@ -86,21 +86,21 @@ Except.ok (Except.error { frag := CoreCpp.Frag.oo, what := "function type", site
 
 ```lean (name := caseOo)
 def caseOo : String :=
-  "class Somador {
+  "class Adder {
    public:
      int acc;
-     virtual bool aceita(int i) { return true; }
-     void junta(int i) { if (aceita(i)) { acc = acc + i; } }
+     virtual bool accepts(int i) { return true; }
+     void add(int i) { if (accepts(i)) { acc = acc + i; } }
      int total() { return acc; }
-     virtual ~Somador() { }
+     virtual ~Adder() { }
    };
-   class SomadorPar : public Somador {
+   class EvenAdder : public Adder {
    public:
-     bool aceita(int i) override { return i % 2 == 0; }
+     bool accepts(int i) override { return i % 2 == 0; }
    };
    int main() {
-     Somador* s = new SomadorPar();
-     for (int i = 1; i <= 10; i = i + 1) { s->junta(i); }
+     Adder* s = new EvenAdder();
+     for (int i = 1; i <= 10; i = i + 1) { s->add(i); }
      int r = s->total();
      delete s;
      return r;
@@ -112,7 +112,7 @@ def caseOo : String :=
 Except.ok (Except.ok (), Except.ok (CoreCpp.Val.int 30))
 ```
 
-* `junta` is declared once and calls `aceita`, which the derived class redefines. A third criterion is *one new class and no change to junta*.
+* `add` is declared once and calls `accepts`, which the derived class redefines. A third criterion is *one new class and no change to junta*.
 
 # §26.4 Dispatch and the closure
 

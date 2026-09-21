@@ -38,13 +38,13 @@ A program may declare several functions with one name, provided they take differ
 
 ```lean (name := overload)
 def overload : String :=
-  "int dobro(int n) { return 2 * n; }
-  bool dobro(bool b) { return b; }
-  int dobro(int a, int b) { return 2 * (a + b); }
+  "int twice(int n) { return 2 * n; }
+  bool twice(bool b) { return b; }
+  int twice(int a, int b) { return 2 * (a + b); }
   int main() {
-    int x = dobro(21);
-    int y = dobro(1, 1);
-    return dobro(false) ? 0 : x + y;
+    int x = twice(21);
+    int y = twice(1, 1);
+    return twice(false) ? 0 : x + y;
   }"
 
 #eval (parseProgram overload).map run
@@ -53,7 +53,7 @@ def overload : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 46))
 ```
 
-The three declarations of `dobro` differ in the number of arguments, in the first case, and in the type of the argument, in the second. Each call in `main` reaches one of them. Nothing in the values distinguishes the calls at run time, and the interpreter is told which function to enter by the type checker, which writes the *signature* of the chosen declaration into the tree.
+The three declarations of `twice` differ in the number of arguments, in the first case, and in the type of the argument, in the second. Each call in `main` reaches one of them. Nothing in the values distinguishes the calls at run time, and the interpreter is told which function to enter by the type checker, which writes the *signature* of the chosen declaration into the tree.
 
 The usefulness is a matter of naming. Without overloading, a library that prints an `int`, a `bool` and a pointer offers three names, `imprimeInt`, `imprimeBool`, `imprimePonteiro`, and the reader must remember which one to write. With overloading it offers `imprime`, and the argument decides. The counterpart is that the reader of a call must know the types of the arguments to know which declaration runs, which is why a language that overloads should also keep the candidates few and distinct.
 
@@ -72,7 +72,7 @@ A has one element whose parameters are exactly the types of the arguments, or A 
 the call of f selects that candidate
 ```
 
-Three cases follow from the rule. With A empty the call fails, and the message is the one of the single candidate of that arity when there is one, so a program with a single `dobro` gets the ordinary mismatch message and not a vague complaint about overloads. With A a singleton the choice is that candidate. With two or more in A the exact one wins, and if none is exact the call is *ambiguous* and the program is rejected.
+Three cases follow from the rule. With A empty the call fails, and the message is the one of the single candidate of that arity when there is one, so a program with a single `twice` gets the ordinary mismatch message and not a vague complaint about overloads. With A a singleton the choice is that candidate. With two or more in A the exact one wins, and if none is exact the call is *ambiguous* and the program is rejected.
 
 An exact candidate is one whose parameter types are the types of the arguments, with no conversion at all. The conversions that may stand between an argument and a parameter are the three of the subset, `nullptr` to a pointer, a lambda to a `std::function`, and subsumption, a pointer to a derived class where a pointer to the base is expected. The last one is the one that produces ambiguity.
 
@@ -157,20 +157,20 @@ The overload set of a method name is the set of methods with that name along the
 
 ```lean (name := methodOverload)
 def methodOverload : String :=
-  "class Conta {
+  "class Account {
   private:
-    int saldo;
+    int balance;
   public:
-    Conta(int s) { this->saldo = s; }
-    int deposita(int v) { saldo = saldo + v; return saldo; }
-    int deposita(int v, int taxa) { return deposita(v - taxa); }
-    int valor() { return saldo; }
+    Account(int s) { this->balance = s; }
+    int deposit(int v) { balance = balance + v; return balance; }
+    int deposit(int v, int rate) { return deposit(v - rate); }
+    int value() { return balance; }
   };
   int main() {
-    Conta* c = new Conta(100);
-    c->deposita(50);
-    c->deposita(20, 5);
-    return c->valor();
+    Account* c = new Account(100);
+    c->deposit(50);
+    c->deposit(20, 5);
+    return c->value();
   }"
 
 #eval (parseProgram methodOverload).map run
@@ -179,7 +179,7 @@ def methodOverload : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 165))
 ```
 
-The call `deposita(v - taxa)` inside the two argument method is an unqualified name, which {secref}[lecture-18] read as `this->deposita(...)`, and the overload set of `this` resolves it to the one argument method. The recursion a reader might fear does not happen, because the arities differ.
+The call `deposit(v - rate)` inside the two argument method is an unqualified name, which {secref}[lecture-18] read as `this->deposit(...)`, and the overload set of `this` resolves it to the one argument method. The recursion a reader might fear does not happen, because the arities differ.
 
 C++ has a rule Core C++ leaves out here. A member named `m` in a derived class *hides* every `m` of the base, so an overload declared in the base is unreachable through a derived object unless the derived class writes `using Base::m`. The subset takes the union along the chain instead, which loses no program and spares a rule.
 
@@ -193,23 +193,23 @@ An operator in C++ is a function with a special name, and a class may give it a 
 
 ```lean (name := operatorPlus)
 def operatorPlus : String :=
-  "class Ponto {
+  "class Point {
   public:
     int x;
     int y;
-    Ponto* operator+(Ponto& o) {
-      Ponto* r = new Ponto();
+    Point* operator+(Point& o) {
+      Point* r = new Point();
       r->x = x + o.x;
       r->y = y + o.y;
       return r;
     }
   };
   int main() {
-    Ponto* a = new Ponto();
+    Point* a = new Point();
     a->x = 1; a->y = 4;
-    Ponto* b = new Ponto();
+    Point* b = new Point();
     b->x = 2; b->y = 3;
-    Ponto* c = *a + *b;
+    Point* c = *a + *b;
     return c->x + c->y;
   }"
 
@@ -219,7 +219,7 @@ def operatorPlus : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 10))
 ```
 
-Two details of the declaration follow from decisions of earlier units. The parameter is `Ponto& o` and not `Ponto o`, because an object is never copied and never held by a variable, so the only way to pass one is to bind its location, which a reference parameter does. The result is `Ponto*` and not `Ponto`, for the same reason, so the operator creates the result with `new` and hands back the pointer.
+Two details of the declaration follow from decisions of earlier units. The parameter is `Point& o` and not `Ponto o`, because an object is never copied and never held by a variable, so the only way to pass one is to bind its location, which a reference parameter does. The result is `Point*` and not `Point`, for the same reason, so the operator creates the result with `new` and hands back the pointer.
 
 The typing rule says that an infix operator whose left operand is an object is the call of the member.
 
@@ -278,7 +278,7 @@ tag := "exercises-21"
 
 {exercise "exr-overload-function"}[] Try to declare two functions that differ only in a `std::function` parameter, run the type checker and explain the message. Then rewrite the pair so that both remain and the call sites do not change, by adding one parameter to one of them.
 
-{exercise "exr-operator-compare"}[] Give the class `Par` a member `operator<` that compares by the first field, and a `main` that uses it in the condition of an `if`. Print the derivation and find the line where the comparison became a method call.
+{exercise "exr-operator-compare"}[] Give the class `Pair` a member `operator<` that compares by the first field, and a `main` that uses it in the condition of an `if`. Print the derivation and find the line where the comparison became a method call.
 
 {exercise "exr-operator-short-circuit"}[] Explain, with an example that has an effect on one side, what would change in the meaning of a program if Core C++ allowed a class to overload `&&`.
 

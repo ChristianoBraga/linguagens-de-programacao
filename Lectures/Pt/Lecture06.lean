@@ -35,10 +35,10 @@ Esta aula acrescenta a Core C++ o primeiro tipo composto, a classe com campos. E
 tag := "classes-campos"
 %%%
 
-Uma *classe* declara um tipo composto pela lista dos seus *campos*, cada um com tipo e nome. Nesta unidade uma classe tem só campos públicos, e os métodos, os construtores e o controle de acesso chegam na UD V. A declaração abaixo define o tipo `Ponto` com dois campos inteiros.
+Uma *classe* declara um tipo composto pela lista dos seus *campos*, cada um com tipo e nome. Nesta unidade uma classe tem só campos públicos, e os métodos, os construtores e o controle de acesso chegam na UD V. A declaração abaixo define o tipo `Point` com dois campos inteiros.
 
 ```
-class Ponto {
+class Point {
 public:
   int x;
   int y;
@@ -133,13 +133,13 @@ A atribuição a um campo não precisa de regra nova. A regra `Assign` da {secre
 
 ```lean (name := ponto)
 def ponto : String :=
-  "class Ponto {
+  "class Point {
   public:
     int x;
     int y;
   };
   int main() {
-    Ponto* p = new Ponto();
+    Point* p = new Point();
     p->x = 3;
     p->y = p->x + 1;
     return p->x * 10 + p->y;
@@ -201,10 +201,10 @@ Dois ponteiros para o mesmo objeto compartilham os seus campos, porque a atribui
 
 ```lean (name := alias)
 def alias : String :=
-  "class Ponto { public: int x; int y; };
+  "class Point { public: int x; int y; };
   int main() {
-    Ponto* a = new Ponto();
-    Ponto* b = a;
+    Point* a = new Point();
+    Point* b = a;
     b->x = 7;
     return a->x + (a == b ? 10 : 0);
   }"
@@ -223,15 +223,15 @@ Em C++ o mesmo programa tem o mesmo resultado, e a decisão de que objetos nunca
 tag := "exercicios-6"
 %%%
 
-{exercise "exr-memoria-apos-new"}[] Escreva a memória depois de `Ponto* p = new Ponto(); Ponto* q = new Ponto(); q->x = p->x + 5;`, com as posições numeradas como o interpretador as numera, e confira com a árvore de derivação.
+{exercise "exr-memoria-apos-new"}[] Escreva a memória depois de `Point* p = new Point(); Point* q = new Point(); q->x = p->x + 5;`, com as posições numeradas como o interpretador as numera, e confira com a árvore de derivação.
 
-{exercise "exr-regras-campo"}[] Construa a derivação de `p->y = p->x + 1` no ambiente e na memória deixados por `Ponto* p = new Ponto(); p->x = 3;`, nomeando as regras `Assign`, `LocArrow`, `Read` e `Arith` onde se aplicam.
+{exercise "exr-regras-campo"}[] Construa a derivação de `p->y = p->x + 1` no ambiente e na memória deixados por `Point* p = new Point(); p->x = 3;`, nomeando as regras `Assign`, `LocArrow`, `Read` e `Arith` onde se aplicam.
 
-{exercise "exr-objeto-por-valor"}[] Explique, pelas regras `T-Decl` e `New`, por que `Ponto q = *p;` é rejeitado, e diga o que C++ faz com essa declaração.
+{exercise "exr-objeto-por-valor"}[] Explique, pelas regras `T-Decl` e `New`, por que `Point q = *p;` é rejeitado, e diga o que C++ faz com essa declaração.
 
 {exercise "exr-compartilhamento"}[] Dê um programa com três ponteiros em que escrever por um muda o valor lido por exatamente um dos outros dois, e desenhe a memória que o explica.
 
-{exercise "exr-campo-classe"}[] A declaração `class Par { public: Ponto a; Ponto b; };` é rejeitada. Reescreva‑a em Core C++, escreva o `main` que cria um par de pontos, e conte as posições que a memória guarda depois dele.
+{exercise "exr-campo-classe"}[] A declaração `class Pair { public: Point a; Point b; };` é rejeitada. Reescreva‑a em Core C++, escreva o `main` que cria um par de pontos, e conte as posições que a memória guarda depois dele.
 
 ```lean -show
 end Lecture6

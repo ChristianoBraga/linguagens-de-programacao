@@ -53,7 +53,7 @@ open CoreCpp
   * records of locations, reached through `C*`
 *
   * recursive
-  * `class No` with a field `No*`
+  * `class Node` with a field `Node*`
   * finite chains of records
 *
   * composite

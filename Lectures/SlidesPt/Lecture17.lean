@@ -44,21 +44,21 @@ open CoreCpp
 
 ```lean (name := stack)
 def stack : String :=
-  "class Pilha {
+  "class Stack {
   private:
-    std::vector<int>* itens;
-    int topo;
+    std::vector<int>* items;
+    int top;
   public:
-    Pilha(int n) { this->itens = new std::vector<int>(n); this->topo = 0; }
-    void empilha(int x) { (*itens)[topo] = x; topo = topo + 1; }
-    int desempilha() { topo = topo - 1; return (*itens)[topo]; }
-    bool vazia() { return topo == 0; }
+    Stack(int n) { this->items = new std::vector<int>(n); this->top = 0; }
+    void push(int x) { (*items)[top] = x; top = top + 1; }
+    int pop() { top = top - 1; return (*items)[top]; }
+    bool empty() { return top == 0; }
   };
   int main() {
-    Pilha* p = new Pilha(8);
-    p->empilha(1);
-    p->empilha(41);
-    return p->desempilha() + p->desempilha();
+    Stack* p = new Stack(8);
+    p->push(1);
+    p->push(41);
+    return p->pop() + p->pop();
   }"
 
 #eval (parseProgram stack).map run
@@ -71,19 +71,19 @@ Except.ok (Except.ok (CoreCpp.Val.int 42))
 
 ```lean (name := peek)
 def peek : String :=
-  "class Pilha {
+  "class Stack {
   private:
-    std::vector<int>* itens;
-    int topo;
+    std::vector<int>* items;
+    int top;
   public:
-    Pilha(int n) { this->itens = new std::vector<int>(n); this->topo = 0; }
+    Stack(int n) { this->items = new std::vector<int>(n); this->top = 0; }
   };
-  int main() { Pilha* p = new Pilha(8); return p->topo; }"
+  int main() { Stack* p = new Stack(8); return p->top; }"
 
 #eval (parseProgram peek).map check
 ```
 ```leanOutput peek
-Except.ok (Except.error (CoreCpp.TypeError.privateMember "Pilha" "topo"))
+Except.ok (Except.error (CoreCpp.TypeError.privateMember "Stack" "top"))
 ```
 
 * O contrato é imposto *antes de o programa rodar*.
@@ -147,7 +147,7 @@ o construtor de B, se existe, não tem parâmetros
 
 # §17.5 Invariantes de representação
 
-* Uma propriedade que toda operação preserva. Para a pilha, `topo` fica nos limites e os valores abaixo dele são os empilhados e não desempilhados.
+* Uma propriedade que toda operação preserva. Para a pilha, `top` fica nos limites e os valores abaixo dele são os empilhados e não desempilhados.
 
 * A visibilidade torna o invariante *demonstrável*. Só os métodos escrevem os campos, então basta verificar cada método.
 

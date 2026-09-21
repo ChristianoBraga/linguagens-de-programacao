@@ -41,16 +41,16 @@ open CoreCpp
 ```lean (name := autoInst)
 def autoInst : String :=
   "template<typename T>
-  class Caixa {
+  class Box {
   private:
     T v;
   public:
-    Caixa(T x) { this->v = x; }
-    T abre() { return v; }
+    Box(T x) { this->v = x; }
+    T get() { return v; }
   };
   int main() {
-    auto c = new Caixa<int>(42);
-    auto n = c->abre();
+    auto c = new Box<int>(42);
+    auto n = c->get();
     delete c;
     return n;
   }"
@@ -123,33 +123,33 @@ comprimento (x : xs) = 1 + comprimento xs
 ```lean (name := whole)
 def whole : String :=
   "template<typename T>
-  class Vetor {
+  class Vect {
   private:
-    std::vector<T>* dados;
+    std::vector<T>* data;
   public:
-    Vetor(int n) { this->dados = new std::vector<T>(n); }
-    T& operator[](int i) { return (*dados)[i]; }
-    ~Vetor() { delete dados; }
+    Vect(int n) { this->data = new std::vector<T>(n); }
+    T& operator[](int i) { return (*data)[i]; }
+    ~Vect() { delete data; }
   };
-  class Ponto {
+  class Point {
   public:
     int x;
-    Ponto* operator+(Ponto& o) {
-      Ponto* r = new Ponto();
+    Point* operator+(Point& o) {
+      Point* r = new Point();
       r->x = x + o.x;
       return r;
     }
   };
-  int soma(int a) { return a; }
-  int soma(int a, int b) { return a + b; }
+  int sum(int a) { return a; }
+  int sum(int a, int b) { return a + b; }
   int main() {
-    auto v = new Vetor<int>(2);
+    auto v = new Vect<int>(2);
     (*v)[0] = 20;
-    (*v)[1] = soma(20, 2);
-    int s = soma((*v)[0]) + (*v)[1];
-    Ponto* p = new Ponto();
+    (*v)[1] = sum(20, 2);
+    int s = sum((*v)[0]) + (*v)[1];
+    Point* p = new Point();
     p->x = 0;
-    Ponto* q = *p + *p;
+    Point* q = *p + *p;
     int r = s + q->x;
     delete v;
     delete p;

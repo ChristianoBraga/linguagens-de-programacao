@@ -50,19 +50,19 @@ for each i, left to right, σ'₀ = σ,
 
 # §14.2 Swap
 
-```lean (name := troca)
+```lean (name := swap)
 def swap : String :=
-  "void troca(int& a, int& b) { int t = a; a = b; b = t; }
-   int main() { int x = 1; int y = 2; troca(x, y);
+  "void swap(int& a, int& b) { int t = a; a = b; b = t; }
+   int main() { int x = 1; int y = 2; swap(x, y);
      return x * 10 + y; }"
 
 #eval (parseProgram swap).map run
 ```
-```leanOutput troca
+```leanOutput swap
 Except.ok (Except.ok (CoreCpp.Val.int 21))
 ```
 
-* The environment of `troca` is \[a ↦ ℓ0, b ↦ ℓ1\], the locations of `x` and `y` under new names. The writes reach `main`.
+* The environment of `swap` is \[a ↦ ℓ0, b ↦ ℓ1\], the locations of `x` and `y` under new names. The writes reach `main`.
 
 * By value the same body would exchange two copies and return 12.
 

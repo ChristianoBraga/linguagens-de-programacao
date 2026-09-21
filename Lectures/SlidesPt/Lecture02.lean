@@ -38,7 +38,7 @@ open CoreCpp
 
 # §2.1 A convenção da inicial
 
-* Em `Pilha<int>` o `<` segue um identificador de tipo e abre um argumento de template.
+* Em `Stack<int>` o `<` segue um identificador de tipo e abre um argumento de template.
 
 * Em `x < y` o `<` segue um identificador de variável e compara.
 

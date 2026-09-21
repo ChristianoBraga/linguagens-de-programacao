@@ -30,22 +30,22 @@ open CoreCpp
 
 ```lean (name := shapes)
 def shapes : String :=
-  "namespace Geometria {
-    class Forma {
+  "namespace Geometry {
+    class Shape {
     public:
       virtual int area() { return 0; }
-      virtual ~Forma() { }
+      virtual ~Shape() { }
     };
-    class Quadrado : public Forma {
+    class Square : public Shape {
     private:
-      int lado;
+      int side;
     public:
-      Quadrado(int l) { this->lado = l; }
-      int area() override { return lado * lado; }
+      Square(int l) { this->side = l; }
+      int area() override { return side * side; }
     };
   }
   int main() {
-    Geometria::Forma* f = new Geometria::Quadrado(4);
+    Geometry::Shape* f = new Geometry::Square(4);
     int a = f->area();
     delete f;
     return a;
@@ -74,23 +74,23 @@ D* ≈ B*
 ```lean (name := downcast)
 def downcast : String :=
   "class Base { public: int x; };
-  class Derivada : public Base { public: int y; };
-  int main() { Base* b = new Derivada(); Derivada* d = b; return 0; }"
+  class Derived : public Base { public: int y; };
+  int main() { Base* b = new Derived(); Derived* d = b; return 0; }"
 
 #eval (parseProgram downcast).map check
 ```
 ```leanOutput downcast
 Except.ok (Except.error (CoreCpp.TypeError.mismatch
    "initialiser of d"
-   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Derivada"))
+   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Derived"))
    (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Base"))))
 ```
 
 # §19.2 Tipo estático e etiqueta de classe
 
-* O verificador de tipos conhece o *tipo estático*, `Forma*`.
+* O verificador de tipos conhece o *tipo estático*, `Shape*`.
 
-* O avaliador vê a *etiqueta de classe* do objeto em σ, `Quadrado`.
+* O avaliador vê a *etiqueta de classe* do objeto em σ, `Square`.
 
 * Os dois podem diferir em todo ponto do programa. O *despacho* decide qual governa uma chamada de método.
 
@@ -100,14 +100,14 @@ Except.ok (Except.error (CoreCpp.TypeError.mismatch
 def staticDyn : String :=
   "class Base {
   public:
-    int fixo() { return 1; }
-    virtual int variavel() { return 10; }
+    int fixed() { return 1; }
+    virtual int dispatched() { return 10; }
   };
-  class Derivada : public Base {
+  class Derived : public Base {
   public:
-    int variavel() override { return 20; }
+    int dispatched() override { return 20; }
   };
-  int main() { Base* b = new Derivada(); return b->fixo() + b->variavel(); }"
+  int main() { Base* b = new Derived(); return b->fixed() + b->dispatched(); }"
 
 #eval (parseProgram staticDyn).map run
 ```
@@ -126,13 +126,13 @@ m ↦ τ m(…) { c } o método m mais próximo de S na cadeia, ou mais próximo
 ```lean (name := hide)
 def hide : String :=
   "class Base { public: int f() { return 1; } };
-  class Derivada : public Base { public: int f() { return 2; } };
+  class Derived : public Base { public: int f() { return 2; } };
   int main() { return 0; }"
 
 #eval (parseProgram hide).map check
 ```
 ```leanOutput hide
-Except.ok (Except.error (CoreCpp.TypeError.redefinesNonVirtual "Derivada" "f"))
+Except.ok (Except.error (CoreCpp.TypeError.redefinesNonVirtual "Derived" "f"))
 ```
 
 * Uma classe derivada redefine só um método `virtual`, e o marca com `override`.
@@ -153,23 +153,23 @@ os destrutores da cadeia de T rodam de T até a raiz, cada um com this ↦ ℓ, 
 
 ```lean (name := dtors)
 def dtors : String :=
-  "class Registro { public: int n; };
+  "class Record { public: int n; };
   class Base {
   public:
-    Registro* r;
+    Record* r;
     virtual ~Base() { r->n = r->n + 1; }
   };
-  class Derivada : public Base {
+  class Derived : public Base {
   public:
-    ~Derivada() { r->n = r->n + 10; }
+    ~Derived() { r->n = r->n + 10; }
   };
   int main() {
-    Registro* reg = new Registro();
-    Derivada* d = new Derivada();
-    d->r = reg;
+    Record* rec = new Record();
+    Derived* d = new Derived();
+    d->r = rec;
     Base* b = d;
     delete b;
-    return reg->n;
+    return rec->n;
   }"
 
 #eval (parseProgram dtors).map run
@@ -183,19 +183,19 @@ Except.ok (Except.ok (CoreCpp.Val.int 11))
 ```lean (name := nonVirtual)
 def nonVirtual : String :=
   "class Base { public: int x; ~Base() { } };
-  class Derivada : public Base { public: int y; };
-  int main() { Base* b = new Derivada(); delete b; return 0; }"
+  class Derived : public Base { public: int y; };
+  int main() { Base* b = new Derived(); delete b; return 0; }"
 
 #eval (parseProgram nonVirtual).map run
 ```
 ```leanOutput nonVirtual
-Except.ok (Except.error (CoreCpp.Error.deleteWithoutVirtualDtor "Base" "Derivada"))
+Except.ok (Except.error (CoreCpp.Error.deleteWithoutVirtualDtor "Base" "Derived"))
 ```
 
 ```lean (name := twice)
 def twice : String :=
-  "class Caixa { public: int v; };
-  int main() { Caixa* c = new Caixa(); delete c; delete c; return 0; }"
+  "class Box { public: int v; };
+  int main() { Box* c = new Box(); delete c; delete c; return 0; }"
 
 #eval (parseProgram twice).map run
 ```
@@ -205,8 +205,8 @@ Except.ok (Except.error (CoreCpp.Error.doubleDelete 1))
 
 ```lean (name := dangling)
 def dangling : String :=
-  "class Caixa { public: int v; };
-  int main() { Caixa* c = new Caixa(); delete c; return c->v; }"
+  "class Box { public: int v; };
+  int main() { Box* c = new Box(); delete c; return c->v; }"
 
 #eval (parseProgram dangling).map run
 ```

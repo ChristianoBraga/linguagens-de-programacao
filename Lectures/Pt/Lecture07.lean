@@ -35,19 +35,19 @@ Esta aula constrói os tipos recursivos a partir das classes da {secref}[aula-6]
 tag := "recursivos"
 %%%
 
-Um tipo é *recursivo* quando os seus valores contêm valores do mesmo tipo. Em Core C++ um tipo recursivo é uma classe com um campo de tipo ponteiro para a própria classe. A classe `No` abaixo é o nó de uma lista encadeada, com um valor e um ponteiro para o nó seguinte.
+Um tipo é *recursivo* quando os seus valores contêm valores do mesmo tipo. Em Core C++ um tipo recursivo é uma classe com um campo de tipo ponteiro para a própria classe. A classe `Node` abaixo é o nó de uma lista encadeada, com um valor e um ponteiro para o nó seguinte.
 
 ```
-class No {
+class Node {
 public:
-  int valor;
-  No* prox;
+  int value;
+  Node* next;
 };
 ```
 
-Um valor de tipo `No*` é `nullptr` ou um ponteiro para um registro cujo campo `prox` é de novo um valor de tipo `No*`. Toda cadeia é finita, porque cada registro foi criado por um `new` que executou antes, e o fim da cadeia é `nullptr`. A recursão está no tipo, e a memória guarda só um número finito de registros.
+Um valor de tipo `Node*` é `nullptr` ou um ponteiro para um registro cujo campo `next` é de novo um valor de tipo `Node*`. Toda cadeia é finita, porque cada registro foi criado por um `new` que executou antes, e o fim da cadeia é `nullptr`. A recursão está no tipo, e a memória guarda só um número finito de registros.
 
-O literal `nullptr` tem um tipo interno, `nullptr_t`, compatível com todo tipo ponteiro e com nada mais. Ele é a razão de existir a relação ≈ da {secref}[aula-5]. Uma declaração `No* p = nullptr` tipa porque `nullptr_t ≈ No*`, e a comparação `p == nullptr` tipa por `T-Eq`. O seu valor é `null`.
+O literal `nullptr` tem um tipo interno, `nullptr_t`, compatível com todo tipo ponteiro e com nada mais. Ele é a razão de existir a relação ≈ da {secref}[aula-5]. Uma declaração `Node* p = nullptr` tipa porque `nullptr_t ≈ Node*`, e a comparação `p == nullptr` tipa por `T-Eq`. O seu valor é `null`.
 
 ```
 ────────────────────────── (T-Null)      ──────────────────────────── (Null)
@@ -56,31 +56,31 @@ O literal `nullptr` tem um tipo interno, `nullptr_t`, compatível com todo tipo 
 
 Uma função sobre um tipo recursivo segue a recursão do tipo. A soma de uma lista é zero para `nullptr` e, para um nó, o valor do nó mais a soma do resto.
 
-```lean (name := lista)
-def lista : String :=
-  "class No {
+```lean (name := list)
+def list : String :=
+  "class Node {
   public:
-    int valor;
-    No* prox;
+    int value;
+    Node* next;
   };
-  int soma(No* p) {
-    return p == nullptr ? 0 : p->valor + soma(p->prox);
+  int sum(Node* p) {
+    return p == nullptr ? 0 : p->value + sum(p->next);
   }
   int main() {
-    No* lista = new No();
-    lista->valor = 1;
-    lista->prox = new No();
-    lista->prox->valor = 2;
-    return soma(lista);
+    Node* list = new Node();
+    list->value = 1;
+    list->next = new Node();
+    list->next->value = 2;
+    return sum(list);
   }"
 
-#eval (parseProgram lista).map run
+#eval (parseProgram list).map run
 ```
-```leanOutput lista
+```leanOutput list
 Except.ok (Except.ok (CoreCpp.Val.int 3))
 ```
 
-O campo `prox` de um nó recém‑criado é `nullptr`, pelos valores por omissão de `New`, então o segundo nó encerra a lista sem uma atribuição explícita. O condicional avalia só o ramo escolhido, então a chamada recursiva não acontece no fim da lista, e a recursão termina porque toda cadeia é finita.
+O campo `next` de um nó recém‑criado é `nullptr`, pelos valores por omissão de `New`, então o segundo nó encerra a lista sem uma atribuição explícita. O condicional avalia só o ramo escolhido, então a chamada recursiva não acontece no fim da lista, e a recursão termina porque toda cadeia é finita.
 
 # A Desreferência de nullptr
 
@@ -91,14 +91,14 @@ tag := "nullptr"
 As regras `LocDeref` e `LocArrow` da {secref}[aula-6] exigem que o ponteiro avalie para uma posição. Quando ele avalia para `null` não há regra com uma posição como resultado, e o resultado é `erro`. É o primeiro dos dois erros de execução da aula, e o ponto em que Core C++ e C++ se separam. C++ deixa a desreferência de um ponteiro nulo indefinida, e na maioria das máquinas o processo é morto pelo sistema operacional. Core C++ lhe dá o resultado definido `erro`, que o interpretador reporta e que encerra o programa.
 
 ```lean (name := nullDeref)
-#eval (parseProgram "class No { public: int valor; No* prox; };
-  int main() { No* p = nullptr; return p->valor; }").map run
+#eval (parseProgram "class Node { public: int value; Node* next; };
+  int main() { Node* p = nullptr; return p->value; }").map run
 ```
 ```leanOutput nullDeref
 Except.ok (Except.error (CoreCpp.Error.nullDereference))
 ```
 
-A verificação é dinâmica, porque um ponteiro ser nulo depende da execução. Um sistema de tipos que separa ponteiros anuláveis de não anuláveis move parte da verificação para o lado estático, e a UD VI menciona as linguagens que o fazem. Em Core C++ o tipo `No*` inclui `nullptr`, e o programador o testa, como `soma` faz.
+A verificação é dinâmica, porque um ponteiro ser nulo depende da execução. Um sistema de tipos que separa ponteiros anuláveis de não anuláveis move parte da verificação para o lado estático, e a UD VI menciona as linguagens que o fazem. Em Core C++ o tipo `Node*` inclui `nullptr`, e o programador o testa, como `sum` faz.
 
 # Vetores
 
@@ -197,10 +197,10 @@ Todo campo e todo elemento começa com o valor por omissão do seu tipo, `0`, `f
 
 ```lean (name := campos)
 def campos : String :=
-  "class Reg { public: int n; bool ok; Reg* prox; };
+  "class Rec { public: int n; bool ok; Rec* next; };
   int main() {
-    Reg* r = new Reg();
-    return r->n + (r->ok ? 10 : 1) + (r->prox == nullptr ? 100 : 0);
+    Rec* r = new Rec();
+    return r->n + (r->ok ? 10 : 1) + (r->next == nullptr ? 100 : 0);
   }"
 
 #eval (parseProgram campos).map run
@@ -215,11 +215,11 @@ Except.ok (Except.ok (CoreCpp.Val.int 101))
 tag := "exercicios-7"
 %%%
 
-{exercise "exr-tamanho-lista"}[] Escreva em Core C++ uma função que conta os nós de uma lista de `No`, e um `main` que constrói uma lista de três nós e devolve a contagem. Execute com o interpretador.
+{exercise "exr-tamanho-lista"}[] Escreva em Core C++ uma função que conta os nós de uma lista de `Node`, e um `main` que constrói uma lista de três nós e devolve a contagem. Execute com o interpretador.
 
-{exercise "exr-memoria-lista"}[] Desenhe a memória depois de o `main` da {secref}[recursivos] construir os seus dois nós, antes da chamada a `soma`, com uma caixa por posição, e marque os registros, os campos e a variável.
+{exercise "exr-memoria-lista"}[] Desenhe a memória depois de o `main` da {secref}[recursivos] construir os seus dois nós, antes da chamada a `sum`, com uma caixa por posição, e marque os registros, os campos e a variável.
 
-{exercise "exr-nullptr-estatico"}[] Explique por que o verificador de tipos não pode rejeitar `No* p = nullptr; return p->valor;`, e proponha uma regra de tipos que o rejeitasse e ainda aceitasse a função `soma`.
+{exercise "exr-nullptr-estatico"}[] Explique por que o verificador de tipos não pode rejeitar `Node* p = nullptr; return p->value;`, e proponha uma regra de tipos que o rejeitasse e ainda aceitasse a função `sum`.
 
 {exercise "exr-vetor-inverso"}[] Escreva em Core C++ um `main` que cria um vetor de cinco elementos, o preenche com 1 a 5, o inverte no lugar com um laço e devolve o primeiro elemento. Diga quantas posições a memória guarda ao fim.
 

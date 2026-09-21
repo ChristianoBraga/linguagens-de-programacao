@@ -31,16 +31,16 @@ open CoreCpp
 # §7.1 Tipos recursivos
 
 ```
-class No {
+class Node {
 public:
-  int valor;
-  No* prox;
+  int value;
+  Node* next;
 };
 ```
 
 * Um tipo é *recursivo* quando os seus valores contêm valores do mesmo tipo. Em Core C++, uma classe com um campo de tipo *ponteiro para a própria classe*.
 
-* Um `No*` é `nullptr` ou um ponteiro para um registro cujo `prox` é de novo um `No*`. Toda cadeia é *finita*, cada registro veio de um `new` que rodou antes.
+* Um `Node*` é `nullptr` ou um ponteiro para um registro cujo `next` é de novo um `Node*`. Toda cadeia é *finita*, cada registro veio de um `new` que rodou antes.
 
 * A recursão está no *tipo*. A memória guarda um número finito de registros.
 
@@ -53,41 +53,41 @@ public:
 
 * `nullptr` tem o tipo interno `nullptr_t`, compatível com *todo tipo ponteiro* e nada mais. É para isso que existe a relação ≈.
 
-* `No* p = nullptr` tipa porque `nullptr_t ≈ No*`. `p == nullptr` tipa por `T-Eq`.
+* `Node* p = nullptr` tipa porque `nullptr_t ≈ Node*`. `p == nullptr` tipa por `T-Eq`.
 
 # §7.1 Uma função sobre um tipo recursivo
 
-```lean (name := lista)
-def lista : String :=
-  "class No {
+```lean (name := list)
+def list : String :=
+  "class Node {
   public:
-    int valor;
-    No* prox;
+    int value;
+    Node* next;
   };
-  int soma(No* p) {
-    return p == nullptr ? 0 : p->valor + soma(p->prox);
+  int sum(Node* p) {
+    return p == nullptr ? 0 : p->value + sum(p->next);
   }
   int main() {
-    No* lista = new No();
-    lista->valor = 1;
-    lista->prox = new No();
-    lista->prox->valor = 2;
-    return soma(lista);
+    Node* list = new Node();
+    list->value = 1;
+    list->next = new Node();
+    list->next->value = 2;
+    return sum(list);
   }"
 
-#eval (parseProgram lista).map run
+#eval (parseProgram list).map run
 ```
-```leanOutput lista
+```leanOutput list
 Except.ok (Except.ok (CoreCpp.Val.int 3))
 ```
 
-* O segundo nó encerra a lista porque `prox` vale `nullptr` por omissão. O condicional avalia só o ramo escolhido, a recursão para.
+* O segundo nó encerra a lista porque `next` vale `nullptr` por omissão. O condicional avalia só o ramo escolhido, a recursão para.
 
 # §7.2 A desreferência de nullptr
 
 ```lean (name := nullDeref)
-#eval (parseProgram "class No { public: int valor; No* prox; };
-  int main() { No* p = nullptr; return p->valor; }").map run
+#eval (parseProgram "class Node { public: int value; Node* next; };
+  int main() { Node* p = nullptr; return p->value; }").map run
 ```
 ```leanOutput nullDeref
 Except.ok (Except.error (CoreCpp.Error.nullDereference))
@@ -190,10 +190,10 @@ Except.ok (Except.error (CoreCpp.Error.negativeSize (-1)))
 
 ```lean (name := campos)
 def campos : String :=
-  "class Reg { public: int n; bool ok; Reg* prox; };
+  "class Rec { public: int n; bool ok; Rec* next; };
   int main() {
-    Reg* r = new Reg();
-    return r->n + (r->ok ? 10 : 1) + (r->prox == nullptr ? 100 : 0);
+    Rec* r = new Rec();
+    return r->n + (r->ok ? 10 : 1) + (r->next == nullptr ? 100 : 0);
   }"
 
 #eval (parseProgram campos).map run

@@ -48,7 +48,7 @@ open CoreCpp
   * initialiser, `std::function<int(int)> f = [=]…`
   * the declared type
 *
-  * argument, `aplica([=]…, 3)`
+  * argument, `apply([=]…, 3)`
   * the parameter type
 *
   * `return [=]…`
@@ -106,8 +106,8 @@ Except.ok (Except.error (CoreCpp.TypeError.constCapture "n"))
 ```lean (name := captureCopy)
 def captureCopy : String :=
   "int main() { int n = 5;
-   std::function<int(int)> soma = [=](int x) -> int { return x + n; };
-   n = 100; return soma(1); }"
+   std::function<int(int)> sum = [=](int x) -> int { return x + n; };
+   n = 100; return sum(1); }"
 
 #eval (parseProgram captureCopy).map run
 ```
@@ -131,38 +131,38 @@ Except.ok (Except.ok (CoreCpp.Val.int 6))
 
 # §15.5 Higher order functions
 
-```lean (name := multiplicador)
+```lean (name := multiplier)
 def multiplier : String :=
-  "std::function<int(int)> multiplicador(int k) {
+  "std::function<int(int)> multiplier(int k) {
      return [=](int x) -> int { return k * x; };
    }
-   int aplica(std::function<int(int)> f, int v) { return f(v); }
-   int main() { return aplica(multiplicador(3), 14); }"
+   int apply(std::function<int(int)> f, int v) { return f(v); }
+   int main() { return apply(multiplier(3), 14); }"
 
 #eval (parseProgram multiplier).map run
 ```
-```leanOutput multiplicador
+```leanOutput multiplier
 Except.ok (Except.ok (CoreCpp.Val.int 42))
 ```
 
-* The closure outlives the call of `multiplicador`. Its copy of `k` is *inside* the closure, nothing dangles.
+* The closure outlives the call of `multiplier`. Its copy of `k` is *inside* the closure, nothing dangles.
 
 # §15.6 Effects through a captured pointer
 
-```lean (name := contador)
+```lean (name := counter)
 def counter : String :=
-  "class Caixa { public: int valor; };
-   std::function<int()> contador() {
-     Caixa* c = new Caixa();
-     c->valor = 0;
-     return [=]() -> int { c->valor = c->valor + 1; return c->valor; };
+  "class Box { public: int value; };
+   std::function<int()> counter() {
+     Box* c = new Box();
+     c->value = 0;
+     return [=]() -> int { c->value = c->value + 1; return c->value; };
    }
-   int main() { std::function<int()> k = contador();
-     int primeiro = k(); return k() + k() + primeiro; }"
+   int main() { std::function<int()> k = counter();
+     int first = k(); return k() + k() + first; }"
 
 #eval (parseProgram counter).map run
 ```
-```leanOutput contador
+```leanOutput counter
 Except.ok (Except.ok (CoreCpp.Val.int 6))
 ```
 

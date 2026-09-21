@@ -50,11 +50,11 @@ The tokens of Core C++ fall into five classes, and {numref}[tbl-tokens] describe
 *
   * type identifier
   * uppercase initial
-  * `Pilha`, `Forma`, `T`
+  * `Stack`, `Shape`, `T`
 *
   * variable identifier
   * lowercase initial
-  * `x`, `acc`, `fatorial`
+  * `x`, `acc`, `factorial`
 *
   * integer literal
   * decimal digits
@@ -67,7 +67,7 @@ The tokens of Core C++ fall into five classes, and {numref}[tbl-tokens] describe
 
 {tabcap "tbl-tokens"}[The five token classes of Core C++.]
 
-The distinction between type identifiers and variable identifiers by their initial is a *lexical convention* of Core C++ that C++ lacks. It exists so that the lexer decides, without context, whether `<` opens a template argument list or compares two values. In `Pilha<int>` the `<` follows a type identifier, and in `x < y` it follows a variable identifier. C++ resolves this ambiguity with a symbol table consulted during parsing, and Core C++ resolves it in the lexer.{fnref}[stdfunction]
+The distinction between type identifiers and variable identifiers by their initial is a *lexical convention* of Core C++ that C++ lacks. It exists so that the lexer decides, without context, whether `<` opens a template argument list or compares two values. In `Stack<int>` the `<` follows a type identifier, and in `x < y` it follows a variable identifier. C++ resolves this ambiguity with a symbol table consulted during parsing, and Core C++ resolves it in the lexer.{fnref}[stdfunction]
 
 The lexer of Core C++ is a function from `String` to `Array Token`, written in Lean as a finite automaton over the list of characters. It applies the *longest match* rule, that is, at each position it reads the longest token the rules admit. Thus `<=` is one token, not `<` followed by `=`, and `y2` is an identifier, not `y` followed by `2`.
 
@@ -100,7 +100,7 @@ Except.error "unexpected character '@'"
 
 :::footnotes
 
-{fnAnchor "stdfunction"}[] The names `std::function` and `std::vector` start with a lowercase letter, so the convention would classify them as variable identifiers. The lexer recognises them before the identifier rule and treats them as reserved words, one token each. For the same reason Core C++ has no token `>>`, and `Pilha<Pilha<int>>` closes with two tokens `>`, which C++ only came to accept in C++11.
+{fnAnchor "stdfunction"}[] The names `std::function` and `std::vector` start with a lowercase letter, so the convention would classify them as variable identifiers. The lexer recognises them before the identifier rule and treats them as reserved words, one token each. For the same reason Core C++ has no token `>>`, and `Stack<Stack<int>>` closes with two tokens `>`, which C++ only came to accept in C++11.
 
 :::
 
@@ -249,7 +249,7 @@ The complete grammar of Core C++, with classes, templates and lambdas, is in the
 tag := "exercises-2"
 %%%
 
-{exercise "exr-lexical"}[] List the tokens of `Pilha<int>* p = new Pilha<int>(8);` with the class of each. Say at which position the uppercase initial convention decides the reading of `<`.
+{exercise "exr-lexical"}[] List the tokens of `Stack<int>* p = new Stack<int>(8);` with the class of each. Say at which position the uppercase initial convention decides the reading of `<`.
 
 {exercise "exr-derivation"}[] Draw the derivation tree of `x < 10 && !fim` by the grammar of {secref}[grammars], and then its abstract syntax tree. Point out what the second one omits.
 

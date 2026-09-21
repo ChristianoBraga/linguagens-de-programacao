@@ -34,23 +34,23 @@ open CoreCpp
 Γ ⊢ e : B*
 ```
 
-* From the specific to the general. Whoever has a `Quadrado*` has a `Forma*`. The converse fails.
+* From the specific to the general. Whoever has a `Square*` has a `Shape*`. The converse fails.
 
 * Not a separate judgment. It lives in the relation τ ≈ τ', so it holds in declarations, assignments, arguments, results, comparisons and branches at once.
 
 ```lean (name := notSuper)
 def notSuper : String :=
-  "class Forma { public: int lado; };
-  class Quadrado : public Forma { public: int marca; };
-  int main() { Forma* f = new Quadrado(); Quadrado* q = f; return 0; }"
+  "class Shape { public: int side; };
+  class Square : public Shape { public: int mark; };
+  int main() { Shape* f = new Square(); Square* q = f; return 0; }"
 
 #eval (parseProgram notSuper).map check
 ```
 ```leanOutput notSuper
 Except.ok (Except.error (CoreCpp.TypeError.mismatch
    "initialiser of q"
-   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Quadrado"))
-   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Forma"))))
+   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Square"))
+   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Shape"))))
 ```
 
 # §23.1 The conversion does nothing
@@ -63,23 +63,23 @@ Except.ok (Except.error (CoreCpp.TypeError.mismatch
 
 ```lean (name := dispatch)
 def dispatch : String :=
-  "class Forma {
+  "class Shape {
   public:
     virtual int area() { return 0; }
-    virtual ~Forma() { }
+    virtual ~Shape() { }
   };
-  class Quadrado : public Forma {
+  class Square : public Shape {
   private:
-    int lado;
+    int side;
   public:
-    Quadrado(int l) { this->lado = l; }
-    int area() override { return lado * lado; }
+    Square(int l) { this->side = l; }
+    int area() override { return side * side; }
   };
-  int soma(Forma& f, Forma& g) { return f.area() + g.area(); }
+  int sum(Shape& f, Shape& g) { return f.area() + g.area(); }
   int main() {
-    Forma* a = new Quadrado(3);
-    Forma* b = new Quadrado(4);
-    int r = soma(*a, *b);
+    Shape* a = new Square(3);
+    Shape* b = new Square(4);
+    int r = sum(*a, *b);
     delete a;
     delete b;
     return r;
@@ -118,24 +118,24 @@ Except.ok (Except.ok (CoreCpp.Val.int 25))
 
 # §23.3 Where the two do not compose
 
-* Is `Pilha<Quadrado*>` a subtype of `Pilha<Forma*>`. In Core C++, in C++ and in Java, *no*.
+* Is `Stack<Square*>` a subtype of `Stack<Shape*>`. In Core C++, in C++ and in Java, *no*.
 
 ```lean (name := invariance)
 def invariance : String :=
   "template<typename T>
-  class Caixa {
+  class Box {
   private:
     T v;
   public:
-    Caixa(T x) { this->v = x; }
-    T abre() { return v; }
-    void guarda(T x) { v = x; }
+    Box(T x) { this->v = x; }
+    T get() { return v; }
+    void store(T x) { v = x; }
   };
-  class Forma { public: int lado; };
-  class Quadrado : public Forma { public: int marca; };
+  class Shape { public: int side; };
+  class Square : public Shape { public: int mark; };
   int main() {
-    Caixa<Quadrado*>* c = new Caixa<Quadrado*>(new Quadrado());
-    Caixa<Forma*>* d = c;
+    Box<Square*>* c = new Box<Square*>(new Square());
+    Box<Shape*>* d = c;
     return 0;
   }"
 
@@ -144,19 +144,19 @@ def invariance : String :=
 ```leanOutput invariance
 Except.ok (Except.error (CoreCpp.TypeError.mismatch
    "initialiser of d"
-   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Caixa<Forma*>"))
-   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Caixa<Quadrado*>"))))
+   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Box<Shape*>"))
+   (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Box<Square*>"))))
 ```
 
 # §23.3 Why the refusal protects the program
 
-* If it were allowed, `d` and `c` would name one object of class `Caixa<Quadrado*>`.
+* If it were allowed, `d` and `c` would name one object of class `Box<Square*>`.
 
-* `d->guarda(x)` accepts any `Forma*`, so a plain `Forma` could enter a box whose `abre` promises a `Quadrado*`.
+* `d->store(x)` accepts any `Shape*`, so a plain `Shape` could enter a box whose `get` promises a `Square*`.
 
-* The next `c->abre()->marca` would read a field of an object that has none.
+* The next `c->get()->mark` would read a field of an object that has none.
 
-* *Covariance* in results, *contravariance* in parameters, *invariance* when the parameter is in both, as in `Caixa`.
+* *Covariance* in results, *contravariance* in parameters, *invariance* when the parameter is in both, as in `Box`.
 
 * C++ and Core C++ make every instantiation invariant. Java asks at the use, Scala and Kotlin at the declaration.
 

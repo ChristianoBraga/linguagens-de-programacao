@@ -44,21 +44,21 @@ open CoreCpp
 
 ```lean (name := stack)
 def stack : String :=
-  "class Pilha {
+  "class Stack {
   private:
-    std::vector<int>* itens;
-    int topo;
+    std::vector<int>* items;
+    int top;
   public:
-    Pilha(int n) { this->itens = new std::vector<int>(n); this->topo = 0; }
-    void empilha(int x) { (*itens)[topo] = x; topo = topo + 1; }
-    int desempilha() { topo = topo - 1; return (*itens)[topo]; }
-    bool vazia() { return topo == 0; }
+    Stack(int n) { this->items = new std::vector<int>(n); this->top = 0; }
+    void push(int x) { (*items)[top] = x; top = top + 1; }
+    int pop() { top = top - 1; return (*items)[top]; }
+    bool empty() { return top == 0; }
   };
   int main() {
-    Pilha* p = new Pilha(8);
-    p->empilha(1);
-    p->empilha(41);
-    return p->desempilha() + p->desempilha();
+    Stack* p = new Stack(8);
+    p->push(1);
+    p->push(41);
+    return p->pop() + p->pop();
   }"
 
 #eval (parseProgram stack).map run
@@ -71,19 +71,19 @@ Except.ok (Except.ok (CoreCpp.Val.int 42))
 
 ```lean (name := peek)
 def peek : String :=
-  "class Pilha {
+  "class Stack {
   private:
-    std::vector<int>* itens;
-    int topo;
+    std::vector<int>* items;
+    int top;
   public:
-    Pilha(int n) { this->itens = new std::vector<int>(n); this->topo = 0; }
+    Stack(int n) { this->items = new std::vector<int>(n); this->top = 0; }
   };
-  int main() { Pilha* p = new Pilha(8); return p->topo; }"
+  int main() { Stack* p = new Stack(8); return p->top; }"
 
 #eval (parseProgram peek).map check
 ```
 ```leanOutput peek
-Except.ok (Except.error (CoreCpp.TypeError.privateMember "Pilha" "topo"))
+Except.ok (Except.error (CoreCpp.TypeError.privateMember "Stack" "top"))
 ```
 
 * The contract is enforced *before the program runs*.
@@ -147,7 +147,7 @@ the constructor of B, if any, takes no parameters
 
 # §17.5 Representation invariants
 
-* A property every operation preserves. For the stack, `topo` stays in bounds and the values below it are the ones pushed and not popped.
+* A property every operation preserves. For the stack, `top` stays in bounds and the values below it are the ones pushed and not popped.
 
 * Visibility makes the invariant *provable*. Only the methods write the fields, so checking each method suffices.
 

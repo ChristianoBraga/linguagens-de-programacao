@@ -40,18 +40,18 @@ The three forbidden ones are the same construction seen from three sides, the fu
 
 ```lean (name := ooCheck)
 def conta : String :=
-  "class Conta {
+  "class Account {
    public:
-     int saldo;
-     virtual int taxa() { return 2; }
-     void deposita(int v) { saldo = saldo + v; }
-     virtual ~Conta() { }
+     int balance;
+     virtual int rate() { return 2; }
+     void deposit(int v) { balance = balance + v; }
+     virtual ~Account() { }
    };
-   class Poupanca : public Conta { public: int taxa() override { return 0; } };
+   class Savings : public Account { public: int rate() override { return 0; } };
    int main() {
-     Conta* c = new Conta(); c->deposita(10);
-     Conta* p = new Poupanca(); p->deposita(10);
-     int r = c->taxa() + p->taxa() + c->saldo;
+     Account* c = new Account(); c->deposit(10);
+     Account* p = new Savings(); p->deposit(10);
+     int r = c->rate() + p->rate() + c->balance;
      delete c; delete p; return r;
    }"
 
@@ -67,7 +67,7 @@ The same program lies outside the imperative fragment, at its first class.
 #eval (parseProgram conta).map (fragment .imperative)
 ```
 ```leanOutput ooNotImp
-Except.ok (Except.error { frag := CoreCpp.Frag.imperative, what := "class", site := "class Conta" })
+Except.ok (Except.error { frag := CoreCpp.Frag.imperative, what := "class", site := "class Account" })
 ```
 
 And a program that returns a lambda lies outside the object oriented one, at the type that carries it.
@@ -115,25 +115,25 @@ The two organising principles of the paradigm are both restrictions on knowledge
 
 *Dispatch* says that the code a call runs is known only at run time, by the class tag of the receiver. In Core C++ that is the rule `Dispatch` of {secref}[lecture-19], and its condition is the `virtual` marker. The caller therefore knows the signature and not the code, which is the other half of the same idea, and the two together are what lets a program be extended by a class its author never saw.
 
-The case study of the unit shows both. The criterion of the sum is a `virtual` method, so the derived class chooses it, and the accumulator is a field, so no caller can reach it except through `junta` and `total`.
+The case study of the unit shows both. The criterion of the sum is a `virtual` method, so the derived class chooses it, and the accumulator is a field, so no caller can reach it except through `add` and `total`.
 
 ```lean (name := caseOo)
 def caseOo : String :=
-  "class Somador {
+  "class Adder {
    public:
      int acc;
-     virtual bool aceita(int i) { return true; }
-     void junta(int i) { if (aceita(i)) { acc = acc + i; } }
+     virtual bool accepts(int i) { return true; }
+     void add(int i) { if (accepts(i)) { acc = acc + i; } }
      int total() { return acc; }
-     virtual ~Somador() { }
+     virtual ~Adder() { }
    };
-   class SomadorPar : public Somador {
+   class EvenAdder : public Adder {
    public:
-     bool aceita(int i) override { return i % 2 == 0; }
+     bool accepts(int i) override { return i % 2 == 0; }
    };
    int main() {
-     Somador* s = new SomadorPar();
-     for (int i = 1; i <= 10; i = i + 1) { s->junta(i); }
+     Adder* s = new EvenAdder();
+     for (int i = 1; i <= 10; i = i + 1) { s->add(i); }
      int r = s->total();
      delete s;
      return r;
@@ -145,7 +145,7 @@ def caseOo : String :=
 Except.ok (Except.ok (), Except.ok (CoreCpp.Val.int 30))
 ```
 
-The method `junta` is declared once, in the base, and calls `aceita`, which the derived class redefines. The call inside `junta` is dispatched, so `junta` runs the criterion of the object it was called on, without knowing which. Extending the program with a third criterion is one new class and no change to `junta`.
+The method `add` is declared once, in the base, and calls `accepts`, which the derived class redefines. The call inside `add` is dispatched, so `add` runs the criterion of the object it was called on, without knowing which. Extending the program with a third criterion is one new class and no change to `add`.
 
 # Dispatch and the Closure
 
@@ -165,7 +165,7 @@ The exchange is visible in the tables of {secref}[lecture-29]. Dispatch puts the
 tag := "exercises-26"
 %%%
 
-{exercise "exr-oo-third"}[] Extend the case study with a third criterion, the multiples of three, and confirm that `junta` does not change. Say which line of the rule `Dispatch` decides the call.
+{exercise "exr-oo-third"}[] Extend the case study with a third criterion, the multiples of three, and confirm that `add` does not change. Say which line of the rule `Dispatch` decides the call.
 
 {exercise "exr-oo-leak"}[] Write a program of the object oriented fragment that allocates an object and never deletes it, and one that deletes it twice. Say what each returns, and which of the three `error` results of `delete` the second reaches.
 
@@ -175,7 +175,7 @@ tag := "exercises-26"
 
 {exercise "exr-oo-vector"}[] Rewrite the case study so that the numbers come from a `std::vector<int>` built with `new`, and say which locations the program leaves in σ at the end and why.
 
-{exercise "exr-oo-static"}[] Remove the `virtual` from `aceita` and run the program again. Explain the result from the rule that chooses the method, and say what the type checker would say if `override` were left in place.
+{exercise "exr-oo-static"}[] Remove the `virtual` from `accepts` and run the program again. Explain the result from the rule that chooses the method, and say what the type checker would say if `override` were left in place.
 
 ```lean -show
 end Lecture26

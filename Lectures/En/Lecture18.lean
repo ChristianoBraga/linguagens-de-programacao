@@ -38,19 +38,19 @@ In {secref}[lecture-6] every field of a new object received the default value of
 
 ```lean (name := counter)
 def counter : String :=
-  "class Contador {
+  "class Counter {
   private:
-    int valor;
+    int value;
   public:
-    Contador(int inicial) { this->valor = inicial; }
-    void incrementa() { valor = valor + 1; }
-    int atual() { return valor; }
+    Counter(int initial) { this->value = initial; }
+    void increment() { value = value + 1; }
+    int current() { return value; }
   };
   int main() {
-    Contador* c = new Contador(40);
-    c->incrementa();
-    c->incrementa();
-    return c->atual();
+    Counter* c = new Counter(40);
+    c->increment();
+    c->increment();
+    return c->current();
   }"
 
 #eval (parseProgram counter).map run
@@ -93,9 +93,9 @@ Inside a member body the keyword `this` denotes the object on which the member w
 Γ ⊢ this : C*                      ρ, σ ⊢ this ⇒ loc ℓ, σ
 ```
 
-The binding of `this` in ρ is made by the call, {secref}[member-call], and it is an *alias* binding in the sense of {secref}[lecture-10]. It names a location that exists before the call, the object, and the return of the member does not free it. There is no location whose content is the pointer `this`, so `this` is not a variable, cannot be assigned and denotes no location by ⇒ₗ. It is a pointer value, and `this->valor` is the field `valor` of the receiver by the rule `LocArrow` of {secref}[lecture-6].
+The binding of `this` in ρ is made by the call, {secref}[member-call], and it is an *alias* binding in the sense of {secref}[lecture-10]. It names a location that exists before the call, the object, and the return of the member does not free it. There is no location whose content is the pointer `this`, so `this` is not a variable, cannot be assigned and denotes no location by ⇒ₗ. It is a pointer value, and `this->value` is the field `value` of the receiver by the rule `LocArrow` of {secref}[lecture-6].
 
-A member body may also name a field or a method of the receiver without `this`. The method `incrementa` above writes `valor` directly. The rule is a fallback on the rules for variables. A name that is not bound in the context, or in the environment, and is a member of the current class denotes the member of `this`.
+A member body may also name a field or a method of the receiver without `this`. The method `increment` above writes `value` directly. The rule is a fallback on the rules for variables. A name that is not bound in the context, or in the environment, and is a member of the current class denotes the member of `this`.
 
 ```
 x ∉ Γ    Γ(this) = C*    Γ ⊢ this->x : τ            x ∉ ρ    ρ(this) = ℓ    σ(ℓ) = obj C [… x ↦ ℓₓ …]
@@ -103,7 +103,7 @@ x ∉ Γ    Γ(this) = C*    Γ ⊢ this->x : τ            x ∉ ρ    ρ(this)
 Γ ⊢ x : τ                                             ρ, σ ⊢ x ⇒ₗ ℓₓ, σ
 ```
 
-A parameter or a local variable with the name of a field hides the field, and the field is then reached only through `this`, the C++ rule as well. The constructor of `Contador` above could have been written with a parameter `valor` and the body `this->valor = valor;`.
+A parameter or a local variable with the name of a field hides the field, and the field is then reached only through `this`, the C++ rule as well. The constructor of `Counter` above could have been written with a parameter `value` and the body `this->value = value;`.
 
 # Member Calls
 
@@ -149,37 +149,37 @@ The interpreter prints the derivation of a program with a constructor and a meth
 
 ```lean (name := traceCtor)
 def traceCtor : String :=
-  "class Caixa {
+  "class Box {
   private:
     int v;
   public:
-    Caixa(int x) { v = x; }
-    int dobro() { return v * 2; }
+    Box(int x) { v = x; }
+    int twice() { return v * 2; }
   };
-  int main() { Caixa* c = new Caixa(21); return c->dobro(); }"
+  int main() { Box* c = new Box(21); return c->twice(); }"
 
 #eval match parseProgram traceCtor with
   | .ok p => IO.println (renderTrace (runWith true p).2)
   | .error e => IO.println e
 ```
 ```leanOutput traceCtor
-      [], {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}} ⊢ 21 ⇒ 21, {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}}   (Lit)
-          [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ x ⇒ₗ ℓ2, {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ 21}   (LocVar)
-        [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ x ⇒ 21, {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ 21}   (Var)
-        [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ v ⇒ₗ ℓ0, {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ 21}   (LocVar)
-      [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ v = x; ⇒ normal, [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ2 ↦ 21}   (Assign)
-    [], {} ⊢ new Caixa(21) ⇒ ℓ1, {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}}   (New)
-  [], {} ⊢ Caixa* c = new Caixa(21); ⇒ normal, [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Decl)
-        [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ c ⇒ₗ ℓ3, {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (LocVar)
-      [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ c ⇒ ℓ1, {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Var)
-            [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ v ⇒ₗ ℓ0, {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (LocVar)
-          [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ v ⇒ 21, {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Var)
-          [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ 2 ⇒ 2, {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Lit)
-        [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ v * 2 ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Binary)
-      [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ return v * 2; ⇒ ret 42, [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Return)
-    [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ c->dobro() ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (MethodCall)
-  [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ return c->dobro(); ⇒ ret 42, [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Return)
-[], {} ⊢ main() ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ Caixa{v ↦ ℓ0}}   (Call)
+      [], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}} ⊢ 21 ⇒ 21, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}}   (Lit)
+          [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ x ⇒ₗ ℓ2, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}   (LocVar)
+        [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ x ⇒ 21, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}   (Var)
+        [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ v ⇒ₗ ℓ0, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}   (LocVar)
+      [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ v = x; ⇒ normal, [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}   (Assign)
+    [], {} ⊢ new Box(21) ⇒ ℓ1, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}}   (New)
+  [], {} ⊢ Box* c = new Box(21); ⇒ normal, [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Decl)
+        [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ c ⇒ₗ ℓ3, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (LocVar)
+      [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ c ⇒ ℓ1, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Var)
+            [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ v ⇒ₗ ℓ0, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (LocVar)
+          [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ v ⇒ 21, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Var)
+          [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ 2 ⇒ 2, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Lit)
+        [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ v * 2 ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Binary)
+      [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ return v * 2; ⇒ ret 42, [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Return)
+    [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ c->twice() ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (MethodCall)
+  [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ return c->twice(); ⇒ ret 42, [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Return)
+[], {} ⊢ main() ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}}   (Call)
 ```
 
 The first lines are the constructor. The field `v` is allocated at ℓ0 with the default zero and the record at ℓ1 before the argument 21 is even evaluated, which is why the store of the first line already holds both. The body runs under the environment `[this ↦ ℓ1, x ↦ ℓ2]`, with the parameter at a fresh location ℓ2, and the unqualified `v` on the left of the assignment reaches ℓ0 by the rule `LocVarField`. When `New` concludes, ℓ2 has left the store and ℓ1 remains. The method call, in the lower half, binds `this` to the same ℓ1, reads `v` through it and returns 42, and the final store holds only the object, since the local `c` of `main` left with the return of the call.
@@ -198,7 +198,7 @@ tag := "exercises-18"
 
 {exercise "exr-method-env"}[] Write a method that mentions a local variable of its caller, run the type checker, and explain by the environment of the rule `Member` why the name is unknown.
 
-{exercise "exr-two-objects"}[] Create two objects of `Contador` and call `incrementa` on each in alternation. Draw the store after each call and explain why the two receivers never interfere.
+{exercise "exr-two-objects"}[] Create two objects of `Counter` and call `increment` on each in alternation. Draw the store after each call and explain why the two receivers never interfere.
 
 {exercise "exr-trace-read"}[] In the trace above, find the line in which ℓ2 leaves the store and the line in which ℓ3 is created, and name the rule responsible for each.
 

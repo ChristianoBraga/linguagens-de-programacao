@@ -76,14 +76,14 @@ no declaration of p mentions a construction that f forbids
 # §25.2 The checker runs
 
 ```lean (name := fragCheck)
-def mdc : String :=
-  "int mdc(int a, int b) {
+def gcd : String :=
+  "int gcd(int a, int b) {
     while (b != 0) { int t = b; b = a % b; a = t; }
     return a;
   }
-  int main() { int x = mdc(48, 18); int& y = x; y = y + 1; return y; }"
+  int main() { int x = gcd(48, 18); int& y = x; y = y + 1; return y; }"
 
-#eval (parseProgram mdc).map (fragment .imperative)
+#eval (parseProgram gcd).map (fragment .imperative)
 ```
 ```leanOutput fragCheck
 Except.ok (Except.ok ())

@@ -58,7 +58,7 @@ Watt divides types into *primitive* types, whose values are atomic, and *composi
   * {secref}[lecture-6]
 *
   * recursive
-  * `class No` with a field `No*`
+  * `class Node` with a field `Node*`
   * finite chains of records
   * {secref}[lecture-7]
 *

@@ -44,18 +44,18 @@ The separation is a decision of the language design, and C++ takes the other one
 tag := "order"
 %%%
 
-When an expression has no effect on the store, the order in which its operands are evaluated does not change its value, and the rules of {secref}[lecture-3] could evaluate them in any order. When a call inside an expression writes through a pointer, the order matters. The program below calls `prox` twice on the same counter, and the value of the sum depends on which call runs first.
+When an expression has no effect on the store, the order in which its operands are evaluated does not change its value, and the rules of {secref}[lecture-3] could evaluate them in any order. When a call inside an expression writes through a pointer, the order matters. The program below calls `next` twice on the same counter, and the value of the sum depends on which call runs first.
 
 ```lean (name := ordem)
 def ordem : String :=
-  "class Cont { public: int n; };
-  int prox(Cont* c) {
+  "class Cell { public: int n; };
+  int next(Cell* c) {
     c->n = c->n + 1;
     return c->n;
   }
   int main() {
-    Cont* c = new Cont();
-    return prox(c) + 10 * prox(c);
+    Cell* c = new Cell();
+    return next(c) + 10 * next(c);
   }"
 
 #eval (parseProgram ordem).map run
@@ -172,7 +172,7 @@ The conditional `e₁ ? e₂ : e₃` is the expression counterpart of the `if` c
 Except.ok (Except.ok (CoreCpp.Val.int 42))
 ```
 
-The conditional is what makes recursion over a recursive type possible in a single expression, as `soma` in {secref}[lecture-7] shows. Without it, the base case would need an `if` command and two `return` commands.
+The conditional is what makes recursion over a recursive type possible in a single expression, as `sum` in {secref}[lecture-7] shows. Without it, the base case would need an `if` command and two `return` commands.
 
 # Arithmetic Details
 
@@ -242,13 +242,13 @@ Each rule stands in the comment of the case that implements it, and the [bluepri
 tag := "exercises-8"
 %%%
 
-{exercise "exr-order-result"}[] Predict the value of `prox(c) * 10 + prox(c) - prox(c)` after `Cont* c = new Cont();`, with `prox` as in {secref}[order], and then the two other values a C++ compiler may compute for it.
+{exercise "exr-order-result"}[] Predict the value of `next(c) * 10 + next(c) - next(c)` after `Cell* c = new Cell();`, with `next` as in {secref}[order], and then the two other values a C++ compiler may compute for it.
 
 {exercise "exr-short-circuit-rules"}[] Write the two rules of `||` in the notation of the course, and build the derivation of `z == 0 || 10 / z > 1` in a store where `z` is 0.
 
 {exercise "exr-assignment-expression"}[] Suppose assignment were an expression whose value is the assigned value, as in C++. Write its typing and evaluation rules, and say which programs would then type that Core C++ rejects today.
 
-{exercise "exr-cond-versus-if"}[] Rewrite `soma` of {secref}[lecture-7] with an `if` command and two `return` commands, and compare the two derivation trees for a list of one node.
+{exercise "exr-cond-versus-if"}[] Rewrite `sum` of {secref}[lecture-7] with an `if` command and two `return` commands, and compare the two derivation trees for a list of one node.
 
 {exercise "exr-truncation"}[] Compute `a / b` and `a % b` for the four sign combinations of `a = 7` and `b = 2`, by the rules of Core C++, and check the identity `(a / b) * b + a % b = a` in each case.
 

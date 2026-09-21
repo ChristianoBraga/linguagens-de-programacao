@@ -86,16 +86,16 @@ f ↦ (τ f (τ₁ x₁, …, τₖ xₖ) { c })    Γ ⊢ eᵢ : τᵢ' with τ
 Γ ⊢ f(e₁, …, eₖ) : τ
 ```
 
-The program below calls `quadrado` with an argument that is itself an expression. The argument is evaluated to 7 before the body runs, and the parameter `n` is a fresh location holding 7.
+The program below calls `square` with an argument that is itself an expression. The argument is evaluated to 7 before the body runs, and the parameter `n` is a fresh location holding 7.
 
-```lean (name := quadrado)
+```lean (name := square)
 def square : String :=
-  "int quadrado(int n) { return n * n; }
-   int main() { int a = 6; return quadrado(a + 1); }"
+  "int square(int n) { return n * n; }
+   int main() { int a = 6; return square(a + 1); }"
 
 #eval (parseProgram square).map run
 ```
-```leanOutput quadrado
+```leanOutput square
 Except.ok (Except.ok (CoreCpp.Val.int 49))
 ```
 
@@ -105,18 +105,18 @@ Except.ok (Except.ok (CoreCpp.Val.int 49))
 tag := "copy"
 %%%
 
-The function `dobro` below assigns to its parameter. Under call by value the assignment writes to the copy, and the variable `x` of `main` keeps its value. The result adds the returned 42 to the unchanged 21.
+The function `twice` below assigns to its parameter. Under call by value the assignment writes to the copy, and the variable `x` of `main` keeps its value. The result adds the returned 42 to the unchanged 21.
 
-```lean (name := dobro)
+```lean (name := twice)
 def double : String :=
-  "int dobro(int n) { n = n * 2; return n; }
-   int main() { int x = 21; return dobro(x) + x; }"
+  "int twice(int n) { n = n * 2; return n; }
+   int main() { int x = 21; return twice(x) + x; }"
 
 #eval match parseProgram double with
   | .ok p => IO.println (renderTrace (runWith true p).2)
   | .error e => IO.println e
 ```
-```leanOutput dobro
+```leanOutput twice
     [], {} ⊢ 21 ⇒ 21, {}   (Lit)
   [], {} ⊢ int x = 21; ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 21}   (Decl)
           [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 21}   (LocVar)
@@ -130,11 +130,11 @@ def double : String :=
             [n ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ 42} ⊢ n ⇒ₗ ℓ1, {ℓ0 ↦ 21, ℓ1 ↦ 42}   (LocVar)
           [n ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ 42} ⊢ n ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ 42}   (Var)
         [n ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ 42} ⊢ return n; ⇒ ret 42, [n ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ 42}   (Return)
-      [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ dobro(x) ⇒ 42, {ℓ0 ↦ 21}   (Call)
+      [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ twice(x) ⇒ 42, {ℓ0 ↦ 21}   (Call)
         [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 21}   (LocVar)
       [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ x ⇒ 21, {ℓ0 ↦ 21}   (Var)
-    [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ dobro(x) + x ⇒ 63, {ℓ0 ↦ 21}   (Binary)
-  [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ return dobro(x) + x; ⇒ ret 63, [x ↦ ℓ0], {ℓ0 ↦ 21}   (Return)
+    [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ twice(x) + x ⇒ 63, {ℓ0 ↦ 21}   (Binary)
+  [x ↦ ℓ0], {ℓ0 ↦ 21} ⊢ return twice(x) + x; ⇒ ret 63, [x ↦ ℓ0], {ℓ0 ↦ 21}   (Return)
 [], {} ⊢ main() ⇒ 63, {}   (Call)
 ```
 
@@ -165,14 +165,14 @@ The type checker does not detect this case, because it would need to know which 
 
 A procedure is called as a statement, and its value void is discarded by the rule `ExprStmt`.
 
-```lean (name := nada)
+```lean (name := noop)
 def procedure : String :=
-  "void nada() { int x = 1; }
-   int main() { nada(); return 3; }"
+  "void noop() { int x = 1; }
+   int main() { noop(); return 3; }"
 
 #eval (parseProgram procedure).map run
 ```
-```leanOutput nada
+```leanOutput noop
 Except.ok (Except.ok (CoreCpp.Val.int 3))
 ```
 
@@ -208,9 +208,9 @@ Inside the body, the parameters are the only variables in the initial context, \
 tag := "exercises-13"
 %%%
 
-{exercise "exr-trace-two-params"}[] Draw the derivation of `int soma(int a, int b) { return a + b; } int main() { return soma(2, 3); }` up to the body of `soma`, showing the two fresh locations and the environment of the call, and compare with the trace of the interpreter.
+{exercise "exr-trace-two-params"}[] Draw the derivation of `int sum(int a, int b) { return a + b; } int main() { return sum(2, 3); }` up to the body of `sum`, showing the two fresh locations and the environment of the call, and compare with the trace of the interpreter.
 
-{exercise "exr-copy-pointer"}[] A parameter of pointer type is also a copy. Write a function `void zera(P* p)` that sets `p->a` to 0 and a function that assigns `nullptr` to its pointer parameter, and explain, by the rule `Call`, why the first has an effect visible in `main` and the second has not.
+{exercise "exr-copy-pointer"}[] A parameter of pointer type is also a copy. Write a function `void zero(P* p)` that sets `p->a` to 0 and a function that assigns `nullptr` to its pointer parameter, and explain, by the rule `Call`, why the first has an effect visible in `main` and the second has not.
 
 {exercise "exr-missing-return"}[] Write a function with two `if` commands whose paths all end in a `return` and one where a path does not, run both with the interpreter, and explain why the type checker accepts both.
 

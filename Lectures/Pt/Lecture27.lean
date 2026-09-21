@@ -66,23 +66,23 @@ A {numref}[tbl-functional] dá os dois lados.
 A declaração sobrevive, e vale dizer por quê. No fragmento, uma declaração não é uma variável no sentido imperativo, é uma *ligação*, um nome para o valor de uma expressão, porque nada pode escrever a posição depois. O laço não sobrevive, então um programa do fragmento itera por recursão, e a expressão como comando também não, já que sem atualização ela só poderia estar ali por um efeito que o fragmento não tem.
 
 ```lean (name := funCheck)
-def escala : String :=
-  "int soma(int n) {
-     return n == 0 ? 0 : n + soma(n - 1);
+def scale : String :=
+  "int sum(int n) {
+     return n == 0 ? 0 : n + sum(n - 1);
    }
-   std::function<int(int)> escala(int k) {
+   std::function<int(int)> scale(int k) {
      return [=](int x) -> int { return k * x; };
    }
-   int aplica(std::function<int(int)> f, int v) {
+   int apply(std::function<int(int)> f, int v) {
      return f(v);
    }
    int main() {
-     std::function<int(int)> triplo = escala(3);
-     int s = soma(4);
-     return aplica(triplo, s);
+     std::function<int(int)> triple = scale(3);
+     int s = sum(4);
+     return apply(triple, s);
    }"
 
-#eval (parseProgram escala).map fun p => (fragment .functional p, run p)
+#eval (parseProgram scale).map fun p => (fragment .functional p, run p)
 ```
 ```leanOutput funCheck
 Except.ok (Except.ok (), Except.ok (CoreCpp.Val.int 30))
@@ -143,12 +143,12 @@ Sem o laço, uma repetição é uma chamada recursiva, e a correspondência é e
 
 ```lean (name := caseFun)
 def caseFun : String :=
-  "int somaAte(std::function<bool(int)> p, int n) {
-     return n == 0 ? 0 : (p(n) ? n : 0) + somaAte(p, n - 1);
+  "int sumTo(std::function<bool(int)> p, int n) {
+     return n == 0 ? 0 : (p(n) ? n : 0) + sumTo(p, n - 1);
    }
    int main() {
-     std::function<bool(int)> par = [=](int i) -> bool { return i % 2 == 0; };
-     return somaAte(par, 10);
+     std::function<bool(int)> even = [=](int i) -> bool { return i % 2 == 0; };
+     return sumTo(even, 10);
    }"
 
 #eval (parseProgram caseFun).map fun p => (fragment .functional p, run p)
@@ -157,7 +157,7 @@ def caseFun : String :=
 Except.ok (Except.ok (), Except.ok (CoreCpp.Val.int 30))
 ```
 
-As duas versões do estudo de caso, esta e a orientada a objetos da {secref}[aula-26], põem o ponto de extensão em lugares diferentes. Aqui o critério é um argumento, então um critério novo é um valor novo no sítio da chamada e `somaAte` não muda. Lá é um método `virtual`, então um critério novo é uma classe nova e `junta` não muda. As duas são a mesma liberdade de projeto, gasta em moeda diferente.
+As duas versões do estudo de caso, esta e a orientada a objetos da {secref}[aula-26], põem o ponto de extensão em lugares diferentes. Aqui o critério é um argumento, então um critério novo é um valor novo no sítio da chamada e `sumTo` não muda. Lá é um método `virtual`, então um critério novo é uma classe nova e `add` não muda. As duas são a mesma liberdade de projeto, gasta em moeda diferente.
 
 Um custo da forma recursiva aparece na derivação. Cada chamada aloca as posições dos seus parâmetros e as libera no retorno, então uma recursão de profundidade dez põe dez quadros em σ ao mesmo tempo, onde o laço reaproveita um. Uma linguagem funcional responde com a eliminação de chamada em cauda, que Core C++ não tem e o curso não reivindica.
 
@@ -187,9 +187,9 @@ tag := "exercicios-27"
 
 {exercise "exr-fun-order"}[] Dê dois programas, um no fragmento funcional e outro fora dele, em que `f() + g()` tenha um valor no primeiro e dois valores possíveis em C++ para o segundo. Diga que regra do fragmento exclui o segundo caso.
 
-{exercise "exr-fun-transparency"}[] Tome o estudo de caso e troque `par` pelo próprio lambda no sítio da chamada. Argumente, a partir da escrita única, que os dois programas têm o mesmo valor, e confirme com o interpretador.
+{exercise "exr-fun-transparency"}[] Tome o estudo de caso e troque `even` pelo próprio lambda no sítio da chamada. Argumente, a partir da escrita única, que os dois programas têm o mesmo valor, e confirme com o interpretador.
 
-{exercise "exr-fun-depth"}[] Imprima a derivação de `somaAte(par, 3)` e conte as posições vivas em σ no ponto mais profundo. Diga quantas a versão com laço da {secref}[aula-25] tem no seu ponto mais profundo.
+{exercise "exr-fun-depth"}[] Imprima a derivação de `sumTo(even, 3)` e conte as posições vivas em σ no ponto mais profundo. Diga quantas a versão com laço da {secref}[aula-25] tem no seu ponto mais profundo.
 
 {exercise "exr-fun-capture"}[] O lambda do estudo de caso não captura nada. Escreva um que capture um limite do escopo envolvente, e explique, pela regra `Lambda`, por que a captura não pode quebrar a escrita única.
 

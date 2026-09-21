@@ -60,14 +60,14 @@ f ↦ (τ f (τ₁ x₁, …, τₖ xₖ) { c })    Γ ⊢ eᵢ : τᵢ' com τ�
 Γ ⊢ f(e₁, …, eₖ) : τ
 ```
 
-```lean (name := quadrado)
+```lean (name := square)
 def square : String :=
-  "int quadrado(int n) { return n * n; }
-   int main() { int a = 6; return quadrado(a + 1); }"
+  "int square(int n) { return n * n; }
+   int main() { int a = 6; return square(a + 1); }"
 
 #eval (parseProgram square).map run
 ```
-```leanOutput quadrado
+```leanOutput square
 Except.ok (Except.ok (CoreCpp.Val.int 49))
 ```
 
@@ -75,18 +75,18 @@ Except.ok (Except.ok (CoreCpp.Val.int 49))
 
 # §13.3 O parâmetro é uma cópia
 
-```lean (name := dobro)
+```lean (name := twice)
 def double : String :=
-  "int dobro(int n) { n = n * 2; return n; }
-   int main() { int x = 21; return dobro(x) + x; }"
+  "int twice(int n) { n = n * 2; return n; }
+   int main() { int x = 21; return twice(x) + x; }"
 
 #eval (parseProgram double).map run
 ```
-```leanOutput dobro
+```leanOutput twice
 Except.ok (Except.ok (CoreCpp.Val.int 63))
 ```
 
-* `dobro` escreve em `n`, a cópia em uma posição nova. O `x` de `main` mantém 21, e o resultado é 42 + 21.
+* `twice` escreve em `n`, a cópia em uma posição nova. O `x` de `main` mantém 21, e o resultado é 42 + 21.
 
 * Na árvore o corpo executa sob \[n ↦ ℓ1\], e depois da chamada a memória volta a \{ℓ0 ↦ 21\}.
 

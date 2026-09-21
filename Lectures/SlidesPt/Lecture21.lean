@@ -36,13 +36,13 @@ open CoreCpp
 
 ```lean (name := overload)
 def overload : String :=
-  "int dobro(int n) { return 2 * n; }
-  bool dobro(bool b) { return b; }
-  int dobro(int a, int b) { return 2 * (a + b); }
+  "int twice(int n) { return 2 * n; }
+  bool twice(bool b) { return b; }
+  int twice(int a, int b) { return 2 * (a + b); }
   int main() {
-    int x = dobro(21);
-    int y = dobro(1, 1);
-    return dobro(false) ? 0 : x + y;
+    int x = twice(21);
+    int y = twice(1, 1);
+    return twice(false) ? 0 : x + y;
   }"
 
 #eval (parseProgram overload).map run
@@ -144,20 +144,20 @@ Except.ok (Except.error (CoreCpp.TypeError.indistinguishable "g"))
 
 ```lean (name := methodOverload)
 def methodOverload : String :=
-  "class Conta {
+  "class Account {
   private:
-    int saldo;
+    int balance;
   public:
-    Conta(int s) { this->saldo = s; }
-    int deposita(int v) { saldo = saldo + v; return saldo; }
-    int deposita(int v, int taxa) { return deposita(v - taxa); }
-    int valor() { return saldo; }
+    Account(int s) { this->balance = s; }
+    int deposit(int v) { balance = balance + v; return balance; }
+    int deposit(int v, int rate) { return deposit(v - rate); }
+    int value() { return balance; }
   };
   int main() {
-    Conta* c = new Conta(100);
-    c->deposita(50);
-    c->deposita(20, 5);
-    return c->valor();
+    Account* c = new Account(100);
+    c->deposit(50);
+    c->deposit(20, 5);
+    return c->value();
   }"
 
 #eval (parseProgram methodOverload).map run
@@ -176,7 +176,7 @@ Except.ok (Except.ok (CoreCpp.Val.int 165))
 
 * O *operando esquerdo decide*, então `1 + 2` mantém o seu significado e nenhuma classe o muda.
 
-* O parâmetro é `Ponto& o`, porque um objeto nunca é copiado. O resultado é `Ponto*`, pela mesma razão.
+* O parâmetro é `Point& o`, porque um objeto nunca é copiado. O resultado é `Point*`, pela mesma razão.
 
 * Aritméticos, comparações e indexação. Não `&&` e `||`, que têm curto‑circuito.
 
@@ -184,23 +184,23 @@ Except.ok (Except.ok (CoreCpp.Val.int 165))
 
 ```lean (name := operatorPlus)
 def operatorPlus : String :=
-  "class Ponto {
+  "class Point {
   public:
     int x;
     int y;
-    Ponto* operator+(Ponto& o) {
-      Ponto* r = new Ponto();
+    Point* operator+(Point& o) {
+      Point* r = new Point();
       r->x = x + o.x;
       r->y = y + o.y;
       return r;
     }
   };
   int main() {
-    Ponto* a = new Ponto();
+    Point* a = new Point();
     a->x = 1; a->y = 4;
-    Ponto* b = new Ponto();
+    Point* b = new Point();
     b->x = 2; b->y = 3;
-    Ponto* c = *a + *b;
+    Point* c = *a + *b;
     return c->x + c->y;
   }"
 

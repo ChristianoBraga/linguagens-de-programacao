@@ -34,18 +34,18 @@ This lecture closes Unit III with the interaction between expressions and the st
 tag := "effects"
 %%%
 
-An expression of Unit I has no effect. Its rules thread the store through the premises, ρ, σ ⊢ e ⇒ v, σ', but every rule returns the store it received, and the order of the operands does not matter for the value. {secref}[lecture-8] showed the first expression with an effect, a call to a function that writes through a pointer. The function `prox` below increments a counter reached through its parameter and returns the new value.
+An expression of Unit I has no effect. Its rules thread the store through the premises, ρ, σ ⊢ e ⇒ v, σ', but every rule returns the store it received, and the order of the operands does not matter for the value. {secref}[lecture-8] showed the first expression with an effect, a call to a function that writes through a pointer. The function `next` below increments a counter reached through its parameter and returns the new value.
 
 ```lean (name := proxDef)
 def counter : String :=
-  "class Cont { public: int n; };
-   int prox(Cont* c) {
+  "class Cell { public: int n; };
+   int next(Cell* c) {
      c->n = c->n + 1;
      return c->n;
    }
    int main() {
-     Cont* c = new Cont();
-     return prox(c) + 10 * prox(c);
+     Cell* c = new Cell();
+     return next(c) + 10 * next(c);
    }"
 
 #eval (parseProgram counter).map run
@@ -132,16 +132,16 @@ Under `Binary-RL` the program of {secref}[effects] returns 12. Both derivations 
 
 Core C++ has one rule and one result, the property {secref}[lecture-3] called determinism. The price is a difference from C++ that the course states once. A Core C++ program with two effectful calls in one expression has the value Core C++ gives it, and a C++ compiler may give it another. The example `call_order.cpp` of the repository returns 21 under the interpreter, and returns 21 or 12 under `g++`, according to the version and the options.
 
-The assignment shows the fixed order at work. The right side is evaluated first, so `prox(c)` returns 1 there, and the index on the left side is evaluated afterwards and returns 2.
+The assignment shows the fixed order at work. The right side is evaluated first, so `next(c)` returns 1 there, and the index on the left side is evaluated afterwards and returns 2.
 
 ```lean (name := assignOrder)
 def assignOrder : String :=
-  "class Cont { public: int n; };
-   int prox(Cont* c) { c->n = c->n + 1; return c->n; }
+  "class Cell { public: int n; };
+   int next(Cell* c) { c->n = c->n + 1; return c->n; }
    int main() {
-     Cont* c = new Cont();
+     Cell* c = new Cell();
      std::vector<int>* v = new std::vector<int>(3);
-     (*v)[prox(c)] = prox(c);
+     (*v)[next(c)] = next(c);
      return (*v)[1] * 10 + (*v)[2];
    }"
 
@@ -157,12 +157,12 @@ The arguments of a call follow the same discipline. The first argument is evalua
 
 ```lean (name := callOrder)
 def callOrder : String :=
-  "class Cont { public: int n; };
-   int prox(Cont* c) { c->n = c->n + 1; return c->n; }
+  "class Cell { public: int n; };
+   int next(Cell* c) { c->n = c->n + 1; return c->n; }
    int f(int a, int b) { return a * 10 + b; }
    int main() {
-     Cont* c = new Cont();
-     return f(prox(c), prox(c));
+     Cell* c = new Cell();
+     return f(next(c), next(c));
    }"
 
 #eval (parseProgram callOrder).map run
@@ -203,7 +203,7 @@ tag := "exercises-12"
 
 {exercise "exr-assign-old-order"}[] Write the assignment rule of C++14, in which the order of the two sides is unspecified, as two rules, and give a Core C++ program that produces two different final stores under them.
 
-{exercise "exr-call-arguments"}[] Write the rule `Call-RL` that evaluates the arguments right to left and compute, under it, the result of the program of {secref}[alternative] that calls `f(prox(c), prox(c))`.
+{exercise "exr-call-arguments"}[] Write the rule `Call-RL` that evaluates the arguments right to left and compute, under it, the result of the program of {secref}[alternative] that calls `f(next(c), next(c))`.
 
 {exercise "exr-pure-fragment"}[] Identify the largest subset of the expressions of Core C++ in which the order of evaluation is irrelevant, and prove, by induction on the rules, that in it ρ, σ ⊢ e ⇒ v, σ' implies σ' = σ.
 

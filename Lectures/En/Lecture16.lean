@@ -34,16 +34,16 @@ This lecture closes Unit IV with the question of *when* an argument is evaluated
 tag := "strict"
 %%%
 
-The rule `Call` of {secref}[lecture-13] evaluates every argument before the body starts, in the premises ρ, σᵢ₋₁ ⊢ eᵢ ⇒ vᵢ, σᵢ. Whether the body uses the parameter or not makes no difference. The function `primeiro` below ignores its second parameter, and the call still evaluates `10 / 0`, so the program ends in `error`.
+The rule `Call` of {secref}[lecture-13] evaluates every argument before the body starts, in the premises ρ, σᵢ₋₁ ⊢ eᵢ ⇒ vᵢ, σᵢ. Whether the body uses the parameter or not makes no difference. The function `first` below ignores its second parameter, and the call still evaluates `10 / 0`, so the program ends in `error`.
 
-```lean (name := primeiro)
+```lean (name := first)
 def first : String :=
-  "int primeiro(int a, int b) { return a; }
-   int main() { return primeiro(1, 10 / 0); }"
+  "int first(int a, int b) { return a; }
+   int main() { return first(1, 10 / 0); }"
 
 #eval (parseProgram first).map run
 ```
-```leanOutput primeiro
+```leanOutput first
 Except.ok (Except.error (CoreCpp.Error.divisionByZero))
 ```
 
@@ -82,7 +82,7 @@ f ↦ (τ f (τ₁ name x₁) { c })
 ρ, σ ⊢ x ⇒ v, σ'
 ```
 
-Two things break the model of Core C++. The environment no longer maps identifiers to locations only, a parameter by name is bound to a pair of an expression and an environment, called a *thunk*. And a read of a variable may have effects and errors, because it evaluates an expression. With this discipline `primeiro(1, 10 / 0)` returns 1, since `b` is never read, and a parameter read twice evaluates its argument twice, which repeats any effect the argument has.
+Two things break the model of Core C++. The environment no longer maps identifiers to locations only, a parameter by name is bound to a pair of an expression and an environment, called a *thunk*. And a read of a variable may have effects and errors, because it evaluates an expression. With this discipline `first(1, 10 / 0)` returns 1, since `b` is never read, and a parameter read twice evaluates its argument twice, which repeats any effect the argument has.
 
 # Simulating a Postponed Argument
 
@@ -90,13 +90,13 @@ Two things break the model of Core C++. The environment no longer maps identifie
 tag := "thunks"
 %%%
 
-The lambdas of {secref}[lecture-15] let a Core C++ program postpone an argument. Instead of a value, the caller passes a function of no parameters whose body is the argument expression, and the callee calls it when, and as many times as, it needs the value. The function `primeiro` below has that shape, and the call with `10 / z` returns 1, because the closure is never called.
+The lambdas of {secref}[lecture-15] let a Core C++ program postpone an argument. Instead of a value, the caller passes a function of no parameters whose body is the argument expression, and the callee calls it when, and as many times as, it needs the value. The function `first` below has that shape, and the call with `10 / z` returns 1, because the closure is never called.
 
 ```lean (name := primeiroPreguicoso)
 def firstLazy : String :=
-  "int primeiro(int a, std::function<int()> b) { return a; }
+  "int first(int a, std::function<int()> b) { return a; }
    int main() { int z = 0;
-   return primeiro(1, [=]() -> int { return 10 / z; }); }"
+   return first(1, [=]() -> int { return 10 / z; }); }"
 
 #eval (parseProgram firstLazy).map run
 ```
@@ -106,15 +106,15 @@ Except.ok (Except.ok (CoreCpp.Val.int 1))
 
 The closure plays the role of the thunk, and its captured copies play the role of the environment ρ₀ of the rule `Var-Name`. The difference is that the programmer writes the postponement, with `[=]() -> int { … }` at the call and `b()` at each use, where ALGOL 60 did it for every parameter.
 
-The simulation also shows the repeated evaluation of call by name. The function `duasVezes` calls its argument twice, and the argument increments a counter reached through a captured pointer, so the two calls see 1 and 2 and the sum is 3. A discipline that evaluates the argument once and remembers the value, *call by need*, would give 2.
+The simulation also shows the repeated evaluation of call by name. The function `applyTwice` calls its argument twice, and the argument increments a counter reached through a captured pointer, so the two calls see 1 and 2 and the sum is 3. A discipline that evaluates the argument once and remembers the value, *call by need*, would give 2.
 
 ```lean (name := duasVezesEfeito)
 def twiceEffect : String :=
-  "class Caixa { public: int valor; };
-   int duasVezes(std::function<int()> t) { return t() + t(); }
-   int main() { Caixa* c = new Caixa(); c->valor = 0;
-     return duasVezes([=]() -> int {
-       c->valor = c->valor + 1; return c->valor; }); }"
+  "class Box { public: int value; };
+   int applyTwice(std::function<int()> t) { return t() + t(); }
+   int main() { Box* c = new Box(); c->value = 0;
+     return applyTwice([=]() -> int {
+       c->value = c->value + 1; return c->value; }); }"
 
 #eval (parseProgram twiceEffect).map run
 ```
@@ -128,7 +128,7 @@ Except.ok (Except.ok (CoreCpp.Val.int 3))
 tag := "lazy"
 %%%
 
-Haskell evaluates every argument by need. An argument is evaluated the first time its value is required and never again, and an argument whose value is never required is never evaluated.{margin}[S. Peyton Jones, *The Implementation of Functional Programming Languages*, Prentice Hall, 1987, chapter 11.] The function `primeiro` in Haskell returns its first argument, and the call with a division by zero returns 1.
+Haskell evaluates every argument by need. An argument is evaluated the first time its value is required and never again, and an argument whose value is never required is never evaluated.{margin}[S. Peyton Jones, *The Implementation of Functional Programming Languages*, Prentice Hall, 1987, chapter 11.] The function `first` in Haskell returns its first argument, and the call with a division by zero returns 1.
 
 ```
 primeiro :: Int -> Int -> Int
@@ -145,7 +145,7 @@ The same program in Core C++ ends in `error`, as {secref}[strict] showed. The ru
 ρ, σ ⊢ x ⇒ v, σ'    and the binding becomes x ↦ v
 ```
 
-Call by need is only equivalent to call by name when the argument has no effects, which is the case in Haskell, where expressions do not change any store. In a language with assignment the two disciplines differ, as `duasVezes` showed, and that is one reason imperative languages keep the strict discipline for arguments. {numref}[tbl-disciplines] summarises.
+Call by need is only equivalent to call by name when the argument has no effects, which is the case in Haskell, where expressions do not change any store. In a language with assignment the two disciplines differ, as `applyTwice` showed, and that is one reason imperative languages keep the strict discipline for arguments. {numref}[tbl-disciplines] summarises.
 
 :::table +header
 *
@@ -236,7 +236,7 @@ tag := "exercises-16"
 
 {exercise "exr-strict-effects"}[] Write a call whose argument has an effect and whose parameter is never read, run it, and explain by the rule `Call` why the effect happens anyway.
 
-{exercise "exr-name-twice"}[] Under call by name, the body `return x + x;` with the argument `prox(c)` of {secref}[lecture-12] evaluates the call twice. Give the result for a counter starting at 0 under call by name, by need and by value.
+{exercise "exr-name-twice"}[] Under call by name, the body `return x + x;` with the argument `next(c)` of {secref}[lecture-12] evaluates the call twice. Give the result for a counter starting at 0 under call by name, by need and by value.
 
 {exercise "exr-simulate-if"}[] Write a function `seNao` that receives a `bool` and two values of type `std::function<int()>` and returns the value of one of them, and explain why the two arguments must be closures for the function to behave like `?:`.
 

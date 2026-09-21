@@ -29,7 +29,7 @@ open CoreCpp
 # §6.1 Classes com campos
 
 ```
-class Ponto {
+class Point {
 public:
   int x;
   int y;
@@ -120,13 +120,13 @@ C ↦ class C { τ₁ f₁; …; τₙ fₙ; }
 
 ```lean (name := ponto)
 def ponto : String :=
-  "class Ponto {
+  "class Point {
   public:
     int x;
     int y;
   };
   int main() {
-    Ponto* p = new Ponto();
+    Point* p = new Point();
     p->x = 3;
     p->y = p->x + 1;
     return p->x * 10 + p->y;
@@ -165,10 +165,10 @@ Except.ok (Except.ok (CoreCpp.Val.int 34))
 
 ```lean (name := alias)
 def alias : String :=
-  "class Ponto { public: int x; int y; };
+  "class Point { public: int x; int y; };
   int main() {
-    Ponto* a = new Ponto();
-    Ponto* b = a;
+    Point* a = new Point();
+    Point* b = a;
     b->x = 7;
     return a->x + (a == b ? 10 : 0);
   }"

@@ -41,18 +41,18 @@ As três proibidas são a mesma construção vista de três lados, a função co
 
 ```lean (name := ooCheck)
 def conta : String :=
-  "class Conta {
+  "class Account {
    public:
-     int saldo;
-     virtual int taxa() { return 2; }
-     void deposita(int v) { saldo = saldo + v; }
-     virtual ~Conta() { }
+     int balance;
+     virtual int rate() { return 2; }
+     void deposit(int v) { balance = balance + v; }
+     virtual ~Account() { }
    };
-   class Poupanca : public Conta { public: int taxa() override { return 0; } };
+   class Savings : public Account { public: int rate() override { return 0; } };
    int main() {
-     Conta* c = new Conta(); c->deposita(10);
-     Conta* p = new Poupanca(); p->deposita(10);
-     int r = c->taxa() + p->taxa() + c->saldo;
+     Account* c = new Account(); c->deposit(10);
+     Account* p = new Savings(); p->deposit(10);
+     int r = c->rate() + p->rate() + c->balance;
      delete c; delete p; return r;
    }"
 
@@ -68,7 +68,7 @@ O mesmo programa fica fora do fragmento imperativo, na sua primeira classe.
 #eval (parseProgram conta).map (fragment .imperative)
 ```
 ```leanOutput ooNotImp
-Except.ok (Except.error { frag := CoreCpp.Frag.imperative, what := "class", site := "class Conta" })
+Except.ok (Except.error { frag := CoreCpp.Frag.imperative, what := "class", site := "class Account" })
 ```
 
 E um programa que devolve um lambda fica fora do orientado a objetos, no tipo que o carrega.
@@ -116,25 +116,25 @@ O *encapsulamento* diz que a representação de um objeto é conhecida apenas de
 
 O *despacho* diz que o código que uma chamada executa é conhecido apenas em tempo de execução, pela etiqueta de classe do receptor. Em Core C++ isso é a regra `Dispatch` da {secref}[aula-19], e a sua condição é a marca `virtual`. O chamador conhece, então, a assinatura e não o código, que é a outra metade da mesma ideia, e os dois juntos são o que permite estender um programa com uma classe que o seu autor nunca viu.
 
-O estudo de caso da unidade mostra os dois. O critério da soma é um método `virtual`, então a classe derivada o escolhe, e o acumulador é um campo, então nenhum chamador o alcança a não ser por `junta` e `total`.
+O estudo de caso da unidade mostra os dois. O critério da soma é um método `virtual`, então a classe derivada o escolhe, e o acumulador é um campo, então nenhum chamador o alcança a não ser por `add` e `total`.
 
 ```lean (name := caseOo)
 def caseOo : String :=
-  "class Somador {
+  "class Adder {
    public:
      int acc;
-     virtual bool aceita(int i) { return true; }
-     void junta(int i) { if (aceita(i)) { acc = acc + i; } }
+     virtual bool accepts(int i) { return true; }
+     void add(int i) { if (accepts(i)) { acc = acc + i; } }
      int total() { return acc; }
-     virtual ~Somador() { }
+     virtual ~Adder() { }
    };
-   class SomadorPar : public Somador {
+   class EvenAdder : public Adder {
    public:
-     bool aceita(int i) override { return i % 2 == 0; }
+     bool accepts(int i) override { return i % 2 == 0; }
    };
    int main() {
-     Somador* s = new SomadorPar();
-     for (int i = 1; i <= 10; i = i + 1) { s->junta(i); }
+     Adder* s = new EvenAdder();
+     for (int i = 1; i <= 10; i = i + 1) { s->add(i); }
      int r = s->total();
      delete s;
      return r;
@@ -146,7 +146,7 @@ def caseOo : String :=
 Except.ok (Except.ok (), Except.ok (CoreCpp.Val.int 30))
 ```
 
-O método `junta` é declarado uma vez, na base, e chama `aceita`, que a classe derivada redefine. A chamada dentro de `junta` é despachada, então `junta` executa o critério do objeto sobre o qual foi chamado, sem saber qual. Estender o programa com um terceiro critério é uma classe nova e nenhuma mudança em `junta`.
+O método `add` é declarado uma vez, na base, e chama `accepts`, que a classe derivada redefine. A chamada dentro de `add` é despachada, então `add` executa o critério do objeto sobre o qual foi chamado, sem saber qual. Estender o programa com um terceiro critério é uma classe nova e nenhuma mudança em `add`.
 
 # Despacho e Closure
 
@@ -166,7 +166,7 @@ A troca aparece nas tabelas da {secref}[aula-29]. O despacho põe o ponto de ext
 tag := "exercicios-26"
 %%%
 
-{exercise "exr-oo-third"}[] Estenda o estudo de caso com um terceiro critério, os múltiplos de três, e confirme que `junta` não muda. Diga que linha da regra `Dispatch` decide a chamada.
+{exercise "exr-oo-third"}[] Estenda o estudo de caso com um terceiro critério, os múltiplos de três, e confirme que `add` não muda. Diga que linha da regra `Dispatch` decide a chamada.
 
 {exercise "exr-oo-leak"}[] Escreva um programa do fragmento orientado a objetos que aloca um objeto e nunca o apaga, e um que o apaga duas vezes. Diga o que cada um devolve, e qual dos três resultados `erro` de `delete` o segundo alcança.
 
@@ -176,7 +176,7 @@ tag := "exercicios-26"
 
 {exercise "exr-oo-vector"}[] Reescreva o estudo de caso de modo que os números venham de um `std::vector<int>` construído com `new`, e diga que posições o programa deixa em σ ao fim e por quê.
 
-{exercise "exr-oo-static"}[] Retire o `virtual` de `aceita` e execute o programa de novo. Explique o resultado pela regra que escolhe o método, e diga o que o verificador de tipos diria se o `override` ficasse.
+{exercise "exr-oo-static"}[] Retire o `virtual` de `accepts` e execute o programa de novo. Explique o resultado pela regra que escolhe o método, e diga o que o verificador de tipos diria se o `override` ficasse.
 
 ```lean -show
 end Lecture26

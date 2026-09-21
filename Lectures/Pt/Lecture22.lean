@@ -35,37 +35,37 @@ A sobrecarga dá um nome a várias declarações escritas à mão. Esta aula dá
 tag := "uma-declaracao"
 %%%
 
-A pilha da {secref}[aula-17] guarda inteiros. Uma pilha de ponteiros para `Ponto` seria o mesmo programa com `int` trocado por `Ponto*` em toda parte, e escrevê‑la de novo é copiar. A repetição não é só trabalhosa, é um problema de manutenção, porque uma correção em uma cópia precisa ser feita nas outras.
+A pilha da {secref}[aula-17] guarda inteiros. Uma pilha de ponteiros para `Point` seria o mesmo programa com `int` trocado por `Point*` em toda parte, e escrevê‑la de novo é copiar. A repetição não é só trabalhosa, é um problema de manutenção, porque uma correção em uma cópia precisa ser feita nas outras.
 
 Um *template de classe* declara a classe uma vez, com o tipo como parâmetro.
 
 ```lean (name := stack)
 def stack : String :=
   "template<typename T>
-  class Pilha {
+  class Stack {
   private:
-    std::vector<T>* itens;
-    int topo;
+    std::vector<T>* items;
+    int top;
   public:
-    Pilha(int n) {
-      this->itens = new std::vector<T>(n);
-      this->topo = 0;
+    Stack(int n) {
+      this->items = new std::vector<T>(n);
+      this->top = 0;
     }
-    void empilha(T x) { (*itens)[topo] = x; topo = topo + 1; }
-    T desempilha() { topo = topo - 1; return (*itens)[topo]; }
-    bool vazia() { return topo == 0; }
+    void push(T x) { (*items)[top] = x; top = top + 1; }
+    T pop() { top = top - 1; return (*items)[top]; }
+    bool empty() { return top == 0; }
   };
-  class Ponto { public: int x; };
+  class Point { public: int x; };
   int main() {
-    Pilha<int>* p = new Pilha<int>(4);
-    p->empilha(3);
-    p->empilha(4);
-    int s = p->desempilha() + p->desempilha();
-    Pilha<Ponto*>* q = new Pilha<Ponto*>(2);
-    Ponto* a = new Ponto();
+    Stack<int>* p = new Stack<int>(4);
+    p->push(3);
+    p->push(4);
+    int s = p->pop() + p->pop();
+    Stack<Point*>* q = new Stack<Point*>(2);
+    Point* a = new Point();
     a->x = 35;
-    q->empilha(a);
-    return s + q->desempilha()->x;
+    q->push(a);
+    return s + q->pop()->x;
   }"
 
 #eval (parseProgram stack).map run
@@ -74,7 +74,7 @@ def stack : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 42))
 ```
 
-A declaração menciona `T` onde a classe de inteiros mencionava `int`, no tipo do vetor, no parâmetro de `empilha` e no resultado de `desempilha`. Os usos em `main` escrevem `Pilha<int>` e `Pilha<Ponto*>`, e cada um deles é um tipo como outro qualquer.
+A declaração menciona `T` onde a classe de inteiros mencionava `int`, no tipo do vetor, no parâmetro de `push` e no resultado de `pop`. Os usos em `main` escrevem `Stack<int>` e `Stack<Point*>`, e cada um deles é um tipo como outro qualquer.
 
 O parâmetro é um parâmetro de *tipo*, e o subconjunto admite um, o que a gramática garante.
 
@@ -101,21 +101,21 @@ p tem template<typename T> class C { … }    C<τ> mencionado em p    C<τ> ∉
 p ⟶ p, class C<τ> { … [T := τ] … }
 ```
 
-Lendo a regra da esquerda para a direita, um programa que menciona `Pilha<int>` e ainda não tem uma classe com esse nome ganha uma, o corpo do template com `int` no lugar de `T`. A regra se aplica de novo enquanto faltar alguma instanciação mencionada, então um template cujo corpo menciona outro template também é expandido, e o processo para quando nenhuma instanciação falta. Ela é idempotente, então aplicá‑la duas vezes não acrescenta nada, o que permite ao verificador de tipos e ao interpretador aplicá‑la cada um por si.
+Lendo a regra da esquerda para a direita, um programa que menciona `Stack<int>` e ainda não tem uma classe com esse nome ganha uma, o corpo do template com `int` no lugar de `T`. A regra se aplica de novo enquanto faltar alguma instanciação mencionada, então um template cujo corpo menciona outro template também é expandido, e o processo para quando nenhuma instanciação falta. Ela é idempotente, então aplicá‑la duas vezes não acrescenta nada, o que permite ao verificador de tipos e ao interpretador aplicá‑la cada um por si.
 
-A substituição alcança todo tipo do corpo, e também os nomes das classes que ele menciona, então um `No<T>*` dentro de uma `Lista<T>` vira um `No<int>*` dentro de `Lista<int>`. O nome de uma instanciação é o texto que o projeto imprime para o tipo, então o nome no fonte e o nome da classe expandida são a mesma cadeia, e as mensagens do verificador nomeiam a classe que o programador escreveu.
+A substituição alcança todo tipo do corpo, e também os nomes das classes que ele menciona, então um `Node<T>*` dentro de uma `Lista<T>` vira um `Node<int>*` dentro de `Lista<int>`. O nome de uma instanciação é o texto que o projeto imprime para o tipo, então o nome no fonte e o nome da classe expandida são a mesma cadeia, e as mensagens do verificador nomeiam a classe que o programador escreveu.
 
-Duas consequências importam para o resto do curso. A primeira é o *custo*. A expansão acontece antes de o programa correr, então uma classe instanciada é uma classe comum e a chamada de um seu método é uma chamada de método comum. Nada do parâmetro sobrevive na memória nem na derivação, e um programa que usa `Pilha<int>` corre exatamente como a classe escrita à mão da {secref}[aula-17]. A segunda é a *verificação*. Um template nunca é verificado, só as suas instanciações são, e um template que ninguém instancia nunca é olhado. C++ faz o mesmo em substância, com uma primeira fase que verifica o que não depende do parâmetro, que o subconjunto deixa de fora.
+Duas consequências importam para o resto do curso. A primeira é o *custo*. A expansão acontece antes de o programa correr, então uma classe instanciada é uma classe comum e a chamada de um seu método é uma chamada de método comum. Nada do parâmetro sobrevive na memória nem na derivação, e um programa que usa `Stack<int>` corre exatamente como a classe escrita à mão da {secref}[aula-17]. A segunda é a *verificação*. Um template nunca é verificado, só as suas instanciações são, e um template que ninguém instancia nunca é olhado. C++ faz o mesmo em substância, com uma primeira fase que verifica o que não depende do parâmetro, que o subconjunto deixa de fora.
 
 ```lean (name := instantiated)
 def instantiated : String :=
   "template<typename T>
-  class Caixa {
+  class Box {
   private:
     T v;
   public:
-    Caixa(T x) { this->v = x; }
-    T abre() { return v; }
+    Box(T x) { this->v = x; }
+    T get() { return v; }
   };
   int main() { return 0; }"
 
@@ -131,24 +131,24 @@ Um template sozinho expande para nada, porque o programa não menciona instancia
 ```lean (name := instantiatedTwo)
 def instantiatedTwo : String :=
   "template<typename T>
-  class Caixa {
+  class Box {
   private:
     T v;
   public:
-    Caixa(T x) { this->v = x; }
-    T abre() { return v; }
+    Box(T x) { this->v = x; }
+    T get() { return v; }
   };
   int main() {
-    Caixa<int>* a = new Caixa<int>(40);
-    Caixa<bool>* b = new Caixa<bool>(true);
-    return a->abre() + (b->abre() ? 2 : 0);
+    Box<int>* a = new Box<int>(40);
+    Box<bool>* b = new Box<bool>(true);
+    return a->get() + (b->get() ? 2 : 0);
   }"
 
 #eval (parseProgram instantiatedTwo).map fun p =>
   (Templates.instantiate p).map fun q => q.classes.map (·.name)
 ```
 ```leanOutput instantiatedTwo
-Except.ok (Except.ok ["Caixa<int>", "Caixa<bool>"])
+Except.ok (Except.ok ["Box<int>", "Box<bool>"])
 ```
 
 ```lean (name := instantiatedRun)
@@ -164,11 +164,11 @@ A instanciação de um nome que não é template é um erro da expansão, relata
 
 ```lean (name := notTemplate)
 #eval (parseProgram
-  "int main() { Pilha<int>* p = new Pilha<int>(2); return 0; }").map check
+  "int main() { Stack<int>* p = new Stack<int>(2); return 0; }").map check
 ```
 ```leanOutput notTemplate
 Except.ok (Except.error (CoreCpp.TypeError.instantiation
-   "Pilha is not a class template, in the instantiation Pilha<int>"))
+   "Stack is not a class template, in the instantiation Stack<int>"))
 ```
 
 # O Que o Parâmetro Pode Ser
@@ -179,27 +179,27 @@ tag := "parametro"
 
 O argumento de uma instanciação é um tipo do subconjunto, um tipo básico, um ponteiro, um vetor ou uma classe, inclusive outra instanciação. Um template pode, portanto, ser usado em um tipo que não existia quando ele foi escrito, o que é o objetivo da construção.
 
-O corpo restringe o argumento sem o dizer. Uma `Pilha<T>` guarda os seus elementos em um `std::vector<T>`, e um elemento de vetor precisa de valor por omissão, então `T` precisa ser um tipo que tenha um. Um template cujo corpo compara dois `T` com `<` exige um `T` que `<` aceite. Nada na declaração registra esses requisitos, e o erro aparece na instanciação, dentro da classe expandida, o que é a fraqueza conhecida da construção.{margin}[B. Stroustrup, *Concepts, The Future of Generic Programming*, ISO WG21 paper N4361, 2015.]
+O corpo restringe o argumento sem o dizer. Uma `Stack<T>` guarda os seus elementos em um `std::vector<T>`, e um elemento de vetor precisa de valor por omissão, então `T` precisa ser um tipo que tenha um. Um template cujo corpo compara dois `T` com `<` exige um `T` que `<` aceite. Nada na declaração registra esses requisitos, e o erro aparece na instanciação, dentro da classe expandida, o que é a fraqueza conhecida da construção.{margin}[B. Stroustrup, *Concepts, The Future of Generic Programming*, ISO WG21 paper N4361, 2015.]
 
 ```lean (name := badInstance)
 def badInstance : String :=
   "template<typename T>
-  class Par {
+  class Pair {
   public:
     T a;
     T b;
-    bool ordenado() { return a < b; }
+    bool sorted() { return a < b; }
   };
-  class Ponto { public: int x; };
+  class Point { public: int x; };
   int main() {
-    Par<Ponto*>* p = new Par<Ponto*>();
-    return p->ordenado() ? 1 : 0;
+    Pair<Point*>* p = new Pair<Point*>();
+    return p->sorted() ? 1 : 0;
   }"
 
 #eval (parseProgram badInstance).map check
 ```
 ```leanOutput badInstance
-Except.ok (Except.error (CoreCpp.TypeError.badOperand "<" (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Ponto"))))
+Except.ok (Except.error (CoreCpp.TypeError.badOperand "<" (CoreCpp.Ty.ptr (CoreCpp.Ty.cls "Point"))))
 ```
 
 A mensagem nomeia o operador e o tipo, e aponta para dentro da classe expandida, não para dentro do template. C++ produz mensagem do mesmo tipo, bem mais longa, e o `concept` de C++20 existe para enunciar o requisito na declaração, de modo que o erro possa ser relatado no uso.
@@ -251,13 +251,13 @@ tag := "exercicios-22"
 
 {exercise "exr-template-expansion"}[] Para um template seu, imprima a tabela de classes antes e depois da expansão com `Templates.instantiate`, e diga qual menção do programa produziu cada classe.
 
-{exercise "exr-template-nested"}[] Escreva um template `Lista<T>` cujo corpo menciona `No<T>`, ele próprio um template, e verifique pela tabela de classes que a expansão chega a um ponto fixo. Diga quantas classes a tabela tem para `Lista<int>`.
+{exercise "exr-template-nested"}[] Escreva um template `Lista<T>` cujo corpo menciona `Node<T>`, ele próprio um template, e verifique pela tabela de classes que a expansão chega a um ponto fixo. Diga quantas classes a tabela tem para `Lista<int>`.
 
 {exercise "exr-template-error"}[] Escreva um template cujo corpo é correto para `int` e errado para um ponteiro, instancie‑o nos dois, e mostre que a mensagem nomeia a classe expandida. Diga em uma frase o que um `concept` teria mudado.
 
-{exercise "exr-template-erasure"}[] Explique como seria a memória de um programa se Core C++ apagasse o parâmetro como Java faz, e que verificação o verificador de tipos teria de acrescentar em cada uso de `desempilha`.
+{exercise "exr-template-erasure"}[] Explique como seria a memória de um programa se Core C++ apagasse o parâmetro como Java faz, e que verificação o verificador de tipos teria de acrescentar em cada uso de `pop`.
 
-{exercise "exr-template-cost"}[] Dê dois programas que usam `Pilha<int>`, um com o template e outro com a classe escrita à mão da {secref}[aula-17], e compare as suas derivações. Diga o que na derivação mostra que instanciar não custa nada em tempo de execução.
+{exercise "exr-template-cost"}[] Dê dois programas que usam `Stack<int>`, um com o template e outro com a classe escrita à mão da {secref}[aula-17], e compare as suas derivações. Diga o que na derivação mostra que instanciar não custa nada em tempo de execução.
 
 ```lean -show
 end Lecture22

@@ -39,20 +39,20 @@ Um programa com muitas classes precisa de um modo de agrupá‑las e de manter o
 
 ```lean (name := ns)
 def ns : String :=
-  "namespace Banco {
-    class Conta {
+  "namespace Bank {
+    class Account {
     private:
-      int saldo;
+      int balance;
     public:
-      Conta(int inicial) { saldo = inicial; }
-      void deposita(int v) { saldo = saldo + v; }
-      int consulta() { return saldo; }
+      Account(int initial) { balance = initial; }
+      void deposit(int v) { balance = balance + v; }
+      int query() { return balance; }
     };
   }
   int main() {
-    Banco::Conta* c = new Banco::Conta(100);
-    c->deposita(20);
-    return c->consulta();
+    Bank::Account* c = new Bank::Account(100);
+    c->deposit(20);
+    return c->query();
   }"
 
 #eval (parseProgram ns).map run
@@ -61,16 +61,16 @@ def ns : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 120))
 ```
 
-O `namespace` não acrescenta regra de tipos nem de avaliação. O analisador o achata, então a tabela de classes recebe uma classe chamada `Banco::Conta` e toda regra trabalha sobre esse nome.
+O `namespace` não acrescenta regra de tipos nem de avaliação. O analisador o achata, então a tabela de classes recebe uma classe chamada `Bank::Account` e toda regra trabalha sobre esse nome.
 
 ```lean (name := nsNames)
 #eval (parseProgram ns).map fun p => p.classes.map (·.name)
 ```
 ```leanOutput nsNames
-Except.ok ["Banco::Conta"]
+Except.ok ["Bank::Account"]
 ```
 
-Dentro do `namespace` um nome de classe não qualificado denota a classe do próprio `namespace`, então o construtor `Conta(int)` e um campo de tipo `Conta*` não precisam de prefixo ali. Core C++ mantém só isto do `namespace` de C++. Não há `using`, não há funções nem variáveis dentro de um `namespace`, e não há modo de alcançar uma classe de um escopo envolvente de dentro de um `namespace` a não ser pelo nome qualificado.{fnref}[nested]
+Dentro do `namespace` um nome de classe não qualificado denota a classe do próprio `namespace`, então o construtor `Account(int)` e um campo de tipo `Account*` não precisam de prefixo ali. Core C++ mantém só isto do `namespace` de C++. Não há `using`, não há funções nem variáveis dentro de um `namespace`, e não há modo de alcançar uma classe de um escopo envolvente de dentro de um `namespace` a não ser pelo nome qualificado.{fnref}[nested]
 
 :::footnotes
 
@@ -90,11 +90,11 @@ As construções da UD V, classes com visibilidade, objetos com identidade em σ
 
 *Identidade e estado.* Um objeto é um registro de posições em σ, {secref}[aula-6], alcançado por ponteiros. Dois ponteiros para a mesma posição nomeiam o mesmo objeto, alterações por um são vistas pelo outro, e um objeto sobrevive ao bloco que o criou. É o modelo de uma entidade mutável com identidade, o oposto da semântica de valores da UD II, em que dois inteiros iguais são indistinguíveis.
 
-*Substitutibilidade.* A regra `Subsumption` da {secref}[aula-19] permite a um cliente escrito para `Forma*` receber um `Quadrado*`. Toda operação da assinatura de `Forma` se aplica ao objeto, então o cliente funciona sem alteração para toda classe que deriva de `Forma`, inclusive classes escritas depois do cliente.{margin}[B. Meyer, *Object-Oriented Software Construction*, 2ª ed., Prentice Hall, 1997, capítulos 14 e 16.]
+*Substitutibilidade.* A regra `Subsumption` da {secref}[aula-19] permite a um cliente escrito para `Shape*` receber um `Square*`. Toda operação da assinatura de `Shape` se aplica ao objeto, então o cliente funciona sem alteração para toda classe que deriva de `Shape`, inclusive classes escritas depois do cliente.{margin}[B. Meyer, *Object-Oriented Software Construction*, 2ª ed., Prentice Hall, 1997, capítulos 14 e 16.]
 
 *Ligação tardia.* A premissa sobre `virtual` em `MethodCall` decide o método pelo objeto, e não pelo ponteiro. Um cliente que chama `f->area()` não precisa saber que forma tem em mãos, e a escolha é feita em tempo de execução, a cada chamada.
 
-Cook observa que um tipo abstrato de dados e um objeto diferem em onde vivem as operações.{margin}[W. R. Cook, *On Understanding Data Abstraction, Revisited*, Proceedings of OOPSLA 2009, pp. 557 a 572.] Um tipo abstrato de dados tem uma representação e operações que a veem, como a pilha da {secref}[aula-17], cujos métodos leem o vetor e o contador do receptor e de qualquer outra pilha que lhes seja passada. Um objeto expõe só a sua assinatura, mesmo a outros objetos da mesma classe, então dois objetos podem ter representações diferentes atrás da mesma assinatura, como `Quadrado` e um hipotético `Circulo` atrás de `Forma`. Core C++ oferece os dois, e a diferença é de projeto, não de linguagem.
+Cook observa que um tipo abstrato de dados e um objeto diferem em onde vivem as operações.{margin}[W. R. Cook, *On Understanding Data Abstraction, Revisited*, Proceedings of OOPSLA 2009, pp. 557 a 572.] Um tipo abstrato de dados tem uma representação e operações que a veem, como a pilha da {secref}[aula-17], cujos métodos leem o vetor e o contador do receptor e de qualquer outra pilha que lhes seja passada. Um objeto expõe só a sua assinatura, mesmo a outros objetos da mesma classe, então dois objetos podem ter representações diferentes atrás da mesma assinatura, como `Square` e um hipotético `Circulo` atrás de `Shape`. Core C++ oferece os dois, e a diferença é de projeto, não de linguagem.
 
 # Compilação Separada
 
@@ -102,27 +102,27 @@ Cook observa que um tipo abstrato de dados e um objeto diferem em onde vivem as 
 tag := "separada"
 %%%
 
-Programas em C++ de qualquer tamanho são divididos em arquivos. Um *cabeçalho* `.hh` declara uma classe, os seus campos e as assinaturas dos seus métodos, e um *fonte* `.cpp` define os métodos com a sintaxe qualificada `Pilha::empilha`. Os clientes incluem o cabeçalho e nunca veem o fonte. O compilador traduz cada fonte em um arquivo objeto, e o ligador os junta em um programa.
+Programas em C++ de qualquer tamanho são divididos em arquivos. Um *cabeçalho* `.hh` declara uma classe, os seus campos e as assinaturas dos seus métodos, e um *fonte* `.cpp` define os métodos com a sintaxe qualificada `Stack::push`. Os clientes incluem o cabeçalho e nunca veem o fonte. O compilador traduz cada fonte em um arquivo objeto, e o ligador os junta em um programa.
 
 ```
-// pilha.hh
-class Pilha {
+// stack.hh
+class Stack {
 private:
-  std::vector<int>* itens;
-  int topo;
+  std::vector<int>* items;
+  int top;
 public:
-  Pilha(int n);
-  void empilha(int x);
-  int desempilha();
-  bool vazia();
+  Stack(int n);
+  void push(int x);
+  int pop();
+  bool empty();
 };
 
-// pilha.cpp
-#include "pilha.hh"
-Pilha::Pilha(int n) { this->itens = new std::vector<int>(n); this->topo = 0; }
-void Pilha::empilha(int x) { (*itens)[topo] = x; topo = topo + 1; }
-int Pilha::desempilha() { topo = topo - 1; return (*itens)[topo]; }
-bool Pilha::vazia() { return topo == 0; }
+// stack.cpp
+#include "stack.hh"
+Stack::Stack(int n) { this->items = new std::vector<int>(n); this->top = 0; }
+void Stack::push(int x) { (*items)[top] = x; top = top + 1; }
+int Stack::pop() { top = top - 1; return (*items)[top]; }
+bool Stack::empty() { return top == 0; }
 ```
 
 A compilação separada é o idioma de C++ para o tipo abstrato de dados na escala dos arquivos. O cabeçalho é a assinatura, o fonte é a representação das operações, e uma alteração no fonte não obriga os clientes a recompilar, só a religar. Ela se apoia no pré‑processador, `#include`, e na definição de métodos fora da classe, e Core C++ não tem nenhum dos dois. O projeto mantém um programa como um arquivo e uma unidade de tradução, porque o idioma não acrescenta regra de tipos nem de avaliação às da {secref}[aula-17] e da {secref}[aula-18]. O cabeçalho ainda expõe os campos privados, já que o compilador precisa do tamanho de um objeto, e o tipo totalmente opaco exige o idioma do ponteiro para a implementação, uma classe cujo único campo é um ponteiro para uma classe privada definida no fonte.
@@ -198,9 +198,9 @@ tag := "exercicios-20"
 
 {exercise "exr-ns-nested"}[] Escreva dois `namespace`, um aninhado no outro, cada um com uma classe, e um `main` que cria um objeto de cada. Imprima a tabela de classes com `Program.classes` e explique os nomes.
 
-{exercise "exr-adt-vs-object"}[] Acrescente à pilha da {secref}[aula-17] um método `igual(Pilha* outra)` que compara duas pilhas lendo os campos de `outra`. Explique, com a distinção de Cook, por que esse método é possível para um tipo abstrato de dados e não seria para um objeto conhecido só pela assinatura.
+{exercise "exr-adt-vs-object"}[] Acrescente à pilha da {secref}[aula-17] um método `igual(Stack* outra)` que compara duas pilhas lendo os campos de `outra`. Explique, com a distinção de Cook, por que esse método é possível para um tipo abstrato de dados e não seria para um objeto conhecido só pela assinatura.
 
-{exercise "exr-substitution"}[] Escreva uma função que recebe um `Forma*` e devolve o dobro da sua área, e a chame com um `Quadrado*` e com um `Forma*`. Explique, por `Subsumption` e `MethodCall`, por que uma função serve aos dois.
+{exercise "exr-substitution"}[] Escreva uma função que recebe um `Shape*` e devolve o dobro da sua área, e a chame com um `Square*` e com um `Shape*`. Explique, por `Subsumption` e `MethodCall`, por que uma função serve aos dois.
 
 {exercise "exr-header"}[] Divida o programa da {secref}[namespaces] em um cabeçalho e um fonte em C++ real, compile com `g++` e descreva que alteração no fonte obriga o cliente a recompilar e qual não obriga.
 

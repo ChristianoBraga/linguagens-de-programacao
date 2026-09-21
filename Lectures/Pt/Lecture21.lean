@@ -39,13 +39,13 @@ Um programa pode declarar várias funções com um nome, desde que elas recebam 
 
 ```lean (name := overload)
 def overload : String :=
-  "int dobro(int n) { return 2 * n; }
-  bool dobro(bool b) { return b; }
-  int dobro(int a, int b) { return 2 * (a + b); }
+  "int twice(int n) { return 2 * n; }
+  bool twice(bool b) { return b; }
+  int twice(int a, int b) { return 2 * (a + b); }
   int main() {
-    int x = dobro(21);
-    int y = dobro(1, 1);
-    return dobro(false) ? 0 : x + y;
+    int x = twice(21);
+    int y = twice(1, 1);
+    return twice(false) ? 0 : x + y;
   }"
 
 #eval (parseProgram overload).map run
@@ -54,7 +54,7 @@ def overload : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 46))
 ```
 
-As três declarações de `dobro` diferem no número de argumentos, no primeiro caso, e no tipo do argumento, no segundo. Cada chamada de `main` alcança uma delas. Nada nos valores distingue as chamadas em tempo de execução, e o interpretador sabe em que função entrar porque o verificador de tipos escreve na árvore a *assinatura* da declaração escolhida.
+As três declarações de `twice` diferem no número de argumentos, no primeiro caso, e no tipo do argumento, no segundo. Cada chamada de `main` alcança uma delas. Nada nos valores distingue as chamadas em tempo de execução, e o interpretador sabe em que função entrar porque o verificador de tipos escreve na árvore a *assinatura* da declaração escolhida.
 
 A utilidade é de nomeação. Sem sobrecarga, uma biblioteca que imprime um `int`, um `bool` e um ponteiro oferece três nomes, `imprimeInt`, `imprimeBool`, `imprimePonteiro`, e o leitor precisa lembrar qual escrever. Com sobrecarga ela oferece `imprime`, e o argumento decide. Em troca, o leitor de uma chamada precisa conhecer os tipos dos argumentos para saber qual declaração corre, e por isso uma linguagem que sobrecarrega deve manter os candidatos poucos e distintos.
 
@@ -73,7 +73,7 @@ A tem um elemento cujos parâmetros são exatamente os tipos dos argumentos, ou 
 a chamada de f seleciona esse candidato
 ```
 
-Três casos decorrem da regra. Com A vazio a chamada falha, e a mensagem é a do único candidato daquela aridade quando existe um, então um programa com um só `dobro` recebe a mensagem comum de tipo e não uma queixa vaga sobre sobrecargas. Com A unitário a escolha é esse candidato. Com dois ou mais em A vence o exato, e se nenhum é exato a chamada é *ambígua* e o programa é recusado.
+Três casos decorrem da regra. Com A vazio a chamada falha, e a mensagem é a do único candidato daquela aridade quando existe um, então um programa com um só `twice` recebe a mensagem comum de tipo e não uma queixa vaga sobre sobrecargas. Com A unitário a escolha é esse candidato. Com dois ou mais em A vence o exato, e se nenhum é exato a chamada é *ambígua* e o programa é recusado.
 
 Um candidato exato é aquele cujos tipos de parâmetro são os tipos dos argumentos, sem conversão alguma. As conversões que podem ficar entre um argumento e um parâmetro são as três do subconjunto, `nullptr` para um ponteiro, um lambda para um `std::function`, e a subsunção, um ponteiro para classe derivada onde se espera um ponteiro para a base. É a última que produz ambiguidade.
 
@@ -158,20 +158,20 @@ O conjunto de sobrecarga de um nome de método é o conjunto dos métodos com es
 
 ```lean (name := methodOverload)
 def methodOverload : String :=
-  "class Conta {
+  "class Account {
   private:
-    int saldo;
+    int balance;
   public:
-    Conta(int s) { this->saldo = s; }
-    int deposita(int v) { saldo = saldo + v; return saldo; }
-    int deposita(int v, int taxa) { return deposita(v - taxa); }
-    int valor() { return saldo; }
+    Account(int s) { this->balance = s; }
+    int deposit(int v) { balance = balance + v; return balance; }
+    int deposit(int v, int rate) { return deposit(v - rate); }
+    int value() { return balance; }
   };
   int main() {
-    Conta* c = new Conta(100);
-    c->deposita(50);
-    c->deposita(20, 5);
-    return c->valor();
+    Account* c = new Account(100);
+    c->deposit(50);
+    c->deposit(20, 5);
+    return c->value();
   }"
 
 #eval (parseProgram methodOverload).map run
@@ -180,7 +180,7 @@ def methodOverload : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 165))
 ```
 
-A chamada `deposita(v - taxa)` dentro do método de dois argumentos é um nome não qualificado, que a {secref}[aula-18] leu como `this->deposita(...)`, e o conjunto de sobrecarga de `this` a resolve para o método de um argumento. A recursão que um leitor poderia temer não acontece, porque as aridades diferem.
+A chamada `deposit(v - rate)` dentro do método de dois argumentos é um nome não qualificado, que a {secref}[aula-18] leu como `this->deposit(...)`, e o conjunto de sobrecarga de `this` a resolve para o método de um argumento. A recursão que um leitor poderia temer não acontece, porque as aridades diferem.
 
 C++ tem aqui uma regra que Core C++ deixa de fora. Um membro de nome `m` em uma classe derivada *esconde* todos os `m` da base, então uma sobrecarga declarada na base fica inalcançável por um objeto da derivada, a menos que a derivada escreva `using Base::m`. O subconjunto toma a união ao longo da cadeia, o que não perde programa algum e poupa uma regra.
 
@@ -194,23 +194,23 @@ Um operador em C++ é uma função com um nome especial, e uma classe pode lhe d
 
 ```lean (name := operatorPlus)
 def operatorPlus : String :=
-  "class Ponto {
+  "class Point {
   public:
     int x;
     int y;
-    Ponto* operator+(Ponto& o) {
-      Ponto* r = new Ponto();
+    Point* operator+(Point& o) {
+      Point* r = new Point();
       r->x = x + o.x;
       r->y = y + o.y;
       return r;
     }
   };
   int main() {
-    Ponto* a = new Ponto();
+    Point* a = new Point();
     a->x = 1; a->y = 4;
-    Ponto* b = new Ponto();
+    Point* b = new Point();
     b->x = 2; b->y = 3;
-    Ponto* c = *a + *b;
+    Point* c = *a + *b;
     return c->x + c->y;
   }"
 
@@ -220,7 +220,7 @@ def operatorPlus : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 10))
 ```
 
-Dois detalhes da declaração decorrem de decisões de unidades anteriores. O parâmetro é `Ponto& o` e não `Ponto o`, porque um objeto nunca é copiado nem guardado em variável, então a única maneira de passar um é ligar a sua posição, o que um parâmetro por referência faz. O resultado é `Ponto*` e não `Ponto`, pela mesma razão, então o operador cria o resultado com `new` e devolve o ponteiro.
+Dois detalhes da declaração decorrem de decisões de unidades anteriores. O parâmetro é `Point& o` e não `Ponto o`, porque um objeto nunca é copiado nem guardado em variável, então a única maneira de passar um é ligar a sua posição, o que um parâmetro por referência faz. O resultado é `Point*` e não `Point`, pela mesma razão, então o operador cria o resultado com `new` e devolve o ponteiro.
 
 A regra de tipos diz que um operador infixo cujo operando esquerdo é um objeto é a chamada do membro.
 
@@ -279,7 +279,7 @@ tag := "exercicios-21"
 
 {exercise "exr-overload-function"}[] Tente declarar duas funções que diferem só em um parâmetro `std::function`, rode o verificador de tipos e explique a mensagem. Depois reescreva o par de modo que as duas permaneçam e as chamadas não mudem, acrescentando um parâmetro a uma delas.
 
-{exercise "exr-operator-compare"}[] Dê à classe `Par` um membro `operator<` que compara pelo primeiro campo, e um `main` que o usa na condição de um `if`. Imprima a derivação e encontre a linha em que a comparação virou chamada de método.
+{exercise "exr-operator-compare"}[] Dê à classe `Pair` um membro `operator<` que compara pelo primeiro campo, e um `main` que o usa na condição de um `if`. Imprima a derivação e encontre a linha em que a comparação virou chamada de método.
 
 {exercise "exr-operator-short-circuit"}[] Explique, com um exemplo que tenha efeito de um dos lados, o que mudaria no significado de um programa se Core C++ permitisse a uma classe sobrecarregar `&&`.
 

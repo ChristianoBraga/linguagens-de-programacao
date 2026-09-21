@@ -47,14 +47,14 @@ What changes is what can be *said* about a program. The rules of Core C++ admit 
 The predicate is a walk over the abstract syntax, and the interpreter runs it.
 
 ```lean (name := fragCheck)
-def mdc : String :=
-  "int mdc(int a, int b) {
+def gcd : String :=
+  "int gcd(int a, int b) {
     while (b != 0) { int t = b; b = a % b; a = t; }
     return a;
   }
-  int main() { int x = mdc(48, 18); int& y = x; y = y + 1; return y; }"
+  int main() { int x = gcd(48, 18); int& y = x; y = y + 1; return y; }"
 
-#eval (parseProgram mdc).map (fragment .imperative)
+#eval (parseProgram gcd).map (fragment .imperative)
 ```
 ```leanOutput fragCheck
 Except.ok (Except.ok ())
@@ -94,7 +94,7 @@ The imperative fragment keeps what the first four units built and nothing else. 
 The program of {secref}[restriction] lies in the fragment, and it is an ordinary imperative program, a loop with two variables, a function, a local reference and an assignment.
 
 ```lean (name := mdcRun)
-#eval (parseProgram mdc).map run
+#eval (parseProgram gcd).map run
 ```
 ```leanOutput mdcRun
 Except.ok (Except.ok (CoreCpp.Val.int 7))

@@ -99,7 +99,7 @@ some [("X", CoreCpp.Logic.Term.fn "f" [CoreCpp.Logic.Term.num 1])]
 A unificação é simétrica no sentido de que os dois lados podem trazer variáveis, e uma chamada liga todas.
 
 ```lean (name := unify2)
-#eval unify [] (.fn "par" [.var "X", .num 2]) (.fn "par" [.num 1, .var "Y"])
+#eval unify [] (.fn "even" [.var "X", .num 2]) (.fn "even" [.num 1, .var "Y"])
 ```
 ```leanOutput unify2
 some [("Y", CoreCpp.Logic.Term.num 2), ("X", CoreCpp.Logic.Term.num 1)]
@@ -148,9 +148,9 @@ A regra `SLD-Is` avalia o seu lado direito e unifica o resultado com o seu lado 
 
 ```lean (name := factQ)
 def fatPl : String :=
-  "fatorial(0, 1).
-   fatorial(N, F) :- N > 0, M is N - 1, fatorial(M, G), F is N * G.
-   ?- fatorial(5, F)."
+  "factorial(0, 1).
+   factorial(N, F) :- N > 0, M is N - 1, factorial(M, G), F is N * G.
+   ?- factorial(5, F)."
 
 #eval match Logic.parse fatPl with
   | .ok (cs, qs) =>
@@ -160,7 +160,7 @@ def fatPl : String :=
   | .error e => IO.println e
 ```
 ```leanOutput factQ
-?- fatorial(5, F).
+?- factorial(5, F).
 F = 120
 ```
 

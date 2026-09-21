@@ -30,14 +30,14 @@ open CoreCpp
 
 ```lean (name := proxDef)
 def counter : String :=
-  "class Cont { public: int n; };
-   int prox(Cont* c) {
+  "class Cell { public: int n; };
+   int next(Cell* c) {
      c->n = c->n + 1;
      return c->n;
    }
    int main() {
-     Cont* c = new Cont();
-     return prox(c) + 10 * prox(c);
+     Cell* c = new Cell();
+     return next(c) + 10 * next(c);
    }"
 
 #eval (parseProgram counter).map run
@@ -107,12 +107,12 @@ Except.ok (Except.ok (CoreCpp.Val.int 21))
 
 ```lean (name := assignOrder)
 def assignOrder : String :=
-  "class Cont { public: int n; };
-   int prox(Cont* c) { c->n = c->n + 1; return c->n; }
+  "class Cell { public: int n; };
+   int next(Cell* c) { c->n = c->n + 1; return c->n; }
    int main() {
-     Cont* c = new Cont();
+     Cell* c = new Cell();
      std::vector<int>* v = new std::vector<int>(3);
-     (*v)[prox(c)] = prox(c);
+     (*v)[next(c)] = next(c);
      return (*v)[1] * 10 + (*v)[2];
    }"
 
@@ -122,9 +122,9 @@ def assignOrder : String :=
 Except.ok (Except.ok (CoreCpp.Val.int 1))
 ```
 
-* Lado direito primeiro, `prox(c)` vale 1 ali. O índice é avaliado depois e vale 2. O índice 2 recebe 1.
+* Lado direito primeiro, `next(c)` vale 1 ali. O índice é avaliado depois e vale 2. O índice 2 recebe 1.
 
-* Argumentos da esquerda para a direita, `f(prox(c), prox(c))` é `f(1, 2)`.
+* Argumentos da esquerda para a direita, `f(next(c), next(c))` é `f(1, 2)`.
 
 # §12.4 Por que não proibir efeitos em expressões
 

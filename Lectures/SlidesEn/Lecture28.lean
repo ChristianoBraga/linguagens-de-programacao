@@ -131,9 +131,9 @@ P, θ ⊢ (s is t) G ⇒ θ'
 
 ```lean (name := factQ)
 def fatPl : String :=
-  "fatorial(0, 1).
-   fatorial(N, F) :- N > 0, M is N - 1, fatorial(M, G), F is N * G.
-   ?- fatorial(5, F)."
+  "factorial(0, 1).
+   factorial(N, F) :- N > 0, M is N - 1, factorial(M, G), F is N * G.
+   ?- factorial(5, F)."
 
 #eval match Logic.parse fatPl with
   | .ok (cs, qs) =>
@@ -143,7 +143,7 @@ def fatPl : String :=
   | .error e => IO.println e
 ```
 ```leanOutput factQ
-?- fatorial(5, F).
+?- factorial(5, F).
 F = 120
 ```
 
