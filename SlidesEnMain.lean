@@ -25,6 +25,10 @@ import Lectures.SlidesEn.Lecture17
 import Lectures.SlidesEn.Lecture18
 import Lectures.SlidesEn.Lecture19
 import Lectures.SlidesEn.Lecture20
+import Lectures.SlidesEn.Lecture21
+import Lectures.SlidesEn.Lecture22
+import Lectures.SlidesEn.Lecture23
+import Lectures.SlidesEn.Lecture24
 
 open Verso Doc
 open Verso.Genre Manual
@@ -229,6 +233,45 @@ def lecture20Deck : SlideDeck where
   notesLink := some ("../en/Lecture-20___-Object-Orientation/", "↩ Notes")
   prevLink := some ("lecture-19.en.html", "‹ Previous lecture")
 
+def lecture21Deck : SlideDeck where
+  fileName := "lecture-21.en.html"
+  pageTitle := "Lecture 21: Overloading · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 21 · Programming Languages"
+  label := "Lecture 21 · Overloading"
+  notesLink := some ("../en/Lecture-21___-Overloading/", "↩ Notes")
+  prevLink := some ("lecture-20.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-22.en.html", "Next lecture ›")
+
+def lecture22Deck : SlideDeck where
+  fileName := "lecture-22.en.html"
+  pageTitle := "Lecture 22: Parametric Polymorphism · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 22 · Programming Languages"
+  label := "Lecture 22 · Parametric Polymorphism"
+  notesLink := some ("../en/Lecture-22___-Parametric-Polymorphism/", "↩ Notes")
+  prevLink := some ("lecture-21.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-23.en.html", "Next lecture ›")
+
+def lecture23Deck : SlideDeck where
+  fileName := "lecture-23.en.html"
+  pageTitle := "Lecture 23: Subtyping · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 23 · Programming Languages"
+  label := "Lecture 23 · Subtyping"
+  notesLink := some ("../en/Lecture-23___-Subtyping/", "↩ Notes")
+  prevLink := some ("lecture-22.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-24.en.html", "Next lecture ›")
+
+def lecture24Deck : SlideDeck where
+  fileName := "lecture-24.en.html"
+  pageTitle := "Lecture 24: Type Inference · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 24 · Programming Languages"
+  label := "Lecture 24 · Type Inference"
+  notesLink := some ("../en/Lecture-24___-Type-Inference/", "↩ Notes")
+  prevLink := some ("lecture-23.en.html", "‹ Previous lecture")
+
 def main := slidesMain (decks :=
   [((%doc Lectures.SlidesEn.Lecture01), lecture1Deck),
    ((%doc Lectures.SlidesEn.Lecture02), lecture2Deck),
@@ -249,4 +292,8 @@ def main := slidesMain (decks :=
    ((%doc Lectures.SlidesEn.Lecture17), lecture17Deck),
    ((%doc Lectures.SlidesEn.Lecture18), lecture18Deck),
    ((%doc Lectures.SlidesEn.Lecture19), lecture19Deck),
-   ((%doc Lectures.SlidesEn.Lecture20), lecture20Deck)])
+   ((%doc Lectures.SlidesEn.Lecture20), lecture20Deck),
+   ((%doc Lectures.SlidesEn.Lecture21), lecture21Deck),
+   ((%doc Lectures.SlidesEn.Lecture22), lecture22Deck),
+   ((%doc Lectures.SlidesEn.Lecture23), lecture23Deck),
+   ((%doc Lectures.SlidesEn.Lecture24), lecture24Deck)])

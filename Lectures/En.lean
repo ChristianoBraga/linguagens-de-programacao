@@ -23,6 +23,10 @@ import Lectures.En.Lecture17
 import Lectures.En.Lecture18
 import Lectures.En.Lecture19
 import Lectures.En.Lecture20
+import Lectures.En.Lecture21
+import Lectures.En.Lecture22
+import Lectures.En.Lecture23
+import Lectures.En.Lecture24
 
 open Verso.Genre Manual
 
@@ -52,3 +56,7 @@ Lecture notes of course 09022, Linguagens de Programação, of the Computer Engi
 {include 0 Lectures.En.Lecture18}
 {include 0 Lectures.En.Lecture19}
 {include 0 Lectures.En.Lecture20}
+{include 0 Lectures.En.Lecture21}
+{include 0 Lectures.En.Lecture22}
+{include 0 Lectures.En.Lecture23}
+{include 0 Lectures.En.Lecture24}

@@ -23,6 +23,10 @@ import Lectures.Pt.Lecture17
 import Lectures.Pt.Lecture18
 import Lectures.Pt.Lecture19
 import Lectures.Pt.Lecture20
+import Lectures.Pt.Lecture21
+import Lectures.Pt.Lecture22
+import Lectures.Pt.Lecture23
+import Lectures.Pt.Lecture24
 
 open Verso.Genre Manual
 
@@ -52,3 +56,7 @@ Notas de aula da disciplina 09022, Linguagens de Programação, do curso de Enge
 {include 0 Lectures.Pt.Lecture18}
 {include 0 Lectures.Pt.Lecture19}
 {include 0 Lectures.Pt.Lecture20}
+{include 0 Lectures.Pt.Lecture21}
+{include 0 Lectures.Pt.Lecture22}
+{include 0 Lectures.Pt.Lecture23}
+{include 0 Lectures.Pt.Lecture24}

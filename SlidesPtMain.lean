@@ -25,6 +25,10 @@ import Lectures.SlidesPt.Lecture17
 import Lectures.SlidesPt.Lecture18
 import Lectures.SlidesPt.Lecture19
 import Lectures.SlidesPt.Lecture20
+import Lectures.SlidesPt.Lecture21
+import Lectures.SlidesPt.Lecture22
+import Lectures.SlidesPt.Lecture23
+import Lectures.SlidesPt.Lecture24
 
 open Verso Doc
 open Verso.Genre Manual
@@ -289,6 +293,57 @@ def aula20Deck : SlideDeck where
   prevSlideLabel := "Slide anterior"
   nextSlideLabel := "Próximo slide"
 
+def aula21Deck : SlideDeck where
+  fileName := "lecture-21.pt.html"
+  pageTitle := "Aula 21: Sobrecarga · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 21 · Linguagens de Programação"
+  label := "Aula 21 · Sobrecarga"
+  notesLink := some ("../pt/Aula-21___-Sobrecarga/", "↩ Notas")
+  prevLink := some ("lecture-20.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-22.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula22Deck : SlideDeck where
+  fileName := "lecture-22.pt.html"
+  pageTitle := "Aula 22: Polimorfismo Paramétrico · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 22 · Linguagens de Programação"
+  label := "Aula 22 · Polimorfismo Paramétrico"
+  notesLink := some ("../pt/Aula-22___-Polimorfismo-Param___trico/", "↩ Notas")
+  prevLink := some ("lecture-21.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-23.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula23Deck : SlideDeck where
+  fileName := "lecture-23.pt.html"
+  pageTitle := "Aula 23: Subtipagem · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 23 · Linguagens de Programação"
+  label := "Aula 23 · Subtipagem"
+  notesLink := some ("../pt/Aula-23___-Subtipagem/", "↩ Notas")
+  prevLink := some ("lecture-22.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-24.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula24Deck : SlideDeck where
+  fileName := "lecture-24.pt.html"
+  pageTitle := "Aula 24: Inferência de Tipos · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 24 · Linguagens de Programação"
+  label := "Aula 24 · Inferência de Tipos"
+  notesLink := some ("../pt/Aula-24___-Infer___ncia-de-Tipos/", "↩ Notas")
+  prevLink := some ("lecture-23.pt.html", "‹ Aula anterior")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
 def main := slidesMain (decks :=
   [((%doc Lectures.SlidesPt.Lecture01), aula1Deck),
    ((%doc Lectures.SlidesPt.Lecture02), aula2Deck),
@@ -309,4 +364,8 @@ def main := slidesMain (decks :=
    ((%doc Lectures.SlidesPt.Lecture17), aula17Deck),
    ((%doc Lectures.SlidesPt.Lecture18), aula18Deck),
    ((%doc Lectures.SlidesPt.Lecture19), aula19Deck),
-   ((%doc Lectures.SlidesPt.Lecture20), aula20Deck)])
+   ((%doc Lectures.SlidesPt.Lecture20), aula20Deck),
+   ((%doc Lectures.SlidesPt.Lecture21), aula21Deck),
+   ((%doc Lectures.SlidesPt.Lecture22), aula22Deck),
+   ((%doc Lectures.SlidesPt.Lecture23), aula23Deck),
+   ((%doc Lectures.SlidesPt.Lecture24), aula24Deck)])
