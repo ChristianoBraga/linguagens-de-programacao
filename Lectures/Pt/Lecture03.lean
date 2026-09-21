@@ -200,7 +200,7 @@ O `return e` avalia a expressão e produz o controle `ret v`, que `Seq-Ret` e `W
 tag := "trace"
 %%%
 
-Cada função do interpretador implementa um juízo, e cada caso de cada função implementa uma regra, com a regra escrita no comentário do caso. Quando o rastreamento está ativo, cada aplicação de regra registra a sua conclusão com o nome da regra, na profundidade em que ocorre na árvore de derivação. As premissas são registradas antes da conclusão, então a árvore aparece em *pós‑ordem*, indentada pela profundidade. A raiz é a última linha.
+Cada função do interpretador implementa um juízo, e cada caso de cada função implementa uma regra, com a regra escrita no comentário do caso. Quando o rastreamento está ativo, cada aplicação de regra registra a instância da regra que conclui, na profundidade em que ocorre na derivação. O interpretador então desenha a derivação como esta aula escreve as suas regras, as premissas sobre um traço de inferência, a conclusão sob ele e o nome da regra à direita. Uma legenda abre a saída e nomeia os ambientes ρᵢ, as memórias σⱼ e todo sujeito longo demais para um juízo, de modo que um juízo ocupa uma linha. Uma subárvore mais larga que a página é escrita à parte sob um nome 𝒟ₖ, e o lugar de onde veio leva esse nome sobre a conclusão da subárvore, como se faz no papel com uma derivação que não cabe.
 
 ```lean (name := traceAssign)
 def sum : String :=
@@ -211,21 +211,45 @@ def sum : String :=
   | .error e => IO.println e
 ```
 ```leanOutput traceAssign
-    [], {} ⊢ 1 ⇒ 1, {}   (Lit)
-  [], {} ⊢ int x = 1; ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 1}   (Decl)
-        [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
-      [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ 1, {ℓ0 ↦ 1}   (Var)
-      [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ 41 ⇒ 41, {ℓ0 ↦ 1}   (Lit)
-    [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x + 41 ⇒ 42, {ℓ0 ↦ 1}   (Binary)
-    [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
-  [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x = x + 41; ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 42}   (Assign)
-      [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 42}   (LocVar)
-    [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ 42, {ℓ0 ↦ 42}   (Var)
-  [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ return x; ⇒ ret 42, [x ↦ ℓ0], {ℓ0 ↦ 42}   (Return)
-[], {} ⊢ main() ⇒ 42, {}   (Call)
+ρ₀ = []            σ₀ = {}
+ρ₁ = [x ↦ ℓ0]      σ₁ = {ℓ0 ↦ 1}
+                   σ₂ = {ℓ0 ↦ 42}
+
+                   𝒟₂                                      𝒟₃                                      𝒟₄
+  ρ₀, σ₀ ⊢ int x = 1; ⇒ normal, ρ₁, σ₁    ρ₁, σ₁ ⊢ x = x + 41; ⇒ normal, ρ₁, σ₂    ρ₁, σ₂ ⊢ return x; ⇒ ret 42, ρ₁, σ₂
+  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────── (Call)
+  ρ₀, σ₀ ⊢ main() ⇒ 42, σ₀
+
+𝒟₁
+  ──────────────────── (LocVar)
+  ρ₁, σ₁ ⊢ x ⇒ₗ ℓ0, σ₁
+  ───────────────────────────── (Var)    ──────────────────── (Lit)
+  ρ₁, σ₁ ⊢ x ⇒ 1, σ₁                     ρ₁, σ₁ ⊢ 41 ⇒ 41, σ₁
+  ───────────────────────────────────────────────────────────────── (Binary)
+  ρ₁, σ₁ ⊢ x + 41 ⇒ 42, σ₁
+
+𝒟₂
+  ────────────────── (Lit)
+  ρ₀, σ₀ ⊢ 1 ⇒ 1, σ₀
+  ──────────────────────────────────── (Decl)
+  ρ₀, σ₀ ⊢ int x = 1; ⇒ normal, ρ₁, σ₁
+
+𝒟₃
+             𝒟₁               ──────────────────── (LocVar)
+  ρ₁, σ₁ ⊢ x + 41 ⇒ 42, σ₁    ρ₁, σ₁ ⊢ x ⇒ₗ ℓ0, σ₁
+  ───────────────────────────────────────────────────────── (Assign)
+  ρ₁, σ₁ ⊢ x = x + 41; ⇒ normal, ρ₁, σ₂
+
+𝒟₄
+  ──────────────────── (LocVar)
+  ρ₁, σ₂ ⊢ x ⇒ₗ ℓ0, σ₂
+  ───────────────────────────── (Var)
+  ρ₁, σ₂ ⊢ x ⇒ 42, σ₂
+  ─────────────────────────────────── (Return)
+  ρ₁, σ₂ ⊢ return x; ⇒ ret 42, ρ₁, σ₂
 ```
 
-A leitura começa pela raiz, a chamada de `main` com ambiente e memória vazios. Um nível acima estão os três comandos do corpo, e a declaração cria a posição ℓ0. A atribuição, nas linhas do meio, avalia primeiro `x + 41`, cuja derivação é a da {secref}[expressoes], e só depois a posição de `x`, na ordem que a regra `Assign` fixa. A memória no `return` tem ℓ0 ↦ 42, e o `return` produz o controle `ret 42` que a chamada consome. A chamada libera então as variáveis locais de `main`, a memória final fica vazia, e o resultado do programa é só o valor 42. No interpretador, os dois casos `Arith` e `Rel` aparecem sob o nome comum `Binary`.
+A legenda dá os dois ambientes e as três memórias por que esta execução passa. A derivação do alto aplica `Call`, e as suas três premissas são os três comandos do corpo, escritas à parte porque as três juntas ultrapassam a largura da página. A primeira, 𝒟₂, aloca ℓ0 e estende o ambiente para ρ₁. A segunda, 𝒟₃, é a atribuição, e avalia primeiro `x + 41`, como 𝒟₁, a derivação da {secref}[expressoes], e só depois a posição de `x`, na ordem que a regra `Assign` fixa, deixando a memória σ₂. A terceira, 𝒟₄, lê essa memória e produz o controle `ret 42`, que a chamada consome. A chamada libera então as variáveis locais de `main`, a memória da sua conclusão volta a ser σ₀, e o resultado do programa é só o valor 42. No interpretador, os dois casos `Arith` e `Rel` aparecem sob o nome comum `Binary`.
 
 # Erro, Determinismo e Divergência
 

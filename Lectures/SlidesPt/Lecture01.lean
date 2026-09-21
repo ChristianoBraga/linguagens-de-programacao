@@ -207,7 +207,7 @@ def factorial(n):
 
 # §1.6 O fatorial em Core C++, executado
 
-```lean (name := fatorialCore)
+```lean (name := factorialCore)
 def factorial : String :=
   "int factorial(int n) {
     int acc = 1;
@@ -218,7 +218,7 @@ def factorial : String :=
 
 #eval (parseProgram factorial).map run
 ```
-```leanOutput fatorialCore
+```leanOutput factorialCore
 Except.ok (Except.ok (CoreCpp.Val.int 120))
 ```
 

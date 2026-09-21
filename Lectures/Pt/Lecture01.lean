@@ -222,7 +222,7 @@ Em vez de descrever cada conceito em uma linguagem diferente, a disciplina os in
 
 O programa abaixo é o fatorial em Core C++, igual à versão em C++ da {secref}[quatro-paradigmas], com a função `main` que devolve o fatorial de 5. O interpretador da disciplina, escrito em Lean, o analisa e o executa.
 
-```lean (name := fatorialCore)
+```lean (name := factorialCore)
 def factorial : String :=
   "int factorial(int n) {
     int acc = 1;
@@ -233,7 +233,7 @@ def factorial : String :=
 
 #eval (parseProgram factorial).map run
 ```
-```leanOutput fatorialCore
+```leanOutput factorialCore
 Except.ok (Except.ok (CoreCpp.Val.int 120))
 ```
 

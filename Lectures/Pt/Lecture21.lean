@@ -232,7 +232,7 @@ A regra de tipos diz que um operador infixo cujo operando esquerdo é um objeto 
 
 O operando esquerdo decide. Um operador sobre dois `int` mantém o significado da {secref}[aula-8], porque o operando esquerdo é um `int` e não um objeto, e nenhuma classe muda o significado de `1 + 2`. Os operadores que uma classe pode sobrecarregar são os aritméticos, as comparações e a indexação. Os lógicos `&&` e `||` ficam de fora, porque têm curto‑circuito e uma chamada de membro avaliaria os dois operandos, o que mudaria o significado do operador em vez de o estender.
 
-A reescrita não é figura de linguagem. O verificador de tipos substitui a forma infixa pela chamada de método, e a derivação do programa mostra a regra `MethodCall` onde o fonte mostra um `+`.
+A reescrita não é figura de linguagem. O verificador de tipos substitui a forma infixa pela chamada de método, e a derivação do programa mostra a regra `MethodCall` onde o fonte mostra um `+`. O excerto abaixo guarda só a conclusão dessa regra, então os nomes ρᵢ e σⱼ são os que a legenda da derivação inteira lhes dá.
 
 ```lean (name := operatorTrace)
 def small : String :=
@@ -254,13 +254,16 @@ def small : String :=
 
 #eval match parseProgram small with
   | .ok p =>
+    let ls := (renderTrace (runWith true p).2).splitOn "\n"
     IO.println (String.intercalate "\n"
-      ((renderTrace (runWith true p).2).splitOn "\n" |>.filter
-        fun l => l.endsWith "(MethodCall)"))
+      ((ls.zip ls.tail).filterMap fun (pair : String × String) =>
+        if pair.1.endsWith "(MethodCall)" then
+          some s!"{pair.2.dropWhile (· == ' ')}   {pair.1.dropWhile (fun c => c == ' ' || c == '─')}"
+        else none))
   | .error e => IO.println e
 ```
 ```leanOutput operatorTrace
-    [a ↦ ℓ2], {ℓ0 ↦ 21, ℓ1 ↦ P{x ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ *a + *a ⇒ ℓ4, {ℓ0 ↦ 21, ℓ1 ↦ P{x ↦ ℓ0}, ℓ2 ↦ ℓ1, ℓ3 ↦ 42, ℓ4 ↦ P{x ↦ ℓ3}}   (MethodCall)
+ρ₁, σ₃ ⊢ *a + *a ⇒ ℓ4, σ₇   (MethodCall)
 ```
 
 Feita a reescrita, a chamada é uma chamada de método comum. A visibilidade se aplica, então um operador declarado `private` é inalcançável de fora da classe. A resolução de sobrecarga se aplica, então uma classe pode declarar `operator+` duas vezes com tipos de parâmetro diferentes. O despacho se aplica, então um operador declarado `virtual` na base e redefinido na derivada é escolhido pela etiqueta de classe do operando esquerdo.

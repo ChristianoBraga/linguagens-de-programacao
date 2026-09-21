@@ -201,24 +201,26 @@ Except.ok (Except.ok ())
 Except.ok (Except.ok (CoreCpp.Val.int 42))
 ```
 
-Reading the derivation of the same program shows where each construction went. The instantiation left no trace, because it happened before the run. The overloaded calls appear as ordinary calls, to the function the checker chose. The operator and the indexing appear as method calls.
+Reading the derivation of the same program shows where each construction went. The instantiation left no trace, because it happened before the run. The overloaded calls appear as ordinary calls, to the function the checker chose. The operator and the indexing appear as method calls. The excerpt below keeps only the conclusions of two rules, so the names ρᵢ and σⱼ are the ones the legend of the whole derivation gives.
 
 ```lean (name := wholeTrace)
 #eval match parseProgram whole with
   | .ok p =>
+    let ls := (renderTrace (runWith true p).2).splitOn "\n"
     IO.println (String.intercalate "\n"
-      ((renderTrace (runWith true p).2).splitOn "\n" |>.filter
-        fun l =>
-          l.endsWith "(MethodLoc)" || l.endsWith "(LocOf)"))
+      ((ls.zip ls.tail).filterMap fun (pair : String × String) =>
+        if pair.1.endsWith "(MethodLoc)" || pair.1.endsWith "(LocOf)" then
+          some s!"{pair.2.dropWhile (· == ' ')}   {pair.1.dropWhile (fun c => c == ' ' || c == '─')}"
+        else none))
   | .error e => IO.println e
 ```
 ```leanOutput wholeTrace
-        [this ↦ ℓ1, i ↦ ℓ7], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ7 ↦ 0} ⊢ &(*data)[i] ⇒ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ7 ↦ 0}   (LocOf)
-    [v ↦ ℓ6], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1} ⊢ (*v)[0] ⇒ₗ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 0, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1}   (MethodLoc)
-        [this ↦ ℓ1, i ↦ ℓ10], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ10 ↦ 1} ⊢ &(*data)[i] ⇒ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ10 ↦ 1}   (LocOf)
-    [v ↦ ℓ6], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1} ⊢ (*v)[1] ⇒ₗ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 0, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1}   (MethodLoc)
-            [this ↦ ℓ1, i ↦ ℓ11], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ11 ↦ 0} ⊢ &(*data)[i] ⇒ ℓ3, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ11 ↦ 0}   (LocOf)
-          [this ↦ ℓ1, i ↦ ℓ13], {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ13 ↦ 1} ⊢ &(*data)[i] ⇒ ℓ4, {ℓ0 ↦ ℓ5, ℓ1 ↦ Vect<int>{data ↦ ℓ0}, ℓ3 ↦ 20, ℓ4 ↦ 22, ℓ5 ↦ vector[ℓ3, ℓ4], ℓ6 ↦ ℓ1, ℓ13 ↦ 1}   (LocOf)
+ρ₃, σ₇ ⊢ &(*data)[i] ⇒ ℓ3, σ₇   (LocOf)
+ρ₂, σ₆ ⊢ (*v)[0] ⇒ₗ ℓ3, σ₆   (MethodLoc)
+ρ₅, σ₁₁ ⊢ &(*data)[i] ⇒ ℓ4, σ₁₁   (LocOf)
+ρ₂, σ₈ ⊢ (*v)[1] ⇒ₗ ℓ4, σ₈   (MethodLoc)
+ρ₆, σ₁₃ ⊢ &(*data)[i] ⇒ ℓ3, σ₁₃   (LocOf)
+ρ₈, σ₁₅ ⊢ &(*data)[i] ⇒ ℓ4, σ₁₅   (LocOf)
 ```
 
 The rule `MethodLoc` is the call of `operator[]` in a position that asks for a location, and `LocOf` is the `return` of that member, which hands back the location of the element rather than its value. Between them they are the whole content of the sentence "`v[i]` is a method call that returns `int&`", which the design of the language stated and this unit made true.

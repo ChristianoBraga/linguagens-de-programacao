@@ -231,7 +231,7 @@ The typing rule says that an infix operator whose left operand is an object is t
 
 The left operand decides. An operator on two `int` keeps the meaning of {secref}[lecture-8], because the left operand is an `int` and not an object, and no class may change the meaning of `1 + 2`. The operators a class may overload are the arithmetic ones, the comparisons and the indexing. The logical `&&` and `||` are excluded, because they short circuit and a member call would evaluate both operands, which would change the meaning of the operator rather than extend it.
 
-The rewriting is not a figure of speech. The type checker replaces the infix form by the method call, and the derivation of the program shows the rule `MethodCall` where the source shows a `+`.
+The rewriting is not a figure of speech. The type checker replaces the infix form by the method call, and the derivation of the program shows the rule `MethodCall` where the source shows a `+`. The excerpt below keeps only the conclusion of that rule, so the names ρᵢ and σⱼ are the ones the legend of the whole derivation gives.
 
 ```lean (name := operatorTrace)
 def small : String :=
@@ -253,13 +253,16 @@ def small : String :=
 
 #eval match parseProgram small with
   | .ok p =>
+    let ls := (renderTrace (runWith true p).2).splitOn "\n"
     IO.println (String.intercalate "\n"
-      ((renderTrace (runWith true p).2).splitOn "\n" |>.filter
-        fun l => l.endsWith "(MethodCall)"))
+      ((ls.zip ls.tail).filterMap fun (pair : String × String) =>
+        if pair.1.endsWith "(MethodCall)" then
+          some s!"{pair.2.dropWhile (· == ' ')}   {pair.1.dropWhile (fun c => c == ' ' || c == '─')}"
+        else none))
   | .error e => IO.println e
 ```
 ```leanOutput operatorTrace
-    [a ↦ ℓ2], {ℓ0 ↦ 21, ℓ1 ↦ P{x ↦ ℓ0}, ℓ2 ↦ ℓ1} ⊢ *a + *a ⇒ ℓ4, {ℓ0 ↦ 21, ℓ1 ↦ P{x ↦ ℓ0}, ℓ2 ↦ ℓ1, ℓ3 ↦ 42, ℓ4 ↦ P{x ↦ ℓ3}}   (MethodCall)
+ρ₁, σ₃ ⊢ *a + *a ⇒ ℓ4, σ₇   (MethodCall)
 ```
 
 Once the rewriting has happened, the call is an ordinary method call. Visibility applies, so an operator declared `private` is unreachable from outside the class. Overload resolution applies, so a class may declare `operator+` twice with different parameter types. Dispatch applies, so an operator declared `virtual` in a base and redefined in a derived class is chosen by the class tag of the left operand.

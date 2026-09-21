@@ -164,23 +164,57 @@ def traceCtor : String :=
   | .error e => IO.println e
 ```
 ```leanOutput traceCtor
-      [], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}} ⊢ 21 ⇒ 21, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}}   (Lit)
-          [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ x ⇒ₗ ℓ2, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}   (LocVar)
-        [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ x ⇒ 21, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}   (Var)
-        [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ v ⇒ₗ ℓ0, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}   (LocVar)
-      [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ v = x; ⇒ normal, [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}   (Assign)
-    [], {} ⊢ new Box(21) ⇒ ℓ1, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}}   (New)
-  [], {} ⊢ Box* c = new Box(21); ⇒ normal, [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Decl)
-        [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ c ⇒ₗ ℓ3, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (LocVar)
-      [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ c ⇒ ℓ1, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Var)
-            [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ v ⇒ₗ ℓ0, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (LocVar)
-          [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ v ⇒ 21, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Var)
-          [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ 2 ⇒ 2, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Lit)
-        [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ v * 2 ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Binary)
-      [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ return v * 2; ⇒ ret 42, [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Return)
-    [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ c->twice() ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (MethodCall)
-  [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ return c->twice(); ⇒ ret 42, [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Return)
-[], {} ⊢ main() ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}}   (Call)
+ρ₀ = []                       σ₀ = {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}}
+ρ₁ = [this ↦ ℓ1, x ↦ ℓ2]      σ₁ = {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}
+ρ₂ = [c ↦ ℓ3]                 σ₂ = {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}
+ρ₃ = [this ↦ ℓ1]              σ₃ = {}
+                              σ₄ = {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}}
+                              σ₅ = {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}
+
+                        𝒟₄                                                𝒟₅
+  ρ₀, σ₃ ⊢ Box* c = new Box(21); ⇒ normal, ρ₂, σ₅    ρ₂, σ₅ ⊢ return c->twice(); ⇒ ret 42, ρ₂, σ₅
+  ─────────────────────────────────────────────────────────────────────────────────────────────── (Call)
+  ρ₀, σ₃ ⊢ main() ⇒ 42, σ₄
+
+𝒟₁
+  ──────────────────── (LocVar)
+  ρ₁, σ₁ ⊢ x ⇒ₗ ℓ2, σ₁
+  ───────────────────────────── (Var)    ──────────────────── (LocVar)
+  ρ₁, σ₁ ⊢ x ⇒ 21, σ₁                    ρ₁, σ₁ ⊢ v ⇒ₗ ℓ0, σ₁
+  ──────────────────────────────────────────────────────────────────── (Assign)
+  ρ₁, σ₁ ⊢ v = x; ⇒ normal, ρ₁, σ₂
+
+𝒟₂
+  ──────────────────── (LocVar)
+  ρ₂, σ₅ ⊢ c ⇒ₗ ℓ3, σ₅
+  ───────────────────────────── (Var)
+  ρ₂, σ₅ ⊢ c ⇒ ℓ1, σ₅
+
+𝒟₃
+  ──────────────────── (LocVar)
+  ρ₃, σ₅ ⊢ v ⇒ₗ ℓ0, σ₅
+  ───────────────────────────── (Var)    ────────────────── (Lit)
+  ρ₃, σ₅ ⊢ v ⇒ 21, σ₅                    ρ₃, σ₅ ⊢ 2 ⇒ 2, σ₅
+  ─────────────────────────────────────────────────────────────── (Binary)
+  ρ₃, σ₅ ⊢ v * 2 ⇒ 42, σ₅
+  ──────────────────────────────────────────────────────────────────────── (Return)
+  ρ₃, σ₅ ⊢ return v * 2; ⇒ ret 42, ρ₃, σ₅
+
+𝒟₄
+  ──────────────────── (Lit)                   𝒟₁
+  ρ₀, σ₀ ⊢ 21 ⇒ 21, σ₀          ρ₁, σ₁ ⊢ v = x; ⇒ normal, ρ₁, σ₂
+  ────────────────────────────────────────────────────────────── (New)
+  ρ₀, σ₃ ⊢ new Box(21) ⇒ ℓ1, σ₄
+  ──────────────────────────────────────────────────────────────────── (Decl)
+  ρ₀, σ₃ ⊢ Box* c = new Box(21); ⇒ normal, ρ₂, σ₅
+
+𝒟₅
+          𝒟₂                               𝒟₃
+  ρ₂, σ₅ ⊢ c ⇒ ℓ1, σ₅    ρ₃, σ₅ ⊢ return v * 2; ⇒ ret 42, ρ₃, σ₅
+  ────────────────────────────────────────────────────────────── (MethodCall)
+  ρ₂, σ₅ ⊢ c->twice() ⇒ 42, σ₅
+  ─────────────────────────────────────────────────────────────────────────── (Return)
+  ρ₂, σ₅ ⊢ return c->twice(); ⇒ ret 42, ρ₂, σ₅
 ```
 
 As primeiras linhas são o construtor. O campo `v` é alocado em ℓ0 com o zero por omissão e o registro em ℓ1 antes mesmo de o argumento 21 ser avaliado, e por isso a memória da primeira linha já contém os dois. O corpo roda sob o ambiente `[this ↦ ℓ1, x ↦ ℓ2]`, com o parâmetro em uma posição nova ℓ2, e o `v` não qualificado à esquerda da atribuição alcança ℓ0 pela regra `LocVarField`. Quando `New` conclui, ℓ2 saiu da memória e ℓ1 permanece. A chamada de método, na metade de baixo, liga `this` ao mesmo ℓ1, lê `v` por ele e devolve 42, e a memória final contém só o objeto, já que a local `c` de `main` saiu com o retorno da chamada.

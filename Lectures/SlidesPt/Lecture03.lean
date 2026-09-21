@@ -193,29 +193,30 @@ premissa₁    premissa₂
 # §3.5 A árvore de derivação impressa pelo interpretador
 
 ```lean (name := traceAssign)
-def sum : String :=
-  "int main() { int x = 1; x = x + 41; return x; }"
+def sum : String := "int main() { return 1 + 41; }"
 
 #eval match parseProgram sum with
   | .ok p => IO.println (renderTrace (runWith true p).2)
   | .error e => IO.println e
 ```
 ```leanOutput traceAssign
-    [], {} ⊢ 1 ⇒ 1, {}   (Lit)
-  [], {} ⊢ int x = 1; ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 1}   (Decl)
-        [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
-      [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ 1, {ℓ0 ↦ 1}   (Var)
-      [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ 41 ⇒ 41, {ℓ0 ↦ 1}   (Lit)
-    [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x + 41 ⇒ 42, {ℓ0 ↦ 1}   (Binary)
-    [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
-  [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x = x + 41; ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 42}   (Assign)
-      [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 42}   (LocVar)
-    [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ 42, {ℓ0 ↦ 42}   (Var)
-  [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ return x; ⇒ ret 42, [x ↦ ℓ0], {ℓ0 ↦ 42}   (Return)
-[], {} ⊢ main() ⇒ 42, {}   (Call)
+ρ₀ = []      σ₀ = {}
+
+  ────────────────── (Lit)    ──────────────────── (Lit)
+  ρ₀, σ₀ ⊢ 1 ⇒ 1, σ₀          ρ₀, σ₀ ⊢ 41 ⇒ 41, σ₀
+  ────────────────────────────────────────────────────── (Binary)
+  ρ₀, σ₀ ⊢ 1 + 41 ⇒ 42, σ₀
+  ─────────────────────────────────────────────────────────────── (Return)
+  ρ₀, σ₀ ⊢ return 1 + 41; ⇒ ret 42, ρ₀, σ₀
+  ──────────────────────────────────────────────────────────────────────── (Call)
+  ρ₀, σ₀ ⊢ main() ⇒ 42, σ₀
 ```
 
-* *Pós‑ordem*, premissas antes da conclusão, indentadas pela profundidade. A raiz é a última linha.
+* Premissas sobre o *traço de inferência*, conclusão sob ele, regra à direita, como no quadro.
+
+* Uma *legenda* nomeia os ambientes ρᵢ, as memórias σⱼ e os sujeitos longos, então um juízo cabe em uma linha.
+
+* Uma subárvore mais larga que a página é escrita à parte sob um nome *𝒟ₖ*.
 
 # §3.6 Erro, determinismo e divergência
 
@@ -263,7 +264,7 @@ Except.ok (Except.error (CoreCpp.TypeError.badOperand "+" (CoreCpp.Ty.bool)))
 
 * Declaração aloca, atribuição escreve, bloco restaura ρ e retira posições de σ, `while` recorre à própria conclusão.
 
-* O interpretador imprime a *árvore de derivação* em pós‑ordem, e a semântica não descreve programas que divergem.
+* O interpretador imprime a *derivação*, premissas sobre o traço de inferência, e a semântica não descreve programas que divergem.
 
 Exercícios: veja as [notas de aula](../pt/Aula-3___-Sem___ntica/).
 

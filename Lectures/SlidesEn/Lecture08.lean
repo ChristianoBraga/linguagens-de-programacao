@@ -122,25 +122,23 @@ Except.ok (Except.ok (CoreCpp.Val.int 1))
 # §8.3 The skipped operand in the derivation
 
 ```lean (name := traceShort)
-#eval match parseProgram "int main() { int z = 0; bool b = z != 0 && 10 / z > 1; return b ? 1 : 0; }" with
+#eval match parseProgram "int main() { return 0 != 0 && 10 / 0 > 1; }" with
   | .ok p => IO.println (renderTrace (runWith true p).2)
   | .error e => IO.println e
 ```
 ```leanOutput traceShort
-    [], {} ⊢ 0 ⇒ 0, {}   (Lit)
-  [], {} ⊢ int z = 0; ⇒ normal, [z ↦ ℓ0], {ℓ0 ↦ 0}   (Decl)
-          [z ↦ ℓ0], {ℓ0 ↦ 0} ⊢ z ⇒ₗ ℓ0, {ℓ0 ↦ 0}   (LocVar)
-        [z ↦ ℓ0], {ℓ0 ↦ 0} ⊢ z ⇒ 0, {ℓ0 ↦ 0}   (Var)
-        [z ↦ ℓ0], {ℓ0 ↦ 0} ⊢ 0 ⇒ 0, {ℓ0 ↦ 0}   (Lit)
-      [z ↦ ℓ0], {ℓ0 ↦ 0} ⊢ z != 0 ⇒ false, {ℓ0 ↦ 0}   (Binary)
-    [z ↦ ℓ0], {ℓ0 ↦ 0} ⊢ z != 0 && 10 / z > 1 ⇒ false, {ℓ0 ↦ 0}   (And)
-  [z ↦ ℓ0], {ℓ0 ↦ 0} ⊢ bool b = z != 0 && 10 / z > 1; ⇒ normal, [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false}   (Decl)
-        [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false} ⊢ b ⇒ₗ ℓ1, {ℓ0 ↦ 0, ℓ1 ↦ false}   (LocVar)
-      [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false} ⊢ b ⇒ false, {ℓ0 ↦ 0, ℓ1 ↦ false}   (Var)
-      [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false} ⊢ 0 ⇒ 0, {ℓ0 ↦ 0, ℓ1 ↦ false}   (Lit)
-    [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false} ⊢ b ? 1 : 0 ⇒ 0, {ℓ0 ↦ 0, ℓ1 ↦ false}   (Cond)
-  [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false} ⊢ return b ? 1 : 0; ⇒ ret 0, [z ↦ ℓ0, b ↦ ℓ1], {ℓ0 ↦ 0, ℓ1 ↦ false}   (Return)
-[], {} ⊢ main() ⇒ 0, {}   (Call)
+ρ₀ = []      σ₀ = {}
+
+  ────────────────── (Lit)    ────────────────── (Lit)
+  ρ₀, σ₀ ⊢ 0 ⇒ 0, σ₀          ρ₀, σ₀ ⊢ 0 ⇒ 0, σ₀
+  ──────────────────────────────────────────────────── (Binary)
+  ρ₀, σ₀ ⊢ 0 != 0 ⇒ false, σ₀
+  ───────────────────────────────────────────────────────────── (And)
+  ρ₀, σ₀ ⊢ 0 != 0 && 10 / 0 > 1 ⇒ false, σ₀
+  ─────────────────────────────────────────────────────────────────── (Return)
+  ρ₀, σ₀ ⊢ return 0 != 0 && 10 / 0 > 1; ⇒ ret false, ρ₀, σ₀
+  ──────────────────────────────────────────────────────────────────────────── (Call)
+  ρ₀, σ₀ ⊢ main() ⇒ false, σ₀
 ```
 
 * Under `And` there is one child, no derivation of the division.

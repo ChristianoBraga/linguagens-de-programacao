@@ -128,18 +128,46 @@ def refScope : String :=
   | .error e => IO.println e
 ```
 ```leanOutput refScope
-    [], {} ⊢ 1 ⇒ 1, {}   (Lit)
-  [], {} ⊢ int x = 1; ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 1}   (Decl)
-      [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
-    [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ int& y = x; ⇒ normal, [x ↦ ℓ0, y ↦ ℓ0], {ℓ0 ↦ 1}   (DeclRef)
-      [x ↦ ℓ0, y ↦ ℓ0], {ℓ0 ↦ 1} ⊢ 5 ⇒ 5, {ℓ0 ↦ 1}   (Lit)
-      [x ↦ ℓ0, y ↦ ℓ0], {ℓ0 ↦ 1} ⊢ y ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
-    [x ↦ ℓ0, y ↦ ℓ0], {ℓ0 ↦ 1} ⊢ y = 5; ⇒ normal, [x ↦ ℓ0, y ↦ ℓ0], {ℓ0 ↦ 5}   (Assign)
-  [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ { int& y = x; y = 5; } ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 5}   (Block)
-      [x ↦ ℓ0], {ℓ0 ↦ 5} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 5}   (LocVar)
-    [x ↦ ℓ0], {ℓ0 ↦ 5} ⊢ x ⇒ 5, {ℓ0 ↦ 5}   (Var)
-  [x ↦ ℓ0], {ℓ0 ↦ 5} ⊢ return x; ⇒ ret 5, [x ↦ ℓ0], {ℓ0 ↦ 5}   (Return)
-[], {} ⊢ main() ⇒ 5, {}   (Call)
+ρ₀ = []                    σ₀ = {}
+ρ₁ = [x ↦ ℓ0]              σ₁ = {ℓ0 ↦ 1}
+ρ₂ = [x ↦ ℓ0, y ↦ ℓ0]      σ₂ = {ℓ0 ↦ 5}
+
+                   𝒟₃                                            𝒟₄                                           𝒟₅
+  ρ₀, σ₀ ⊢ int x = 1; ⇒ normal, ρ₁, σ₁    ρ₁, σ₁ ⊢ { int& y = x; y = 5; } ⇒ normal, ρ₁, σ₂    ρ₁, σ₂ ⊢ return x; ⇒ ret 5, ρ₁, σ₂
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── (Call)
+  ρ₀, σ₀ ⊢ main() ⇒ 5, σ₀
+
+𝒟₁
+  ──────────────────── (LocVar)
+  ρ₁, σ₁ ⊢ x ⇒ₗ ℓ0, σ₁
+  ───────────────────────────────────── (DeclRef)
+  ρ₁, σ₁ ⊢ int& y = x; ⇒ normal, ρ₂, σ₁
+
+𝒟₂
+  ────────────────── (Lit)    ──────────────────── (LocVar)
+  ρ₂, σ₁ ⊢ 5 ⇒ 5, σ₁          ρ₂, σ₁ ⊢ y ⇒ₗ ℓ0, σ₁
+  ───────────────────────────────────────────────────────── (Assign)
+  ρ₂, σ₁ ⊢ y = 5; ⇒ normal, ρ₂, σ₂
+
+𝒟₃
+  ────────────────── (Lit)
+  ρ₀, σ₀ ⊢ 1 ⇒ 1, σ₀
+  ──────────────────────────────────── (Decl)
+  ρ₀, σ₀ ⊢ int x = 1; ⇒ normal, ρ₁, σ₁
+
+𝒟₄
+                   𝒟₁                                     𝒟₂
+  ρ₁, σ₁ ⊢ int& y = x; ⇒ normal, ρ₂, σ₁    ρ₂, σ₁ ⊢ y = 5; ⇒ normal, ρ₂, σ₂
+  ───────────────────────────────────────────────────────────────────────── (Block)
+  ρ₁, σ₁ ⊢ { int& y = x; y = 5; } ⇒ normal, ρ₁, σ₂
+
+𝒟₅
+  ──────────────────── (LocVar)
+  ρ₁, σ₂ ⊢ x ⇒ₗ ℓ0, σ₂
+  ───────────────────────────── (Var)
+  ρ₁, σ₂ ⊢ x ⇒ 5, σ₂
+  ─────────────────────────────────── (Return)
+  ρ₁, σ₂ ⊢ return x; ⇒ ret 5, ρ₁, σ₂
 ```
 
 The block ends with the store still holding ℓ0, now with value 5. To obtain that, each binding of ρ records whether the declaration that made it *owns* the location, as `Decl` does, or *aliases* one, as `DeclRef` does. The rule `Block` reads ρ' ∖ ρ as the owned bindings the block added, and frees their locations only. The environment printed in the trace does not show the mark, because it changes nothing in lookup, only in block exit.{fnref}[alternative]

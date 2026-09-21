@@ -199,7 +199,7 @@ The `return e` evaluates the expression and yields the control `ret v`, which `S
 tag := "trace"
 %%%
 
-Each function of the interpreter implements a judgment, and each case of each function implements a rule, with the rule written in the comment of the case. When tracing is on, each rule application records its conclusion with the name of the rule, at the depth at which it occurs in the derivation tree. Premises are recorded before the conclusion, so the tree appears in *post order*, indented by depth. The root is the last line.
+Each function of the interpreter implements a judgment, and each case of each function implements a rule, with the rule written in the comment of the case. When tracing is on, each rule application records the instance of the rule it concludes, at its depth in the derivation. The interpreter then draws the derivation as this lecture writes its rules, the premises over a line of inference, the conclusion under it and the rule name at the right. A legend opens the output and names the environments ρᵢ, the stores σⱼ and every subject too long for a judgment, so that a judgment occupies one line. A subtree wider than the page is written apart under a name 𝒟ₖ, and the place it came from carries that name over the conclusion of the subtree, as one does on paper with a derivation that does not fit.
 
 ```lean (name := traceAssign)
 def sum : String :=
@@ -210,21 +210,45 @@ def sum : String :=
   | .error e => IO.println e
 ```
 ```leanOutput traceAssign
-    [], {} ⊢ 1 ⇒ 1, {}   (Lit)
-  [], {} ⊢ int x = 1; ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 1}   (Decl)
-        [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
-      [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ 1, {ℓ0 ↦ 1}   (Var)
-      [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ 41 ⇒ 41, {ℓ0 ↦ 1}   (Lit)
-    [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x + 41 ⇒ 42, {ℓ0 ↦ 1}   (Binary)
-    [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
-  [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x = x + 41; ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 42}   (Assign)
-      [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 42}   (LocVar)
-    [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ 42, {ℓ0 ↦ 42}   (Var)
-  [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ return x; ⇒ ret 42, [x ↦ ℓ0], {ℓ0 ↦ 42}   (Return)
-[], {} ⊢ main() ⇒ 42, {}   (Call)
+ρ₀ = []            σ₀ = {}
+ρ₁ = [x ↦ ℓ0]      σ₁ = {ℓ0 ↦ 1}
+                   σ₂ = {ℓ0 ↦ 42}
+
+                   𝒟₂                                      𝒟₃                                      𝒟₄
+  ρ₀, σ₀ ⊢ int x = 1; ⇒ normal, ρ₁, σ₁    ρ₁, σ₁ ⊢ x = x + 41; ⇒ normal, ρ₁, σ₂    ρ₁, σ₂ ⊢ return x; ⇒ ret 42, ρ₁, σ₂
+  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────── (Call)
+  ρ₀, σ₀ ⊢ main() ⇒ 42, σ₀
+
+𝒟₁
+  ──────────────────── (LocVar)
+  ρ₁, σ₁ ⊢ x ⇒ₗ ℓ0, σ₁
+  ───────────────────────────── (Var)    ──────────────────── (Lit)
+  ρ₁, σ₁ ⊢ x ⇒ 1, σ₁                     ρ₁, σ₁ ⊢ 41 ⇒ 41, σ₁
+  ───────────────────────────────────────────────────────────────── (Binary)
+  ρ₁, σ₁ ⊢ x + 41 ⇒ 42, σ₁
+
+𝒟₂
+  ────────────────── (Lit)
+  ρ₀, σ₀ ⊢ 1 ⇒ 1, σ₀
+  ──────────────────────────────────── (Decl)
+  ρ₀, σ₀ ⊢ int x = 1; ⇒ normal, ρ₁, σ₁
+
+𝒟₃
+             𝒟₁               ──────────────────── (LocVar)
+  ρ₁, σ₁ ⊢ x + 41 ⇒ 42, σ₁    ρ₁, σ₁ ⊢ x ⇒ₗ ℓ0, σ₁
+  ───────────────────────────────────────────────────────── (Assign)
+  ρ₁, σ₁ ⊢ x = x + 41; ⇒ normal, ρ₁, σ₂
+
+𝒟₄
+  ──────────────────── (LocVar)
+  ρ₁, σ₂ ⊢ x ⇒ₗ ℓ0, σ₂
+  ───────────────────────────── (Var)
+  ρ₁, σ₂ ⊢ x ⇒ 42, σ₂
+  ─────────────────────────────────── (Return)
+  ρ₁, σ₂ ⊢ return x; ⇒ ret 42, ρ₁, σ₂
 ```
 
-Reading starts at the root, the call of `main` with empty environment and store. One level up are the three commands of the body, and the declaration creates the location ℓ0. The assignment, in the middle lines, first evaluates `x + 41`, whose derivation is the one of {secref}[expressions], and only then the location of `x`, in the order the rule `Assign` fixes. The store at the `return` has ℓ0 ↦ 42, and the `return` yields the control `ret 42` that the call consumes. The call then frees the locals of `main`, so the final store is empty, and the result of the program is the value 42 alone. In the interpreter the two cases `Arith` and `Rel` appear under the common name `Binary`.
+The legend gives the two environments and the three stores this execution passes through. The derivation at the top applies `Call`, and its three premises are the three commands of the body, written apart because the three together exceed the width of the page. The first, 𝒟₂, allocates ℓ0 and extends the environment to ρ₁. The second, 𝒟₃, is the assignment, and it evaluates `x + 41` first, as 𝒟₁, the derivation of {secref}[expressions], and only then the location of `x`, in the order the rule `Assign` fixes, leaving the store σ₂. The third, 𝒟₄, reads that store and yields the control `ret 42`, which the call consumes. The call then frees the locals of `main`, so the store of its conclusion is σ₀ again and the result of the program is the value 42 alone. In the interpreter the two cases `Arith` and `Rel` appear under the common name `Binary`.
 
 # Error, Determinism and Divergence
 

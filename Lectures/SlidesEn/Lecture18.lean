@@ -142,28 +142,26 @@ def traceCtor : String :=
   int main() { Box* c = new Box(21); return c->twice(); }"
 
 #eval match parseProgram traceCtor with
-  | .ok p => IO.println (renderTrace (runWith true p).2)
+  | .ok p =>
+    let ls := (renderTrace (runWith true p).2).splitOn "\n"
+    IO.println (String.intercalate "\n" (ls.takeWhile (· != "𝒟₁")))
   | .error e => IO.println e
 ```
 ```leanOutput traceCtor
-      [], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}} ⊢ 21 ⇒ 21, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}}   (Lit)
-          [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ x ⇒ₗ ℓ2, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}   (LocVar)
-        [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ x ⇒ 21, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}   (Var)
-        [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ v ⇒ₗ ℓ0, {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}   (LocVar)
-      [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21} ⊢ v = x; ⇒ normal, [this ↦ ℓ1, x ↦ ℓ2], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}   (Assign)
-    [], {} ⊢ new Box(21) ⇒ ℓ1, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}}   (New)
-  [], {} ⊢ Box* c = new Box(21); ⇒ normal, [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Decl)
-        [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ c ⇒ₗ ℓ3, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (LocVar)
-      [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ c ⇒ ℓ1, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Var)
-            [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ v ⇒ₗ ℓ0, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (LocVar)
-          [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ v ⇒ 21, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Var)
-          [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ 2 ⇒ 2, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Lit)
-        [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ v * 2 ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Binary)
-      [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ return v * 2; ⇒ ret 42, [this ↦ ℓ1], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Return)
-    [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ c->twice() ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (MethodCall)
-  [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1} ⊢ return c->twice(); ⇒ ret 42, [c ↦ ℓ3], {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}   (Return)
-[], {} ⊢ main() ⇒ 42, {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}}   (Call)
+ρ₀ = []                       σ₀ = {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}}
+ρ₁ = [this ↦ ℓ1, x ↦ ℓ2]      σ₁ = {ℓ0 ↦ 0, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}
+ρ₂ = [c ↦ ℓ3]                 σ₂ = {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ2 ↦ 21}
+ρ₃ = [this ↦ ℓ1]              σ₃ = {}
+                              σ₄ = {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}}
+                              σ₅ = {ℓ0 ↦ 21, ℓ1 ↦ Box{v ↦ ℓ0}, ℓ3 ↦ ℓ1}
+
+                        𝒟₄                                                𝒟₅
+  ρ₀, σ₃ ⊢ Box* c = new Box(21); ⇒ normal, ρ₂, σ₅    ρ₂, σ₅ ⊢ return c->twice(); ⇒ ret 42, ρ₂, σ₅
+  ─────────────────────────────────────────────────────────────────────────────────────────────── (Call)
+  ρ₀, σ₃ ⊢ main() ⇒ 42, σ₄
 ```
+
+* Only the main derivation. The premises 𝒟₄ and 𝒟₅ are written apart, and the notes carry them in full.
 
 # §18.4 Reading the tree
 

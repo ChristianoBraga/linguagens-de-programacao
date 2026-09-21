@@ -174,21 +174,55 @@ A árvore de derivação mostra as duas variáveis lado a lado. Dentro do bloco 
   | .error e => IO.println e
 ```
 ```leanOutput shadowTrace
-    [], {} ⊢ 1 ⇒ 1, {}   (Lit)
-  [], {} ⊢ int x = 1; ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 1}   (Decl)
-      [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ 10 ⇒ 10, {ℓ0 ↦ 1}   (Lit)
-    [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ int x = 10; ⇒ normal, [x ↦ ℓ0, x ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 10}   (Decl)
-          [x ↦ ℓ0, x ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 10} ⊢ x ⇒ₗ ℓ1, {ℓ0 ↦ 1, ℓ1 ↦ 10}   (LocVar)
-        [x ↦ ℓ0, x ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 10} ⊢ x ⇒ 10, {ℓ0 ↦ 1, ℓ1 ↦ 10}   (Var)
-        [x ↦ ℓ0, x ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 10} ⊢ 1 ⇒ 1, {ℓ0 ↦ 1, ℓ1 ↦ 10}   (Lit)
-      [x ↦ ℓ0, x ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 10} ⊢ x + 1 ⇒ 11, {ℓ0 ↦ 1, ℓ1 ↦ 10}   (Binary)
-      [x ↦ ℓ0, x ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 10} ⊢ x ⇒ₗ ℓ1, {ℓ0 ↦ 1, ℓ1 ↦ 10}   (LocVar)
-    [x ↦ ℓ0, x ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 10} ⊢ x = x + 1; ⇒ normal, [x ↦ ℓ0, x ↦ ℓ1], {ℓ0 ↦ 1, ℓ1 ↦ 11}   (Assign)
-  [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ { int x = 10; x = x + 1; } ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 1}   (Block)
-      [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
-    [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ 1, {ℓ0 ↦ 1}   (Var)
-  [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ return x; ⇒ ret 1, [x ↦ ℓ0], {ℓ0 ↦ 1}   (Return)
-[], {} ⊢ main() ⇒ 1, {}   (Call)
+ρ₀ = []                    σ₀ = {}
+ρ₁ = [x ↦ ℓ0]              σ₁ = {ℓ0 ↦ 1}
+ρ₂ = [x ↦ ℓ0, x ↦ ℓ1]      σ₂ = {ℓ0 ↦ 1, ℓ1 ↦ 10}
+                           σ₃ = {ℓ0 ↦ 1, ℓ1 ↦ 11}
+
+                   𝒟₄                                              𝒟₅                                             𝒟₆
+  ρ₀, σ₀ ⊢ int x = 1; ⇒ normal, ρ₁, σ₁    ρ₁, σ₁ ⊢ { int x = 10; x = x + 1; } ⇒ normal, ρ₁, σ₁    ρ₁, σ₁ ⊢ return x; ⇒ ret 1, ρ₁, σ₁
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── (Call)
+  ρ₀, σ₀ ⊢ main() ⇒ 1, σ₀
+
+𝒟₁
+  ──────────────────── (LocVar)
+  ρ₂, σ₂ ⊢ x ⇒ₗ ℓ1, σ₂
+  ───────────────────────────── (Var)    ────────────────── (Lit)
+  ρ₂, σ₂ ⊢ x ⇒ 10, σ₂                    ρ₂, σ₂ ⊢ 1 ⇒ 1, σ₂
+  ─────────────────────────────────────────────────────────────── (Binary)
+  ρ₂, σ₂ ⊢ x + 1 ⇒ 11, σ₂
+
+𝒟₂
+  ──────────────────── (Lit)
+  ρ₁, σ₁ ⊢ 10 ⇒ 10, σ₁
+  ───────────────────────────────────── (Decl)
+  ρ₁, σ₁ ⊢ int x = 10; ⇒ normal, ρ₂, σ₂
+
+𝒟₃
+            𝒟₁               ──────────────────── (LocVar)
+  ρ₂, σ₂ ⊢ x + 1 ⇒ 11, σ₂    ρ₂, σ₂ ⊢ x ⇒ₗ ℓ1, σ₂
+  ──────────────────────────────────────────────────────── (Assign)
+  ρ₂, σ₂ ⊢ x = x + 1; ⇒ normal, ρ₂, σ₃
+
+𝒟₄
+  ────────────────── (Lit)
+  ρ₀, σ₀ ⊢ 1 ⇒ 1, σ₀
+  ──────────────────────────────────── (Decl)
+  ρ₀, σ₀ ⊢ int x = 1; ⇒ normal, ρ₁, σ₁
+
+𝒟₅
+                   𝒟₂                                       𝒟₃
+  ρ₁, σ₁ ⊢ int x = 10; ⇒ normal, ρ₂, σ₂    ρ₂, σ₂ ⊢ x = x + 1; ⇒ normal, ρ₂, σ₃
+  ───────────────────────────────────────────────────────────────────────────── (Block)
+  ρ₁, σ₁ ⊢ { int x = 10; x = x + 1; } ⇒ normal, ρ₁, σ₁
+
+𝒟₆
+  ──────────────────── (LocVar)
+  ρ₁, σ₁ ⊢ x ⇒ₗ ℓ0, σ₁
+  ───────────────────────────── (Var)
+  ρ₁, σ₁ ⊢ x ⇒ 1, σ₁
+  ─────────────────────────────────── (Return)
+  ρ₁, σ₁ ⊢ return x; ⇒ ret 1, ρ₁, σ₁
 ```
 
 O ambiente impresso lista as ligações da mais antiga para a mais nova, e a busca as lê da mais nova para a mais antiga, por isso `x ⇒ₗ ℓ1` dentro do bloco. C++ tem a mesma regra para o sombreamento e a mesma para o fim de um bloco, em que o armazenamento da variável interna é liberado. A diferença é que Core C++ torna a liberação visível em σ, e qualquer acesso posterior a ℓ1 seria `erro`, enquanto C++ deixa esse acesso indefinido. A próxima aula mostra como uma referência produz esse acesso em C++ e por que ela não o produz em Core C++.

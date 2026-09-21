@@ -193,29 +193,30 @@ premise₁    premise₂
 # §3.5 The derivation tree printed by the interpreter
 
 ```lean (name := traceAssign)
-def sum : String :=
-  "int main() { int x = 1; x = x + 41; return x; }"
+def sum : String := "int main() { return 1 + 41; }"
 
 #eval match parseProgram sum with
   | .ok p => IO.println (renderTrace (runWith true p).2)
   | .error e => IO.println e
 ```
 ```leanOutput traceAssign
-    [], {} ⊢ 1 ⇒ 1, {}   (Lit)
-  [], {} ⊢ int x = 1; ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 1}   (Decl)
-        [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
-      [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ 1, {ℓ0 ↦ 1}   (Var)
-      [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ 41 ⇒ 41, {ℓ0 ↦ 1}   (Lit)
-    [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x + 41 ⇒ 42, {ℓ0 ↦ 1}   (Binary)
-    [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 1}   (LocVar)
-  [x ↦ ℓ0], {ℓ0 ↦ 1} ⊢ x = x + 41; ⇒ normal, [x ↦ ℓ0], {ℓ0 ↦ 42}   (Assign)
-      [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ₗ ℓ0, {ℓ0 ↦ 42}   (LocVar)
-    [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ x ⇒ 42, {ℓ0 ↦ 42}   (Var)
-  [x ↦ ℓ0], {ℓ0 ↦ 42} ⊢ return x; ⇒ ret 42, [x ↦ ℓ0], {ℓ0 ↦ 42}   (Return)
-[], {} ⊢ main() ⇒ 42, {}   (Call)
+ρ₀ = []      σ₀ = {}
+
+  ────────────────── (Lit)    ──────────────────── (Lit)
+  ρ₀, σ₀ ⊢ 1 ⇒ 1, σ₀          ρ₀, σ₀ ⊢ 41 ⇒ 41, σ₀
+  ────────────────────────────────────────────────────── (Binary)
+  ρ₀, σ₀ ⊢ 1 + 41 ⇒ 42, σ₀
+  ─────────────────────────────────────────────────────────────── (Return)
+  ρ₀, σ₀ ⊢ return 1 + 41; ⇒ ret 42, ρ₀, σ₀
+  ──────────────────────────────────────────────────────────────────────── (Call)
+  ρ₀, σ₀ ⊢ main() ⇒ 42, σ₀
 ```
 
-* *Post order*, premises before the conclusion, indented by depth. The root is the last line.
+* Premises over the *line of inference*, conclusion under it, rule at the right, as on the board.
+
+* A *legend* names the environments ρᵢ, the stores σⱼ and the long subjects, so a judgment fits one line.
+
+* A subtree wider than the page is written apart under a name *𝒟ₖ*.
 
 # §3.6 Error, determinism and divergence
 
@@ -263,7 +264,7 @@ Except.ok (Except.error (CoreCpp.TypeError.badOperand "+" (CoreCpp.Ty.bool)))
 
 * Declaration allocates, assignment writes, block restores ρ and removes locations from σ, `while` recurs on its own conclusion.
 
-* The interpreter prints the *derivation tree* in post order, and the semantics does not describe diverging programs.
+* The interpreter prints the *derivation*, premises over the line of inference, and the semantics does not describe diverging programs.
 
 Exercises: see the [lecture notes](../en/Lecture-3___-Semantics/).
 
