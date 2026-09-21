@@ -16,7 +16,9 @@ The notes exist in two languages, with parallel document trees:
 
 Units I to VI are written, Lectures 1 to 24. Unit VII is in preparation.
 
-Lean code is identical in both versions; only the prose differs.
+Lean code is identical in both versions; only the prose differs. The seven
+units of the syllabus are written, Lectures 1 to 29, each with a slide deck in
+both languages.
 
 The course studies the meaning of the constructions of programming languages.
 It follows Watt's structure and presents each construction as part of Core C++, a well behaved subset of C++17, with typing and evaluation rules in

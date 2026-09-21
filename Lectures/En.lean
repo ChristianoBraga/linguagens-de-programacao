@@ -27,6 +27,11 @@ import Lectures.En.Lecture21
 import Lectures.En.Lecture22
 import Lectures.En.Lecture23
 import Lectures.En.Lecture24
+import Lectures.En.Lecture25
+import Lectures.En.Lecture26
+import Lectures.En.Lecture27
+import Lectures.En.Lecture28
+import Lectures.En.Lecture29
 
 open Verso.Genre Manual
 
@@ -34,7 +39,7 @@ set_option pp.rawOnError true
 
 #doc (Manual) "Programming Languages" =>
 
-Lecture notes of course 09022, Linguagens de Programação, of the Computer Engineering programme of the Instituto Militar de Engenharia. The course studies the meaning of the constructions of programming languages. It follows the structure of Watt and presents each construction as part of Core C++, a well behaved subset of C++17, with typing and evaluation rules in natural semantics and their implementation in Lean 4. Unit I, Introduction, takes the first four lectures, Unit II, Types, the next four, Unit III, Storage and Control, Lectures 9 to 12, Unit IV, Abstraction, Lectures 13 to 16, and Unit V, Encapsulation, Lectures 17 to 20.
+Lecture notes of course 09022, Linguagens de Programação, of the Computer Engineering programme of the Instituto Militar de Engenharia. The course studies the meaning of the constructions of programming languages. It follows the structure of Watt and presents each construction as part of Core C++, a well behaved subset of C++17, with typing and evaluation rules in natural semantics and their implementation in Lean 4. Unit I, Introduction, takes the first four lectures, Unit II, Types, the next four, Unit III, Storage and Control, Lectures 9 to 12, Unit IV, Abstraction, Lectures 13 to 16, Unit V, Encapsulation, Lectures 17 to 20, Unit VI, Type Systems, Lectures 21 to 24, and Unit VII, Paradigms, Lectures 25 to 29.
 
 {include 0 Lectures.En.Lecture01}
 {include 0 Lectures.En.Lecture02}
@@ -60,3 +65,8 @@ Lecture notes of course 09022, Linguagens de Programação, of the Computer Engi
 {include 0 Lectures.En.Lecture22}
 {include 0 Lectures.En.Lecture23}
 {include 0 Lectures.En.Lecture24}
+{include 0 Lectures.En.Lecture25}
+{include 0 Lectures.En.Lecture26}
+{include 0 Lectures.En.Lecture27}
+{include 0 Lectures.En.Lecture28}
+{include 0 Lectures.En.Lecture29}

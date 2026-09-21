@@ -27,6 +27,11 @@ import Lectures.Pt.Lecture21
 import Lectures.Pt.Lecture22
 import Lectures.Pt.Lecture23
 import Lectures.Pt.Lecture24
+import Lectures.Pt.Lecture25
+import Lectures.Pt.Lecture26
+import Lectures.Pt.Lecture27
+import Lectures.Pt.Lecture28
+import Lectures.Pt.Lecture29
 
 open Verso.Genre Manual
 
@@ -34,7 +39,7 @@ set_option pp.rawOnError true
 
 #doc (Manual) "Linguagens de Programação" =>
 
-Notas de aula da disciplina 09022, Linguagens de Programação, do curso de Engenharia de Computação do Instituto Militar de Engenharia. A disciplina estuda o significado das construções das linguagens de programação. Ela segue a estrutura de Watt e apresenta cada construção como parte de Core C++, um subconjunto bem comportado de C++17, com regras de tipos e de avaliação em semântica natural e a sua implementação em Lean 4. A unidade didática I, Introdução, ocupa as quatro primeiras aulas, a UD II, Tipos, as quatro seguintes, a UD III, Armazenamento e Controle, as Aulas 9 a 12, a UD IV, Abstração, as Aulas 13 a 16, e a UD V, Encapsulamento, as Aulas 17 a 20.
+Notas de aula da disciplina 09022, Linguagens de Programação, do curso de Engenharia de Computação do Instituto Militar de Engenharia. A disciplina estuda o significado das construções das linguagens de programação. Ela segue a estrutura de Watt e apresenta cada construção como parte de Core C++, um subconjunto bem comportado de C++17, com regras de tipos e de avaliação em semântica natural e a sua implementação em Lean 4. A unidade didática I, Introdução, ocupa as quatro primeiras aulas, a UD II, Tipos, as quatro seguintes, a UD III, Armazenamento e Controle, as Aulas 9 a 12, a UD IV, Abstração, as Aulas 13 a 16, a UD V, Encapsulamento, as Aulas 17 a 20, a UD VI, Sistemas de Tipos, as Aulas 21 a 24, e a UD VII, Paradigmas, as Aulas 25 a 29.
 
 {include 0 Lectures.Pt.Lecture01}
 {include 0 Lectures.Pt.Lecture02}
@@ -60,3 +65,8 @@ Notas de aula da disciplina 09022, Linguagens de Programação, do curso de Enge
 {include 0 Lectures.Pt.Lecture22}
 {include 0 Lectures.Pt.Lecture23}
 {include 0 Lectures.Pt.Lecture24}
+{include 0 Lectures.Pt.Lecture25}
+{include 0 Lectures.Pt.Lecture26}
+{include 0 Lectures.Pt.Lecture27}
+{include 0 Lectures.Pt.Lecture28}
+{include 0 Lectures.Pt.Lecture29}

@@ -29,6 +29,11 @@ import Lectures.SlidesPt.Lecture21
 import Lectures.SlidesPt.Lecture22
 import Lectures.SlidesPt.Lecture23
 import Lectures.SlidesPt.Lecture24
+import Lectures.SlidesPt.Lecture25
+import Lectures.SlidesPt.Lecture26
+import Lectures.SlidesPt.Lecture27
+import Lectures.SlidesPt.Lecture28
+import Lectures.SlidesPt.Lecture29
 
 open Verso Doc
 open Verso.Genre Manual
@@ -340,6 +345,71 @@ def aula24Deck : SlideDeck where
   label := "Aula 24 · Inferência de Tipos"
   notesLink := some ("../pt/Aula-24___-Infer___ncia-de-Tipos/", "↩ Notas")
   prevLink := some ("lecture-23.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-25.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula25Deck : SlideDeck where
+  fileName := "lecture-25.pt.html"
+  pageTitle := "Aula 25: O Paradigma Imperativo · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 25 · Linguagens de Programação"
+  label := "Aula 25 · O Paradigma Imperativo"
+  notesLink := some ("../pt/Aula-25___-O-Paradigma-Imperativo/", "↩ Notas")
+  prevLink := some ("lecture-24.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-26.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula26Deck : SlideDeck where
+  fileName := "lecture-26.pt.html"
+  pageTitle := "Aula 26: O Paradigma Orientado a Objetos · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 26 · Linguagens de Programação"
+  label := "Aula 26 · O Paradigma Orientado a Objetos"
+  notesLink := some ("../pt/Aula-26___-O-Paradigma-Orientado-a-Objetos/", "↩ Notas")
+  prevLink := some ("lecture-25.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-27.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula27Deck : SlideDeck where
+  fileName := "lecture-27.pt.html"
+  pageTitle := "Aula 27: O Paradigma Funcional · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 27 · Linguagens de Programação"
+  label := "Aula 27 · O Paradigma Funcional"
+  notesLink := some ("../pt/Aula-27___-O-Paradigma-Funcional/", "↩ Notas")
+  prevLink := some ("lecture-26.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-28.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula28Deck : SlideDeck where
+  fileName := "lecture-28.pt.html"
+  pageTitle := "Aula 28: O Paradigma Lógico · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 28 · Linguagens de Programação"
+  label := "Aula 28 · O Paradigma Lógico"
+  notesLink := some ("../pt/Aula-28___-O-Paradigma-L___gico/", "↩ Notas")
+  prevLink := some ("lecture-27.pt.html", "‹ Aula anterior")
+  nextLink := some ("lecture-29.pt.html", "Próxima aula ›")
+  startLabel := "⇤ Início"
+  prevSlideLabel := "Slide anterior"
+  nextSlideLabel := "Próximo slide"
+
+def aula29Deck : SlideDeck where
+  fileName := "lecture-29.pt.html"
+  pageTitle := "Aula 29: Quatro Paradigmas, Um Problema · Slides"
+  htmlLang := "pt"
+  kicker := "Aula 29 · Linguagens de Programação"
+  label := "Aula 29 · Quatro Paradigmas, Um Problema"
+  notesLink := some ("../pt/Aula-29___-Quatro-Paradigmas,-Um-Problema/", "↩ Notas")
+  prevLink := some ("lecture-28.pt.html", "‹ Aula anterior")
   startLabel := "⇤ Início"
   prevSlideLabel := "Slide anterior"
   nextSlideLabel := "Próximo slide"
@@ -368,4 +438,9 @@ def main := slidesMain (decks :=
    ((%doc Lectures.SlidesPt.Lecture21), aula21Deck),
    ((%doc Lectures.SlidesPt.Lecture22), aula22Deck),
    ((%doc Lectures.SlidesPt.Lecture23), aula23Deck),
-   ((%doc Lectures.SlidesPt.Lecture24), aula24Deck)])
+   ((%doc Lectures.SlidesPt.Lecture24), aula24Deck),
+   ((%doc Lectures.SlidesPt.Lecture25), aula25Deck),
+   ((%doc Lectures.SlidesPt.Lecture26), aula26Deck),
+   ((%doc Lectures.SlidesPt.Lecture27), aula27Deck),
+   ((%doc Lectures.SlidesPt.Lecture28), aula28Deck),
+   ((%doc Lectures.SlidesPt.Lecture29), aula29Deck)])

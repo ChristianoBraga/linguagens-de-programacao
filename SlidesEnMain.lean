@@ -29,6 +29,11 @@ import Lectures.SlidesEn.Lecture21
 import Lectures.SlidesEn.Lecture22
 import Lectures.SlidesEn.Lecture23
 import Lectures.SlidesEn.Lecture24
+import Lectures.SlidesEn.Lecture25
+import Lectures.SlidesEn.Lecture26
+import Lectures.SlidesEn.Lecture27
+import Lectures.SlidesEn.Lecture28
+import Lectures.SlidesEn.Lecture29
 
 open Verso Doc
 open Verso.Genre Manual
@@ -271,6 +276,56 @@ def lecture24Deck : SlideDeck where
   label := "Lecture 24 · Type Inference"
   notesLink := some ("../en/Lecture-24___-Type-Inference/", "↩ Notes")
   prevLink := some ("lecture-23.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-25.en.html", "Next lecture ›")
+
+def lecture25Deck : SlideDeck where
+  fileName := "lecture-25.en.html"
+  pageTitle := "Lecture 25: The Imperative Paradigm · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 25 · Programming Languages"
+  label := "Lecture 25 · The Imperative Paradigm"
+  notesLink := some ("../en/Lecture-25___-The-Imperative-Paradigm/", "↩ Notes")
+  prevLink := some ("lecture-24.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-26.en.html", "Next lecture ›")
+
+def lecture26Deck : SlideDeck where
+  fileName := "lecture-26.en.html"
+  pageTitle := "Lecture 26: The Object Oriented Paradigm · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 26 · Programming Languages"
+  label := "Lecture 26 · The Object Oriented Paradigm"
+  notesLink := some ("../en/Lecture-26___-The-Object-Oriented-Paradigm/", "↩ Notes")
+  prevLink := some ("lecture-25.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-27.en.html", "Next lecture ›")
+
+def lecture27Deck : SlideDeck where
+  fileName := "lecture-27.en.html"
+  pageTitle := "Lecture 27: The Functional Paradigm · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 27 · Programming Languages"
+  label := "Lecture 27 · The Functional Paradigm"
+  notesLink := some ("../en/Lecture-27___-The-Functional-Paradigm/", "↩ Notes")
+  prevLink := some ("lecture-26.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-28.en.html", "Next lecture ›")
+
+def lecture28Deck : SlideDeck where
+  fileName := "lecture-28.en.html"
+  pageTitle := "Lecture 28: The Logic Paradigm · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 28 · Programming Languages"
+  label := "Lecture 28 · The Logic Paradigm"
+  notesLink := some ("../en/Lecture-28___-The-Logic-Paradigm/", "↩ Notes")
+  prevLink := some ("lecture-27.en.html", "‹ Previous lecture")
+  nextLink := some ("lecture-29.en.html", "Next lecture ›")
+
+def lecture29Deck : SlideDeck where
+  fileName := "lecture-29.en.html"
+  pageTitle := "Lecture 29: Four Paradigms, One Problem · Slides"
+  htmlLang := "en"
+  kicker := "Lecture 29 · Programming Languages"
+  label := "Lecture 29 · Four Paradigms, One Problem"
+  notesLink := some ("../en/Lecture-29___-Four-Paradigms,-One-Problem/", "↩ Notes")
+  prevLink := some ("lecture-28.en.html", "‹ Previous lecture")
 
 def main := slidesMain (decks :=
   [((%doc Lectures.SlidesEn.Lecture01), lecture1Deck),
@@ -296,4 +351,9 @@ def main := slidesMain (decks :=
    ((%doc Lectures.SlidesEn.Lecture21), lecture21Deck),
    ((%doc Lectures.SlidesEn.Lecture22), lecture22Deck),
    ((%doc Lectures.SlidesEn.Lecture23), lecture23Deck),
-   ((%doc Lectures.SlidesEn.Lecture24), lecture24Deck)])
+   ((%doc Lectures.SlidesEn.Lecture24), lecture24Deck),
+   ((%doc Lectures.SlidesEn.Lecture25), lecture25Deck),
+   ((%doc Lectures.SlidesEn.Lecture26), lecture26Deck),
+   ((%doc Lectures.SlidesEn.Lecture27), lecture27Deck),
+   ((%doc Lectures.SlidesEn.Lecture28), lecture28Deck),
+   ((%doc Lectures.SlidesEn.Lecture29), lecture29Deck)])

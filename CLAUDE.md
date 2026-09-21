@@ -52,19 +52,9 @@ https://christianobraga.github.io/linguagens-de-programacao/.
 
 ## Estado em 2026-09-21
 
-UD I a VI completas nas duas línguas, vinte e quatro aulas com slides. UD VI,
-Aulas 21 a 24, Overloading, Parametric Polymorphism, Subtyping, Type
-Inference, sobre o fragmento de sobrecarga, operadores membros, templates e
-`auto` de `corecpp`. As UD II a VI usam os fragmentos de `corecpp`
-especificados em `../.claude/spec-ud2.md` a `spec-ud6.md`. UD VII por
-escrever. O script `refresh_outputs.py`, guardado no scratchpad da sessão e
-recriável em poucas linhas, reexecuta cada bloco `lean (name := …)` contra o
-`corecpp` atual e reescreve o `leanOutput` correspondente, útil quando uma
-mudança do interpretador altera as árvores de derivação de aulas anteriores.
-
-Duas armadilhas do Verso encontradas na UD VI. Um bloco `lean` com dois
-`#eval` produz duas mensagens, e um bloco `leanOutput` casa com uma, então
-cada `#eval` vai no seu bloco. As `tag` de seção são globais por árvore, e a
-árvore em português usa `aula-N` e nomes de seção em português, então as
-referências `{secref}` diferem entre as duas línguas mesmo com o mesmo
-código Lean.
+Curso completo nas duas línguas, sete UD, Aulas 1 a 29, cada uma com deck em
+inglês e em português. UD I, Introdução, Aulas 1 a 4. UD II, Tipos, 5 a 8.
+UD III, Armazenamento e Controle, 9 a 12. UD IV, Abstração, 13 a 16. UD V,
+Encapsulamento, 17 a 20. UD VI, Sistemas de Tipos, 21 a 24. UD VII,
+Paradigmas, 25 a 29. As especificações de cada UD ficam em
+`../.claude/spec-udN.md`, e o interpretador em `../core-cpp`.
